@@ -1,0 +1,118 @@
+package ch.fhnw.ima.paleo;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import java.time.Instant;
+import java.util.*;
+
+import static ch.fhnw.ima.paleo.ColumnIds.*;
+import static java.util.stream.Collectors.toList;
+
+public final class DataFrame {
+
+    private final Map<ColumnId, Column<?>> columns;
+    private final int rowCount;
+
+    public DataFrame(int rowCount, Column<?>... columns) {
+        this(rowCount, Arrays.asList(columns));
+    }
+
+    public DataFrame(int rowCount, List<Column<?>> columns) {
+        this.rowCount = rowCount;
+        this.columns = createImmutableMap(this.rowCount, columns);
+    }
+
+    private static Map<ColumnId, Column<?>> createImmutableMap(int rowCount, List<Column<?>> columns) {
+        Map<ColumnId, Column<?>> map = new LinkedHashMap<>();
+        columns.forEach(c -> {
+            if (rowCount != c.getRowCount()) {
+                String format = "Illegal row count (column '%s', expected '%s', actual '%s')";
+                String msg = String.format(format, c.getColumnId(), rowCount, c.getRowCount());
+                throw new IllegalArgumentException(msg);
+            }
+            map.put(c.getColumnId(), c);
+        });
+        return ImmutableMap.copyOf(map);
+    }
+
+    public int getRowCount() {
+        return this.rowCount;
+    }
+
+    public int getColumnCount() {
+        return this.columns.size();
+    }
+
+    public List<ColumnId> getColumnIds() {
+        return ImmutableList.copyOf(this.columns.keySet());
+    }
+
+    public List<String> getColumnNames() {
+        return this.columns.keySet().stream().map(ColumnId::getName).collect(toList());
+    }
+
+    public <C extends ColumnId> C getColumnId(int columnIndex, Class<C> columnClass) {
+        return columnClass.cast(ImmutableList.copyOf(this.columns.keySet()).get(columnIndex));
+    }
+
+    public IntColumn getColumn(IntColumnId columnId) {
+        return getTypedColumn(columnId);
+    }
+
+    public DoubleColumn getColumn(DoubleColumnId columnId) {
+        return getTypedColumn(columnId);
+    }
+
+    public StringColumn getColumn(StringColumnId columnId) {
+        return getTypedColumn(columnId);
+    }
+
+    public InstantColumn getColumn(InstantColumnId columnId) {
+        return getTypedColumn(columnId);
+    }
+
+    public FactorColumn getColumn(FactorColumnId columnId) {
+        return getTypedColumn(columnId);
+    }
+
+    public <T> GenericColumn<T> getColumn(GenericColumnId columnId) {
+        return getTypedColumn(columnId);
+    }
+
+    public int getValueAt(int rowIndex, IntColumnId columnId) {
+        IntColumn column = getTypedColumn(columnId);
+        return column.getValueAt(rowIndex);
+    }
+
+    public double getValueAt(int rowIndex, DoubleColumnId columnId) {
+        DoubleColumn column = getTypedColumn(columnId);
+        return column.getValueAt(rowIndex);
+    }
+
+    public String getValueAt(int rowIndex, StringColumnId columnId) {
+        StringColumn column = getTypedColumn(columnId);
+        return column.getValueAt(rowIndex);
+    }
+
+    public Instant getValueAt(int rowIndex, InstantColumnId columnId) {
+        InstantColumn column = getTypedColumn(columnId);
+        return column.getValueAt(rowIndex);
+    }
+
+    public String getValueAt(int rowIndex, FactorColumnId columnId) {
+        FactorColumn column = getTypedColumn(columnId);
+        return column.getValueAt(rowIndex);
+    }
+
+    public <T> T getValueAt(int rowIndex, GenericColumnId columnId) {
+        GenericColumn<T> column = getTypedColumn(columnId);
+        return column.getValueAt(rowIndex);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Column<?>> T getTypedColumn(ColumnId columnId) {
+        return (T) this.columns.get(columnId);
+    }
+
+}

@@ -1,0 +1,7 @@
+ext {
+    libraries = [:]
+}
+
+libraries.guava = 'com.google.guava:guava:18.0'
+libraries.junit = 'junit:junit:4.11'
+libraries.commons_csv = 'org.apache.commons:commons-csv:1.2'

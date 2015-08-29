@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':paleo-core')
+    compile libraries.commons_csv
+}
