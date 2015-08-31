@@ -19,8 +19,8 @@ public class DataFrameTest {
     private static final StringColumnId NAME = ColumnIds.stringCol("Name");
     private static final IntColumnId AGE = ColumnIds.intCol("Age");
     private static final DoubleColumnId HEIGHT = ColumnIds.doubleCol("Height");
-    private static final InstantColumnId DATE_OF_BIRTH = ColumnIds.instantCol("Date Of Birth");
-    private static final FactorColumnId GENDER = ColumnIds.factorCol("Gender");
+    private static final TimestampColumnId DATE_OF_BIRTH = ColumnIds.timestampCol("Date Of Birth");
+    private static final CategoryColumnId GENDER = ColumnIds.categoryCol("Gender");
 
     private static final Instant AUG_26_1975 = Instant.parse("1975-08-26T12:08:30.00Z");
     private static final Instant JAN_08_2008 = Instant.parse("2006-01-08T23:43:30.00Z");
@@ -32,8 +32,8 @@ public class DataFrameTest {
         StringColumn nameColumn = new StringColumn(NAME, asList("Ada", "Homer", "Hillary"));
         IntColumn ageColumn = new IntColumn(AGE, IntStream.of(42, 99, 67));
         DoubleColumn heightColumn = new DoubleColumn(HEIGHT, DoubleStream.of(1.74, 1.20, 1.70));
-        InstantColumn dateOfBirthColumn = new InstantColumn(DATE_OF_BIRTH, asList(AUG_26_1975, JAN_08_2008, OCT_26_1947));
-        FactorColumn genderColumn = FactorColumn.builder(GENDER).addAll("Female", "Male", "Female").build();
+        TimestampColumn dateOfBirthColumn = new TimestampColumn(DATE_OF_BIRTH, asList(AUG_26_1975, JAN_08_2008, OCT_26_1947));
+        CategoryColumn genderColumn = CategoryColumn.builder(GENDER).addAll("Female", "Male", "Female").build();
 
         DataFrame df = new DataFrame(3, nameColumn, ageColumn, heightColumn, dateOfBirthColumn, genderColumn);
 
@@ -55,7 +55,7 @@ public class DataFrameTest {
         assertEquals(heightColumn, df.getColumn(HEIGHT));
         assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.getValues().toArray(), 0.01);
 
-        assertEquals("Instant", DATE_OF_BIRTH.getType().getDescription());
+        assertEquals("Timestamp", DATE_OF_BIRTH.getType().getDescription());
         assertEquals(dateOfBirthColumn, df.getColumn(DATE_OF_BIRTH));
         assertEquals(asList(AUG_26_1975, JAN_08_2008, OCT_26_1947), dateOfBirthColumn.getValues().collect(toList()));
 
@@ -72,12 +72,12 @@ public class DataFrameTest {
         assertEquals(1.74, doubleValue, 0.01);
 
         // typed random access for timestamps
-        Instant instantValue = df.getValueAt(1, DATE_OF_BIRTH);
-        assertEquals(JAN_08_2008, instantValue);
+        Instant timestampValue = df.getValueAt(1, DATE_OF_BIRTH);
+        assertEquals(JAN_08_2008, timestampValue);
 
-        // Typed random access for factors (aka categories)
-        String factorValue = df.getValueAt(2, GENDER);
-        assertEquals("Female", factorValue);
+        // Typed random access for categories
+        String categoryValue = df.getValueAt(2, GENDER);
+        assertEquals("Female", categoryValue);
 
     }
 

@@ -83,10 +83,10 @@ public final class Parser {
             return new IntColumnBuilder(name);
         } else if (ColumnType.PRIMITIVE_DOUBLE.getDescription().equalsIgnoreCase(type)) {
             return new DoubleColumnBuilder(name);
-        } else if (ColumnType.INSTANT.getDescription().equalsIgnoreCase(type)) {
-            return new InstantColumnBuilder(name, formatter);
-        } else if (ColumnType.FACTOR.getDescription().equalsIgnoreCase(type)) {
-            return new FactorColumnBuilder(name);
+        } else if (ColumnType.TIMESTAMP.getDescription().equalsIgnoreCase(type)) {
+            return new TimestampColumnBuilder(name, formatter);
+        } else if (ColumnType.CATEGORY.getDescription().equalsIgnoreCase(type)) {
+            return new CategoryColumnBuilder(name);
         } else {
             return new StringColumnBuilder(name);
         }
@@ -170,20 +170,20 @@ public final class Parser {
         }
     }
 
-    private static final class InstantColumnBuilder implements ColumnBuilder<InstantColumn> {
+    private static final class TimestampColumnBuilder implements ColumnBuilder<TimestampColumn> {
 
         private final Optional<DateTimeFormatter> formatter;
         private final GenericColumnId id;
         private final ImmutableList.Builder<Instant> valueListBuilder;
 
-        private InstantColumnBuilder(String name, Optional<DateTimeFormatter> formatter) {
-            this.id = ColumnIds.instantCol(name);
+        private TimestampColumnBuilder(String name, Optional<DateTimeFormatter> formatter) {
+            this.id = ColumnIds.timestampCol(name);
             this.formatter = formatter;
             this.valueListBuilder = ImmutableList.builder();
         }
 
         @Override
-        public InstantColumnBuilder add(String stringValue) {
+        public TimestampColumnBuilder add(String stringValue) {
             Instant instant;
             if (this.formatter.isPresent()) {
                 LocalDateTime dateTime = LocalDateTime.from(this.formatter.get().parse(stringValue));
@@ -196,28 +196,28 @@ public final class Parser {
         }
 
         @Override
-        public InstantColumn build() {
-            return new InstantColumn(this.id, this.valueListBuilder.build());
+        public TimestampColumn build() {
+            return new TimestampColumn(this.id, this.valueListBuilder.build());
         }
 
     }
 
-    private static final class FactorColumnBuilder implements ColumnBuilder<FactorColumn> {
+    private static final class CategoryColumnBuilder implements ColumnBuilder<CategoryColumn> {
 
-        private final FactorColumn.Builder delegate;
+        private final CategoryColumn.Builder delegate;
 
-        private FactorColumnBuilder(String name) {
-            this.delegate = FactorColumn.builder(ColumnIds.factorCol(name));
+        private CategoryColumnBuilder(String name) {
+            this.delegate = CategoryColumn.builder(ColumnIds.categoryCol(name));
         }
 
         @Override
-        public FactorColumnBuilder add(String stringValue) {
+        public CategoryColumnBuilder add(String stringValue) {
             this.delegate.add(stringValue);
             return this;
         }
 
         @Override
-        public FactorColumn build() {
+        public CategoryColumn build() {
             return this.delegate.build();
         }
 

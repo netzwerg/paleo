@@ -5,8 +5,8 @@ public final class ColumnType {
     public static final ColumnType PRIMITIVE_INT = new ColumnType("Int");
     public static final ColumnType PRIMITIVE_DOUBLE = new ColumnType("Double");
     public static final ColumnType STRING = new ColumnType("String");
-    public static final ColumnType INSTANT = new ColumnType("Instant");
-    public static final ColumnType FACTOR = new ColumnType("Factor");
+    public static final ColumnType TIMESTAMP = new ColumnType("Timestamp");
+    public static final ColumnType CATEGORY = new ColumnType("Category");
 
     private final String description;
 

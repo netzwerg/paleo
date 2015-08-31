@@ -14,12 +14,12 @@ public final class ColumnIds {
         return new StringColumnId(name);
     }
 
-    public static InstantColumnId instantCol(String name) {
-        return new InstantColumnId(name);
+    public static TimestampColumnId timestampCol(String name) {
+        return new TimestampColumnId(name);
     }
 
-    public static FactorColumnId factorCol(String name) {
-        return new FactorColumnId(name);
+    public static CategoryColumnId categoryCol(String name) {
+        return new CategoryColumnId(name);
     }
 
     public static final class IntColumnId extends GenericColumnId {
@@ -40,15 +40,15 @@ public final class ColumnIds {
         }
     }
 
-    public static final class InstantColumnId extends GenericColumnId {
-        private InstantColumnId(String name) {
-            super(name, ColumnType.INSTANT);
+    public static final class TimestampColumnId extends GenericColumnId {
+        private TimestampColumnId(String name) {
+            super(name, ColumnType.TIMESTAMP);
         }
     }
 
-    public static final class FactorColumnId extends GenericColumnId {
-        private FactorColumnId(String name) {
-            super(name, ColumnType.FACTOR);
+    public static final class CategoryColumnId extends GenericColumnId {
+        private CategoryColumnId(String name) {
+            super(name, ColumnType.CATEGORY);
         }
     }
 

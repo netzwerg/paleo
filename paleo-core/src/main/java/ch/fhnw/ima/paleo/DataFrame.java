@@ -68,11 +68,11 @@ public final class DataFrame {
         return getTypedColumn(columnId);
     }
 
-    public InstantColumn getColumn(InstantColumnId columnId) {
+    public TimestampColumn getColumn(TimestampColumnId columnId) {
         return getTypedColumn(columnId);
     }
 
-    public FactorColumn getColumn(FactorColumnId columnId) {
+    public CategoryColumn getColumn(CategoryColumnId columnId) {
         return getTypedColumn(columnId);
     }
 
@@ -95,13 +95,13 @@ public final class DataFrame {
         return column.getValueAt(rowIndex);
     }
 
-    public Instant getValueAt(int rowIndex, InstantColumnId columnId) {
-        InstantColumn column = getTypedColumn(columnId);
+    public Instant getValueAt(int rowIndex, TimestampColumnId columnId) {
+        TimestampColumn column = getTypedColumn(columnId);
         return column.getValueAt(rowIndex);
     }
 
-    public String getValueAt(int rowIndex, FactorColumnId columnId) {
-        FactorColumn column = getTypedColumn(columnId);
+    public String getValueAt(int rowIndex, CategoryColumnId columnId) {
+        CategoryColumn column = getTypedColumn(columnId);
         return column.getValueAt(rowIndex);
     }
 

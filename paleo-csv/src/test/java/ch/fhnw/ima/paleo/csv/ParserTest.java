@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 public class ParserTest {
 
     public static final String CONTENTS = "Name\tAge\tHeight\tDate Of Birth\tGender\n" +
-            "String\tInt\tDouble\tInstant\tFactor\n" +
+            "String\tInt\tDouble\tTimestamp\tCategory\n" +
             "Ada\t42\t1.74\t19750826050916\tFemale\n" +
             "Homer\t99\t1.20\t20060108050916\tMale\n" +
             "Hillary\t67\t1.70\t19471026050916\tFemale\n";
@@ -43,14 +43,14 @@ public class ParserTest {
         DoubleColumn heightColumn = df.getColumn(heightColumnId);
         assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.getValues().toArray(), 0.01);
 
-        InstantColumnId dateOfBirthColumnId = df.getColumnId(3, InstantColumnId.class);
-        InstantColumn dateOfBirthColumn = df.getColumn(dateOfBirthColumnId);
+        TimestampColumnId dateOfBirthColumnId = df.getColumnId(3, TimestampColumnId.class);
+        TimestampColumn dateOfBirthColumn = df.getColumn(dateOfBirthColumnId);
         Function<? super Instant, Month> toMonth = instant -> instant.atZone(ZoneId.from(ZoneOffset.UTC)).getMonth();
         assertEquals(asList(Month.AUGUST, Month.JANUARY, Month.OCTOBER), dateOfBirthColumn.getValues().map(toMonth).collect(toList()));
 
-        FactorColumnId genderColumnId = df.getColumnId(4, FactorColumnId.class);
-        FactorColumn genderColumn = df.getColumn(genderColumnId);
-        assertEquals(ImmutableSet.of("Female", "Male"), genderColumn.getFactors());
+        CategoryColumnId genderColumnId = df.getColumnId(4, CategoryColumnId.class);
+        CategoryColumn genderColumn = df.getColumn(genderColumnId);
+        assertEquals(ImmutableSet.of("Female", "Male"), genderColumn.getCategories());
 
         // typed random access for e.g. String
         String stringValue = df.getValueAt(0, nameColumnId);
@@ -64,8 +64,9 @@ public class ParserTest {
         double doubleValue = df.getValueAt(0, heightColumnId);
         assertEquals(1.74, doubleValue, 0.01);
 
-        String factorValue = df.getValueAt(2, genderColumnId);
-        assertEquals("Female", factorValue);
+        // typed random access for categories
+        String categoryValue = df.getValueAt(2, genderColumnId);
+        assertEquals("Female", categoryValue);
     }
 
 }
