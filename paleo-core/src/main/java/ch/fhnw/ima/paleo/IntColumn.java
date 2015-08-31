@@ -15,9 +15,13 @@ public final class IntColumn implements Column<IntColumnId> {
         this.values = values.toArray();
     }
 
+    public static Builder builder(IntColumnId id) {
+        return new Builder(id);
+    }
+
     @Override
     public IntColumnId getColumnId() {
-        return id;
+        return this.id;
     }
 
     @Override
@@ -31,6 +35,34 @@ public final class IntColumn implements Column<IntColumnId> {
 
     public IntStream getValues() {
         return Arrays.stream(this.values);
+    }
+
+    public static final class Builder {
+
+        private final IntColumnId id;
+        private final IntStream.Builder valueBuilder;
+
+        public Builder(IntColumnId id) {
+            this.id = id;
+            this.valueBuilder = IntStream.builder();
+        }
+
+        public Builder addAll(int... values) {
+            for (int value : values) {
+                add(value);
+            }
+            return this;
+        }
+
+        public Builder add(int value) {
+            this.valueBuilder.add(value);
+            return this;
+        }
+
+        public IntColumn build() {
+            return new IntColumn(this.id, this.valueBuilder.build());
+        }
+
     }
 
 }

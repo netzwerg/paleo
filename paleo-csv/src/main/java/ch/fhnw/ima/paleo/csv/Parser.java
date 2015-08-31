@@ -13,7 +13,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 import static ch.fhnw.ima.paleo.ColumnIds.*;
 
@@ -104,23 +103,21 @@ public final class Parser {
 
     private static final class IntColumnBuilder implements ColumnBuilder<IntColumn> {
 
-        private final IntColumnId id;
-        private final IntStream.Builder valueStreamBuilder;
+        private final IntColumn.Builder delegate;
 
         private IntColumnBuilder(String name) {
-            this.id = ColumnIds.intCol(name);
-            this.valueStreamBuilder = IntStream.builder();
+            this.delegate = IntColumn.builder(ColumnIds.intCol(name));
         }
 
         @Override
         public IntColumnBuilder add(String stringValue) {
-            this.valueStreamBuilder.add(Integer.valueOf(stringValue));
+            this.delegate.add(Integer.valueOf(stringValue));
             return this;
         }
 
         @Override
         public IntColumn build() {
-            return new IntColumn(this.id, valueStreamBuilder.build());
+            return this.delegate.build();
         }
 
     }
