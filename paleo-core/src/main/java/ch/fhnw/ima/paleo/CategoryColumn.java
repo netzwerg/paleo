@@ -31,7 +31,7 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
     }
 
     @Override
-    public CategoryColumnId getColumnId() {
+    public CategoryColumnId getId() {
         return this.id;
     }
 

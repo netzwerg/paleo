@@ -20,7 +20,7 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
     }
 
     @Override
-    public DoubleColumnId getColumnId() {
+    public DoubleColumnId getId() {
         return id;
     }
 

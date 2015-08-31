@@ -11,7 +11,7 @@ public class IntColumnTest {
     public void builder() {
         IntColumnId id = intCol("test");
         IntColumn column = IntColumn.builder(id).add(42).addAll(33, 69).add(99).build();
-        assertEquals(id, column.getColumnId());
+        assertEquals(id, column.getId());
         assertEquals(4, column.getRowCount());
         assertEquals(42, column.getValueAt(0));
         assertEquals(99, column.getValueAt(column.getRowCount() - 1));

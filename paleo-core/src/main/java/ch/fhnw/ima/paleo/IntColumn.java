@@ -20,7 +20,7 @@ public final class IntColumn implements Column<IntColumnId> {
     }
 
     @Override
-    public IntColumnId getColumnId() {
+    public IntColumnId getId() {
         return this.id;
     }
 

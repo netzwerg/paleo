@@ -31,10 +31,10 @@ public final class DataFrame {
         columns.forEach(c -> {
             if (rowCount != c.getRowCount()) {
                 String format = "Illegal row count (column '%s', expected '%s', actual '%s')";
-                String msg = String.format(format, c.getColumnId(), rowCount, c.getRowCount());
+                String msg = String.format(format, c.getId(), rowCount, c.getRowCount());
                 throw new IllegalArgumentException(msg);
             }
-            map.put(c.getColumnId(), c);
+            map.put(c.getId(), c);
         });
         return ImmutableMap.copyOf(map);
     }

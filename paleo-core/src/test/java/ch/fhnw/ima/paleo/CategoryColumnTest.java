@@ -14,7 +14,7 @@ public class CategoryColumnTest {
         CategoryColumn.Builder builder = CategoryColumn.builder(id);
         builder.add("foo").add("bar").addAll("foo", "baz", "bar").add("foo");
         CategoryColumn column = builder.build();
-        assertEquals(id, column.getColumnId());
+        assertEquals(id, column.getId());
         assertEquals(6, column.getRowCount());
         assertEquals(ImmutableSet.of("foo", "bar", "baz"), column.getCategories());
         assertEquals("foo", column.getValueAt(0));
