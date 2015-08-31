@@ -6,4 +6,8 @@ public interface Column<T extends ColumnId> {
 
     int getRowCount();
 
+    interface Builder<T extends Column<?>> {
+        T build();
+    }
+
 }

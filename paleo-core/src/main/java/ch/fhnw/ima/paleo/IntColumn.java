@@ -37,7 +37,7 @@ public final class IntColumn implements Column<IntColumnId> {
         return Arrays.stream(this.values);
     }
 
-    public static final class Builder {
+    public static final class Builder implements Column.Builder<IntColumn> {
 
         private final IntColumnId id;
         private final IntStream.Builder valueBuilder;
@@ -59,6 +59,7 @@ public final class IntColumn implements Column<IntColumnId> {
             return this;
         }
 
+        @Override
         public IntColumn build() {
             return new IntColumn(this.id, this.valueBuilder.build());
         }

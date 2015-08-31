@@ -12,9 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.DoubleStream;
-
-import static ch.fhnw.ima.paleo.ColumnIds.*;
+import java.util.function.Consumer;
 
 public final class Parser {
 
@@ -33,7 +31,7 @@ public final class Parser {
         CSVRecord columnNames = it.next();
         CSVRecord columnTypes = it.next();
 
-        List<ColumnBuilder> columnBuilders = createColumnBuilders(columnNames, columnTypes, formatter, columnBuilderFactories);
+        List<FromStringColumnBuilder> columnBuilders = createColumnBuilders(columnNames, columnTypes, formatter, columnBuilderFactories);
 
         int rowCount = 0;
         while (it.hasNext()) {
@@ -41,7 +39,7 @@ public final class Parser {
             CSVRecord row = it.next();
 
             Iterator<String> valueIt = row.iterator();
-            Iterator<ColumnBuilder> columnBuildersIt = columnBuilders.iterator();
+            Iterator<FromStringColumnBuilder> columnBuildersIt = columnBuilders.iterator();
             while (valueIt.hasNext()) {
                 columnBuildersIt.next().add(valueIt.next());
             }
@@ -52,7 +50,7 @@ public final class Parser {
         return new DataFrame(rowCount, columns.build());
     }
 
-    private static List<ColumnBuilder> createColumnBuilders(CSVRecord columnNames, CSVRecord columnTypes, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
+    private static List<FromStringColumnBuilder> createColumnBuilders(CSVRecord columnNames, CSVRecord columnTypes, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
 
         if (columnNames.size() != columnTypes.size()) {
             String msg = String.format(
@@ -62,7 +60,7 @@ public final class Parser {
             throw new IllegalArgumentException(msg);
         }
 
-        ImmutableList.Builder<ColumnBuilder> resultBuilder = ImmutableList.builder();
+        ImmutableList.Builder<FromStringColumnBuilder> resultBuilder = ImmutableList.builder();
 
         Iterator<String> nameIt = columnNames.iterator();
         Iterator<String> typeIt = columnTypes.iterator();
@@ -75,149 +73,89 @@ public final class Parser {
         return resultBuilder.build();
     }
 
-    private static ColumnBuilder<?> createColumnBuilder(String name, String type, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
+    private static FromStringColumnBuilder<?> createColumnBuilder(String name, String type, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
         if (columnBuilderFactories.containsKey(type)) {
             return columnBuilderFactories.get(type).create(name, type);
         } else if (ColumnType.PRIMITIVE_INT.getDescription().equalsIgnoreCase(type)) {
-            return new IntColumnBuilder(name);
+            return intColumnBuilder(name);
         } else if (ColumnType.PRIMITIVE_DOUBLE.getDescription().equalsIgnoreCase(type)) {
-            return new DoubleColumnBuilder(name);
+            return doubleColumnBuilder(name);
         } else if (ColumnType.TIMESTAMP.getDescription().equalsIgnoreCase(type)) {
-            return new TimestampColumnBuilder(name, formatter);
+            return timestampColumnBuilder(name, formatter);
         } else if (ColumnType.CATEGORY.getDescription().equalsIgnoreCase(type)) {
-            return new CategoryColumnBuilder(name);
+            return categoryColumnBuilder(name);
         } else {
-            return new StringColumnBuilder(name);
+            return stringColumnBuilder(name);
         }
     }
 
-    public interface ColumnBuilder<C extends Column<?>> {
-        ColumnBuilder<C> add(String stringValue);
-
-        C build();
+    public interface FromStringColumnBuilder<C extends Column<?>> extends Column.Builder<C> {
+        FromStringColumnBuilder<C> add(String stringValue);
     }
 
-    public interface ColumnBuilderFactory {
-        ColumnBuilder<?> create(String name, String typeDescription);
-    }
+    private static class GenericFromStringColumnBuilder<C extends Column<?>> implements FromStringColumnBuilder<C> {
 
-    private static final class IntColumnBuilder implements ColumnBuilder<IntColumn> {
+        private final Column.Builder<C> delegateBuilder;
+        private final Consumer<String> valueAccepter;
 
-        private final IntColumn.Builder delegate;
-
-        private IntColumnBuilder(String name) {
-            this.delegate = IntColumn.builder(ColumnIds.intCol(name));
+        private GenericFromStringColumnBuilder(Column.Builder<C> delegateBuilder, Consumer<String> valueAccepter) {
+            this.delegateBuilder = delegateBuilder;
+            this.valueAccepter = valueAccepter;
         }
 
         @Override
-        public IntColumnBuilder add(String stringValue) {
-            this.delegate.add(Integer.valueOf(stringValue));
+        public FromStringColumnBuilder<C> add(String stringValue) {
+            this.valueAccepter.accept(stringValue);
             return this;
         }
 
-        @Override
-        public IntColumn build() {
-            return this.delegate.build();
+        public C build() {
+            return this.delegateBuilder.build();
         }
 
     }
 
-    private static final class DoubleColumnBuilder implements ColumnBuilder<DoubleColumn> {
-
-        private final DoubleColumnId id;
-        private final DoubleStream.Builder valueStreamBuilder;
-
-        private DoubleColumnBuilder(String name) {
-            this.id = ColumnIds.doubleCol(name);
-            this.valueStreamBuilder = DoubleStream.builder();
-        }
-
-        @Override
-        public DoubleColumnBuilder add(String stringValue) {
-            this.valueStreamBuilder.add(Double.valueOf(stringValue));
-            return this;
-        }
-
-        @Override
-        public DoubleColumn build() {
-            return new DoubleColumn(this.id, valueStreamBuilder.build());
-        }
-
+    private static FromStringColumnBuilder<IntColumn> intColumnBuilder(String name) {
+        IntColumn.Builder builder = IntColumn.builder(ColumnIds.intCol(name));
+        Consumer<String> valueAccepter = stringValue -> builder.add(Integer.parseInt(stringValue));
+        return new GenericFromStringColumnBuilder<>(builder, valueAccepter);
     }
 
-    private static final class StringColumnBuilder implements ColumnBuilder<StringColumn> {
-
-        private final StringColumnId id;
-        private final ImmutableList.Builder<String> valueListBuilder;
-
-        private StringColumnBuilder(String name) {
-            this.id = ColumnIds.stringCol(name);
-            this.valueListBuilder = ImmutableList.builder();
-        }
-
-        @Override
-        public StringColumnBuilder add(String stringValue) {
-            this.valueListBuilder.add(stringValue);
-            return this;
-        }
-
-        @Override
-        public StringColumn build() {
-            return new StringColumn(this.id, this.valueListBuilder.build());
-        }
+    private static FromStringColumnBuilder<DoubleColumn> doubleColumnBuilder(String name) {
+        DoubleColumn.Builder builder = DoubleColumn.builder(ColumnIds.doubleCol(name));
+        Consumer<String> valueAccepter = stringValue -> builder.add(Double.parseDouble(stringValue));
+        return new GenericFromStringColumnBuilder<>(builder, valueAccepter);
     }
 
-    private static final class TimestampColumnBuilder implements ColumnBuilder<TimestampColumn> {
+    private static FromStringColumnBuilder<StringColumn> stringColumnBuilder(String name) {
+        StringColumn.Builder builder = StringColumn.builder(ColumnIds.stringCol(name));
+        Consumer<String> valueAccepter = builder::add;
+        return new GenericFromStringColumnBuilder<>(builder, valueAccepter);
+    }
 
-        private final Optional<DateTimeFormatter> formatter;
-        private final GenericColumnId id;
-        private final ImmutableList.Builder<Instant> valueListBuilder;
+    private static FromStringColumnBuilder<CategoryColumn> categoryColumnBuilder(String name) {
+        CategoryColumn.Builder builder = CategoryColumn.builder(ColumnIds.categoryCol(name));
+        Consumer<String> valueAccepter = builder::add;
+        return new GenericFromStringColumnBuilder<>(builder, valueAccepter);
+    }
 
-        private TimestampColumnBuilder(String name, Optional<DateTimeFormatter> formatter) {
-            this.id = ColumnIds.timestampCol(name);
-            this.formatter = formatter;
-            this.valueListBuilder = ImmutableList.builder();
-        }
-
-        @Override
-        public TimestampColumnBuilder add(String stringValue) {
+    private static FromStringColumnBuilder<TimestampColumn> timestampColumnBuilder(String name, Optional<DateTimeFormatter> formatter) {
+        TimestampColumn.Builder builder = TimestampColumn.builder(ColumnIds.timestampCol(name));
+        Consumer<String> valueAccepter = stringValue -> {
             Instant instant;
-            if (this.formatter.isPresent()) {
-                LocalDateTime dateTime = LocalDateTime.from(this.formatter.get().parse(stringValue));
+            if (formatter.isPresent()) {
+                LocalDateTime dateTime = LocalDateTime.from(formatter.get().parse(stringValue));
                 instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
             } else {
                 instant = Instant.parse(stringValue);
             }
-            this.valueListBuilder.add(instant);
-            return this;
-        }
-
-        @Override
-        public TimestampColumn build() {
-            return new TimestampColumn(this.id, this.valueListBuilder.build());
-        }
-
+            builder.add(instant);
+        };
+        return new GenericFromStringColumnBuilder<>(builder, valueAccepter);
     }
 
-    private static final class CategoryColumnBuilder implements ColumnBuilder<CategoryColumn> {
-
-        private final CategoryColumn.Builder delegate;
-
-        private CategoryColumnBuilder(String name) {
-            this.delegate = CategoryColumn.builder(ColumnIds.categoryCol(name));
-        }
-
-        @Override
-        public CategoryColumnBuilder add(String stringValue) {
-            this.delegate.add(stringValue);
-            return this;
-        }
-
-        @Override
-        public CategoryColumn build() {
-            return this.delegate.build();
-        }
-
+    public interface ColumnBuilderFactory {
+        FromStringColumnBuilder<?> create(String name, String typeDescription);
     }
 
 }

@@ -86,7 +86,7 @@ public class DataFrameTest {
         GenericColumnId fileColumnId = new GenericColumnId("File", new ColumnType("File"));
         File fileA = new File("/path/to/a.txt");
         File fileB = new File("/path/to/b.txt");
-        GenericColumn<File> fileColumn = new GenericColumn<>(fileColumnId, Arrays.asList(fileA, fileB));
+        GenericColumn<File,GenericColumnId> fileColumn = new GenericColumn<>(fileColumnId, Arrays.asList(fileA, fileB));
 
         DataFrame df = new DataFrame(2, fileColumn);
         assertEquals(2, df.getRowCount());

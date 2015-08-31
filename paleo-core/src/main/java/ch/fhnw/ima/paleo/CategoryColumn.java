@@ -49,7 +49,7 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
         return ImmutableSet.copyOf(this.categories);
     }
 
-    public static final class Builder {
+    public static final class Builder implements Column.Builder<CategoryColumn> {
 
         private final CategoryColumnId id;
         private final IntStream.Builder categoryIndexByRowIndexBuilder;

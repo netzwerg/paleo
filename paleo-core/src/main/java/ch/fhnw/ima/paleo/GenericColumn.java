@@ -1,23 +1,24 @@
 package ch.fhnw.ima.paleo;
 
-import ch.fhnw.ima.paleo.ColumnIds.GenericColumnId;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-public class GenericColumn<T> implements Column<GenericColumnId> {
+import static ch.fhnw.ima.paleo.ColumnIds.GenericColumnId;
 
-    private final GenericColumnId id;
-    private final ImmutableList<T> values;
+public class GenericColumn<V, I extends GenericColumnId> implements Column<I> {
 
-    public GenericColumn(GenericColumnId id, List<T> values) {
+    private final I id;
+    private final ImmutableList<V> values;
+
+    protected GenericColumn(I id, List<V> values) {
         this.id = id;
         this.values = ImmutableList.copyOf(values);
     }
 
     @Override
-    public GenericColumnId getColumnId() {
+    public I getColumnId() {
         return this.id;
     }
 
@@ -26,12 +27,36 @@ public class GenericColumn<T> implements Column<GenericColumnId> {
         return this.values.size();
     }
 
-    public T getValueAt(int index) {
+    public V getValueAt(int index) {
         return this.values.get(index);
     }
 
-    public Stream<T> getValues() {
+    public Stream<V> getValues() {
         return this.values.stream();
+    }
+
+    protected static abstract class Builder<V, I extends GenericColumnId, C extends GenericColumn<V, I>> implements Column.Builder<C> {
+
+        protected final I id;
+        protected final ImmutableList.Builder<V> valueBuilder;
+
+        public Builder(I id) {
+            this.id = id;
+            this.valueBuilder = ImmutableList.builder();
+        }
+
+        public Builder<V, I, C> addAll(V... values) {
+            for (V value : values) {
+                add(value);
+            }
+            return this;
+        }
+
+        public Builder<V, I, C> add(V value) {
+            this.valueBuilder.add(value);
+            return this;
+        }
+
     }
 
 }

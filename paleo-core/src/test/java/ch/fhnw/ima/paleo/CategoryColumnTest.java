@@ -3,13 +3,14 @@ package ch.fhnw.ima.paleo;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 
+import static ch.fhnw.ima.paleo.ColumnIds.*;
 import static org.junit.Assert.assertEquals;
 
 public class CategoryColumnTest {
 
     @Test
     public void builder() {
-        ColumnIds.CategoryColumnId id = ColumnIds.categoryCol("test");
+        CategoryColumnId id = categoryCol("test");
         CategoryColumn.Builder builder = CategoryColumn.builder(id);
         builder.add("foo").add("bar").addAll("foo", "baz", "bar").add("foo");
         CategoryColumn column = builder.build();

@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ch.fhnw.ima.paleo.ColumnIds.*;
 import static java.util.stream.Collectors.toList;
@@ -76,7 +79,7 @@ public final class DataFrame {
         return getTypedColumn(columnId);
     }
 
-    public <T> GenericColumn<T> getColumn(GenericColumnId columnId) {
+    public <V, I extends GenericColumnId> GenericColumn<V, I> getColumn(I columnId) {
         return getTypedColumn(columnId);
     }
 
@@ -105,8 +108,8 @@ public final class DataFrame {
         return column.getValueAt(rowIndex);
     }
 
-    public <T> T getValueAt(int rowIndex, GenericColumnId columnId) {
-        GenericColumn<T> column = getTypedColumn(columnId);
+    public <V, I extends GenericColumnId> V getValueAt(int rowIndex, I columnId) {
+        GenericColumn<V, I> column = getTypedColumn(columnId);
         return column.getValueAt(rowIndex);
     }
 

@@ -15,6 +15,10 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
         this.values = values.toArray();
     }
 
+    public static Builder builder(DoubleColumnId id) {
+        return new Builder(id);
+    }
+
     @Override
     public DoubleColumnId getColumnId() {
         return id;
@@ -31,6 +35,35 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
 
     public DoubleStream getValues() {
         return Arrays.stream(this.values);
+    }
+
+    public static final class Builder implements Column.Builder<DoubleColumn> {
+
+        private final DoubleColumnId id;
+        private final DoubleStream.Builder valueBuilder;
+
+        public Builder(DoubleColumnId id) {
+            this.id = id;
+            this.valueBuilder = DoubleStream.builder();
+        }
+
+        public Builder add(double ... values) {
+            for (double value: values) {
+                add(value);
+            }
+            return this;
+        }
+
+        public Builder add(double value) {
+            this.valueBuilder.add(value);
+            return this;
+        }
+
+        @Override
+        public DoubleColumn build() {
+            return new DoubleColumn(this.id, this.valueBuilder.build());
+        }
+
     }
 
 }
