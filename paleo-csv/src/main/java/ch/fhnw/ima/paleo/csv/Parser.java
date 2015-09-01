@@ -38,6 +38,12 @@ public final class Parser {
             rowCount++;
             CSVRecord row = it.next();
 
+            if (row.size() != columnBuilders.size()) {
+                String msgFormat = "Row '%s' contains '%s' values (but should match column count '%s')";
+                String msg = String.format(msgFormat, rowCount + 2, row.size(), columnBuilders.size());
+                throw new IllegalArgumentException(msg);
+            }
+
             Iterator<String> valueIt = row.iterator();
             Iterator<FromStringColumnBuilder> columnBuildersIt = columnBuilders.iterator();
             while (valueIt.hasNext()) {
