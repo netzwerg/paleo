@@ -31,28 +31,28 @@ public class ParserTest {
         assertEquals(5, df.getColumnCount());
         assertEquals(Arrays.asList("Name", "Age", "Height", "Date Of Birth", "Gender"), df.getColumnNames());
 
-        StringColumnId nameColumnId = df.getColumnId(0, StringColumnId.class);
+        StringColumnId nameColumnId = df.getColumnId(0, ColumnType.STRING);
         StringColumn nameColumn = df.getColumn(nameColumnId);
         assertEquals(asList("Ada", "Homer", "Hillary"), nameColumn.getValues().collect(toList()));
 
-        IntColumnId ageColumnId = df.getColumnId(1, IntColumnId.class);
+        IntColumnId ageColumnId = df.getColumnId(1, ColumnType.PRIMITIVE_INT);
         IntColumn ageColumn = df.getColumn(ageColumnId);
         assertArrayEquals(new int[]{42, 99, 67}, ageColumn.getValues().toArray());
 
-        DoubleColumnId heightColumnId = df.getColumnId(2, DoubleColumnId.class);
+        DoubleColumnId heightColumnId = df.getColumnId(2, ColumnType.PRIMITIVE_DOUBLE);
         DoubleColumn heightColumn = df.getColumn(heightColumnId);
         assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.getValues().toArray(), 0.01);
 
-        TimestampColumnId dateOfBirthColumnId = df.getColumnId(3, TimestampColumnId.class);
+        TimestampColumnId dateOfBirthColumnId = df.getColumnId(3, ColumnType.TIMESTAMP);
         TimestampColumn dateOfBirthColumn = df.getColumn(dateOfBirthColumnId);
         Function<? super Instant, Month> toMonth = instant -> instant.atZone(ZoneId.from(ZoneOffset.UTC)).getMonth();
         assertEquals(asList(Month.AUGUST, Month.JANUARY, Month.OCTOBER), dateOfBirthColumn.getValues().map(toMonth).collect(toList()));
 
-        CategoryColumnId genderColumnId = df.getColumnId(4, CategoryColumnId.class);
+        CategoryColumnId genderColumnId = df.getColumnId(4, ColumnType.CATEGORY);
         CategoryColumn genderColumn = df.getColumn(genderColumnId);
         assertEquals(ImmutableSet.of("Female", "Male"), genderColumn.getCategories());
 
-        // typed random access for e.g. String
+        // typed random access for String values
         String stringValue = df.getValueAt(0, nameColumnId);
         assertEquals("Ada", stringValue);
 

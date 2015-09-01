@@ -55,8 +55,9 @@ public final class DataFrame {
         return this.columns.keySet().stream().map(ColumnId::getName).collect(toList());
     }
 
-    public <C extends ColumnId> C getColumnId(int columnIndex, Class<C> columnClass) {
-        return columnClass.cast(ImmutableList.copyOf(this.columns.keySet()).get(columnIndex));
+    public <C extends ColumnId> C getColumnId(int columnIndex, ColumnType<C> type) {
+        Class<C> idType = type.getIdType();
+        return idType.cast(ImmutableList.copyOf(this.columns.keySet()).get(columnIndex));
     }
 
     public IntColumn getColumn(IntColumnId columnId) {

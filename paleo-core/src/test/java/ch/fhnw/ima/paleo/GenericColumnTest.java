@@ -15,7 +15,7 @@ public class GenericColumnTest {
 
     @Test
     public void builder() {
-        ColumnType type = new ColumnType("CUSTOM");
+        ColumnType<ColumnIds.GenericColumnId> type = new ColumnType<>("CUSTOM", ColumnIds.GenericColumnId.class);
         ColumnIds.GenericColumnId id = ColumnIds.genericCol("test", type);
         GenericColumn.Builder<File, ColumnIds.GenericColumnId, GenericColumn<File, ColumnIds.GenericColumnId>> builder =
                 new GenericColumn.Builder<File, ColumnIds.GenericColumnId, GenericColumn<File, ColumnIds.GenericColumnId>>(id) {
