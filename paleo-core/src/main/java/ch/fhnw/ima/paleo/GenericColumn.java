@@ -45,14 +45,15 @@ public class GenericColumn<V, I extends GenericColumnId> implements Column<I> {
             this.valueBuilder = ImmutableList.builder();
         }
 
-        public Builder<V, I, C> addAll(V... values) {
+        @SafeVarargs
+        public final Builder<V, I, C> addAll(V... values) {
             for (V value : values) {
                 add(value);
             }
             return this;
         }
 
-        public Builder<V, I, C> add(V value) {
+        public final Builder<V, I, C> add(V value) {
             this.valueBuilder.add(value);
             return this;
         }

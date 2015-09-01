@@ -21,7 +21,7 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
 
     @Override
     public DoubleColumnId getId() {
-        return id;
+        return this.id;
     }
 
     @Override

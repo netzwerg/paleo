@@ -30,7 +30,7 @@ public final class DataFrame {
         Map<ColumnId, Column<?>> map = new LinkedHashMap<>();
         columns.forEach(c -> {
             if (rowCount != c.getRowCount()) {
-                String format = "Illegal row count (column '%s', expected '%s', actual '%s')";
+                String format = "Illegal row count in column '%s' (expected '%s', actual '%s')";
                 String msg = String.format(format, c.getId(), rowCount, c.getRowCount());
                 throw new IllegalArgumentException(msg);
             }

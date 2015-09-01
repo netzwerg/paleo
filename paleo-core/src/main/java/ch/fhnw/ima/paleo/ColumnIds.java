@@ -2,6 +2,10 @@ package ch.fhnw.ima.paleo;
 
 public final class ColumnIds {
 
+    private ColumnIds() {
+        // enforce usage of static factory methods
+    }
+
     public static IntColumnId intCol(String name) {
         return new IntColumnId(name);
     }
@@ -20,6 +24,10 @@ public final class ColumnIds {
 
     public static CategoryColumnId categoryCol(String name) {
         return new CategoryColumnId(name);
+    }
+
+    public static GenericColumnId genericCol(String name, ColumnType type) {
+        return new GenericColumnId(name, type);
     }
 
     public static final class IntColumnId extends GenericColumnId {

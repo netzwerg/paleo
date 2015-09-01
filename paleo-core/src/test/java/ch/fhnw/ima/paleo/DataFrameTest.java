@@ -1,5 +1,6 @@
 package ch.fhnw.ima.paleo;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 
 import java.io.File;
@@ -44,20 +45,29 @@ public class DataFrameTest {
         assertEquals(Arrays.asList("Name", "Age", "Height", "Date Of Birth", "Gender"), df.getColumnNames());
 
         assertEquals("String", NAME.getType().getDescription());
+        assertEquals(NAME, df.getColumnId(0, StringColumnId.class));
         assertEquals(nameColumn, df.getColumn(NAME));
         assertEquals(asList("Ada", "Homer", "Hillary"), nameColumn.getValues().collect(toList()));
 
         assertEquals("Int", AGE.getType().getDescription());
+        assertEquals(AGE, df.getColumnId(1, IntColumnId.class));
         assertEquals(ageColumn, df.getColumn(AGE));
         assertArrayEquals(new int[]{42, 99, 67}, ageColumn.getValues().toArray());
 
         assertEquals("Double", HEIGHT.getType().getDescription());
+        assertEquals(HEIGHT, df.getColumnId(2, DoubleColumnId.class));
         assertEquals(heightColumn, df.getColumn(HEIGHT));
         assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.getValues().toArray(), 0.01);
 
         assertEquals("Timestamp", DATE_OF_BIRTH.getType().getDescription());
+        assertEquals(DATE_OF_BIRTH, df.getColumnId(3, TimestampColumnId.class));
         assertEquals(dateOfBirthColumn, df.getColumn(DATE_OF_BIRTH));
         assertEquals(asList(AUG_26_1975, JAN_08_2008, OCT_26_1947), dateOfBirthColumn.getValues().collect(toList()));
+
+        assertEquals("Category", GENDER.getType().getDescription());
+        assertEquals(GENDER, df.getColumnId(4, CategoryColumnId.class));
+        assertEquals(genderColumn, df.getColumn(GENDER));
+        assertEquals(ImmutableSet.of("Female", "Male"), genderColumn.getCategories());
 
         // typed random access for e.g. String
         String stringValue = df.getValueAt(0, NAME);
@@ -91,6 +101,9 @@ public class DataFrameTest {
         DataFrame df = new DataFrame(2, fileColumn);
         assertEquals(2, df.getRowCount());
         assertEquals(1, df.getColumnCount());
+
+        GenericColumn<File, GenericColumnId> column = df.getColumn(fileColumnId);
+        assertEquals(fileColumn, column);
 
         File fileValue = df.getValueAt(1, fileColumnId);
         assertEquals(fileB, fileValue);

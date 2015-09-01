@@ -5,7 +5,7 @@ import java.util.List;
 
 import static ch.fhnw.ima.paleo.ColumnIds.TimestampColumnId;
 
-public class TimestampColumn extends GenericColumn<Instant, TimestampColumnId> {
+public final class TimestampColumn extends GenericColumn<Instant, TimestampColumnId> {
 
     public TimestampColumn(TimestampColumnId id, List<Instant> values) {
         super(id, values);

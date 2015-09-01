@@ -14,7 +14,7 @@ public final class StringColumn extends GenericColumn<String, StringColumnId> {
         return new Builder(id);
     }
 
-    public static class Builder extends GenericColumn.Builder<String, StringColumnId, StringColumn> {
+    public static final class Builder extends GenericColumn.Builder<String, StringColumnId, StringColumn> {
 
         public Builder(StringColumnId id) {
             super(id);
