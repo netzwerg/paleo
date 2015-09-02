@@ -1,1 +1,1 @@
-include 'paleo-core', 'paleo-csv'
+include 'paleo-core', 'paleo-io'
