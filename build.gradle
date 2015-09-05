@@ -18,11 +18,13 @@ subprojects {
     version = rootProject.version
 
     repositories {
+        mavenLocal()
         mavenCentral()
     }
 
     dependencies {
         testCompile libraries.junit
+        testCompile libraries.chabis
     }
 
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.*;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static ch.fhnw.ima.paleo.ColumnIds.CategoryColumnId;
 
@@ -49,6 +50,13 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
         return ImmutableSet.copyOf(this.categories);
     }
 
+    /**
+     * Creates a stream of individual row values (i.e. "explodes" categories).
+     */
+    public Stream<String> createValues() {
+        return IntStream.range(0, this.rowCount).mapToObj(this::getValueAt);
+    }
+
     public static final class Builder implements Column.Builder<CategoryColumn> {
 
         private final CategoryColumnId id;
@@ -63,9 +71,13 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
             this.categoryIndexByCategory = new HashMap<>();
         }
 
-        public Builder addAll(String... values) {
-            Arrays.asList(values).forEach(this::add);
+        public Builder addAll(Iterable<String> values) {
+            values.forEach(this::add);
             return this;
+        }
+
+        public Builder addAll(String... values) {
+            return addAll(Arrays.asList(values));
         }
 
         public Builder add(String value) {

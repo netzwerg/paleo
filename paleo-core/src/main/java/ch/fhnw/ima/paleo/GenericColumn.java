@@ -2,6 +2,7 @@ package ch.fhnw.ima.paleo;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -45,12 +46,14 @@ public class GenericColumn<V, I extends GenericColumnId> implements Column<I> {
             this.valueBuilder = ImmutableList.builder();
         }
 
+        public final Builder<V, I, C> addAll(Iterable<V> values) {
+            values.forEach(this::add);
+            return this;
+        }
+
         @SafeVarargs
         public final Builder<V, I, C> addAll(V... values) {
-            for (V value : values) {
-                add(value);
-            }
-            return this;
+            return addAll(Arrays.asList(values));
         }
 
         public final Builder<V, I, C> add(V value) {
