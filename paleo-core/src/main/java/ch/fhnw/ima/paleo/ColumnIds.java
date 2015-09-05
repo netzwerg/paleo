@@ -14,6 +14,10 @@ public final class ColumnIds {
         return new DoubleColumnId(name);
     }
 
+    public static BooleanColumnId booleanCol(String name) {
+        return new BooleanColumnId(name);
+    }
+
     public static StringColumnId stringCol(String name) {
         return new StringColumnId(name);
     }
@@ -32,13 +36,19 @@ public final class ColumnIds {
 
     public static final class IntColumnId extends GenericColumnId {
         private IntColumnId(String name) {
-            super(name, ColumnType.PRIMITIVE_INT);
+            super(name, ColumnType.INT);
         }
     }
 
     public static final class DoubleColumnId extends GenericColumnId {
         private DoubleColumnId(String name) {
-            super(name, ColumnType.PRIMITIVE_DOUBLE);
+            super(name, ColumnType.DOUBLE);
+        }
+    }
+
+    public static final class BooleanColumnId extends GenericColumnId {
+        private BooleanColumnId(String name) {
+            super(name, ColumnType.BOOLEAN);
         }
     }
 

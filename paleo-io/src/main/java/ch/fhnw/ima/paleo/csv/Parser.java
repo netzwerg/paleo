@@ -82,10 +82,12 @@ public final class Parser {
     private static FromStringColumnBuilder<?> createColumnBuilder(String name, String type, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
         if (columnBuilderFactories.containsKey(type)) {
             return columnBuilderFactories.get(type).create(name, type);
-        } else if (ColumnType.PRIMITIVE_INT.getDescription().equalsIgnoreCase(type)) {
+        } else if (ColumnType.INT.getDescription().equalsIgnoreCase(type)) {
             return intColumnBuilder(name);
-        } else if (ColumnType.PRIMITIVE_DOUBLE.getDescription().equalsIgnoreCase(type)) {
+        } else if (ColumnType.DOUBLE.getDescription().equalsIgnoreCase(type)) {
             return doubleColumnBuilder(name);
+        } else if (ColumnType.BOOLEAN.getDescription().equalsIgnoreCase(type)) {
+            return booleanColumnBuilder(name);
         } else if (ColumnType.TIMESTAMP.getDescription().equalsIgnoreCase(type)) {
             return timestampColumnBuilder(name, formatter);
         } else if (ColumnType.CATEGORY.getDescription().equalsIgnoreCase(type)) {
@@ -130,6 +132,12 @@ public final class Parser {
     private static FromStringColumnBuilder<DoubleColumn> doubleColumnBuilder(String name) {
         DoubleColumn.Builder builder = DoubleColumn.builder(ColumnIds.doubleCol(name));
         Consumer<String> valueAccepter = stringValue -> builder.add(Double.parseDouble(stringValue));
+        return new GenericFromStringColumnBuilder<>(builder, valueAccepter);
+    }
+
+    private static FromStringColumnBuilder<BooleanColumn> booleanColumnBuilder(String name) {
+        BooleanColumn.Builder builder = BooleanColumn.builder(ColumnIds.booleanCol(name));
+        Consumer<String> valueAccepter = stringValue -> builder.add(Boolean.parseBoolean(stringValue));
         return new GenericFromStringColumnBuilder<>(builder, valueAccepter);
     }
 

@@ -68,6 +68,10 @@ public final class DataFrame {
         return getTypedColumn(columnId);
     }
 
+    public BooleanColumn getColumn(BooleanColumnId columnId) {
+        return getTypedColumn(columnId);
+    }
+
     public StringColumn getColumn(StringColumnId columnId) {
         return getTypedColumn(columnId);
     }
@@ -91,6 +95,11 @@ public final class DataFrame {
 
     public double getValueAt(int rowIndex, DoubleColumnId columnId) {
         DoubleColumn column = getTypedColumn(columnId);
+        return column.getValueAt(rowIndex);
+    }
+
+    public boolean getValueAt(int rowIndex, BooleanColumnId columnId) {
+        BooleanColumn column = getTypedColumn(columnId);
         return column.getValueAt(rowIndex);
     }
 
