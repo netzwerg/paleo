@@ -1,6 +1,6 @@
 package ch.fhnw.ima.paleo;
 
-import ch.netzwerg.chabis.Chabis;
+import ch.netzwerg.chabis.WordGenerator;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,11 +15,11 @@ import static org.junit.Assert.assertEquals;
 
 public class CategoryColumnTest {
 
-    private Chabis chabis;
+    private WordGenerator wordGenerator;
 
     @Before
     public void before() {
-        this.chabis = new Chabis(new Random(42));
+        this.wordGenerator = new WordGenerator(new Random(42));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class CategoryColumnTest {
     public void createValues() {
         CategoryColumnId id = categoryCol("test" );
         CategoryColumn.Builder builder = CategoryColumn.builder(id);
-        List<String> values = this.chabis.randomWords(100);
+        List<String> values = this.wordGenerator.randomWords(100);
         CategoryColumn column = builder.addAll(values).build();
         assertEquals(93, column.getCategories().size());
         assertEquals(values, column.createValues().collect(toList()));
