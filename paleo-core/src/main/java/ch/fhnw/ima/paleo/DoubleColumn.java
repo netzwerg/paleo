@@ -47,7 +47,7 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
             this.valueBuilder = DoubleStream.builder();
         }
 
-        public Builder add(double ... values) {
+        public Builder addAll(double ... values) {
             for (double value: values) {
                 add(value);
             }
