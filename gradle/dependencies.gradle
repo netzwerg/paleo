@@ -5,4 +5,4 @@ ext {
 libraries.guava = 'com.google.guava:guava:18.0'
 libraries.junit = 'junit:junit:4.11'
 libraries.commons_csv = 'org.apache.commons:commons-csv:1.2'
-libraries.chabis = 'ch.netzwerg:chabis:0.1.0'
+libraries.chabis = files("gradle/lib/chabis-0.1.0.jar") // until it is available on maven central

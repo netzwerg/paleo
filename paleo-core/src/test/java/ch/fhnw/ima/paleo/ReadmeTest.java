@@ -14,7 +14,7 @@ public class ReadmeTest {
     public void demo() {
 
         // Type-safe column identifiers
-        final StringColumnId NAME = stringCol("Name");
+        final StringColumnId NAME = ColumnIds.stringCol("Name");
         final CategoryColumnId COLOR = categoryCol("Color");
         final DoubleColumnId SERVING_SIZE = doubleCol("Serving Size (g)");
 

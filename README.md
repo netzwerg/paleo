@@ -1,26 +1,28 @@
-Paleo
-=====
-Java 8 data frames with typed columns. The following column types are supported out-of-the-box:
+# Paleo
+
+Immutable Java 8 data frames with typed columns.
+
+A data frame is composed of `0..n` named columns, which all contain the same number of row values. Each column has a
+specific value type and hence offers type-safe value access. The following column types are supported out-of-the-box:
 
 * **Int**: Primitive `int` values
 * **Double**: Primitive `double` values
-* **Boolean**: Primitive `double` values
+* **Boolean**: Primitive `boolean` values
 * **String**: `java.lang.String` values
 * **Timestamp**: `java.time.Instant` values
 * **Category**: Categorical `String` values (aka Factors)
 
-All columns offer type-safe value access, use efficient data structures to store their values, and support a
-builder API for convenient creation.
+Columns can be created via a fluent builder API, or populated from text files.
 
-Hello Paleo
-===========
+# Hello Paleo
+
 The `paleo-core` module provides all classes to identify, create, and structure typed columns: 
 
 ```java
 // Type-safe column identifiers
-final StringColumnId NAME = stringCol("Name");
-final CategoryColumnId COLOR = categoryCol("Color");
-final DoubleColumnId SERVING_SIZE = doubleCol("Serving Size (g)");
+final StringColumnId NAME = ColumnIds.stringCol("Name");
+final CategoryColumnId COLOR = ColumnIds.categoryCol("Color");
+final DoubleColumnId SERVING_SIZE = ColumnIds.doubleCol("Serving Size (g)");
 
 // Builder API for convenient creation
 StringColumn nameColumn = StringColumn.builder(NAME).addAll("Banana", "Blueberry", "Lemon", "Apple").build();
@@ -42,8 +44,8 @@ double maxServingSize = servingSizes.summaryStatistics().getMax();
 Set<String> colors = colorColumn.getCategories();
 ```
 
-Parsing From Tab-Delimited Text
-===============================
+# Parsing From Tab-Delimited Text
+
 The `paleo-io` module parses data frames from tab-delimited text representations:
 
 ```java
@@ -69,3 +71,10 @@ Stream<String> nameValues = nameColumn.getValues();
 // ... or access individual values via row index / column id 
 String yellow = dataFrame.getValueAt(2, COLOR);
 ```
+
+Why The Name?
+=============
+The backing data structures are all about **raw** values and **primitive** types &mdash; this somehow reminded me of
+the paleo diet.
+
+&copy; by Rahel Lüthy
