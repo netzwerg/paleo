@@ -14,38 +14,16 @@
  * limitations under the License.
  */
 
-plugins {
-    id 'ch.netzwerg.release' version '1.1.0'
-}
+package ch.netzwerg.paleo;
 
-apply from: "gradle/dependencies.gradle"
+public interface Column<T extends ColumnId> {
 
+    T getId();
 
-subprojects {
+    int getRowCount();
 
-    apply plugin: 'java'
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    compileJava.options.encoding = 'UTF-8'
-
-    group = 'ch.netzwerg'
-    version = rootProject.version
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
+    interface Builder<T extends Column<?>> {
+        T build();
     }
 
-    dependencies {
-        testCompile libraries.junit
-        testCompile libraries.chabis
-    }
-
-}
-
-release {
-    dependsOn subprojects.build
-    push = true
 }
