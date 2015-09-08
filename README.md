@@ -2,8 +2,8 @@
 
 Immutable Java 8 data frames with typed columns.
 
-A data frame is composed of `0..n` named columns, which all contain the same number of row values. Each column has a
-specific value type and hence offers type-safe value access. The following column types are supported out-of-the-box:
+A data frame is composed of `0..n` named columns, which all contain the same number of row values. Each column has fixed
+data type, which allows it to offer type-safe value access. The following column types are supported out-of-the-box:
 
 * **Int**: Primitive `int` values
 * **Double**: Primitive `double` values
