@@ -44,7 +44,7 @@ double maxServingSize = servingSizes.summaryStatistics().getMax();
 Set<String> colors = colorColumn.getCategories();
 ```
 
-# Parsing From Tab-Delimited Text
+# Parsing From Text / File
 
 The `paleo-io` module parses data frames from tab-delimited text representations:
 
@@ -72,9 +72,74 @@ Stream<String> nameValues = nameColumn.getValues();
 String yellow = dataFrame.getValueAt(2, COLOR);
 ```
 
-Why The Name?
-=============
+# Usage
+
+All modules are available via [Bintray/jCenter](https://bintray.com/netzwerg/maven/paleo/view).
+
+## Repository Configuration
+
+Gradle:
+
+```groovy
+repositories {
+    jcenter()
+}
+```
+
+Maven `settings.xml`:
+
+```xml
+<repository>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+    <id>central</id>
+    <name>bintray</name>
+    <url>http://jcenter.bintray.com</url>
+</repository>
+```
+
+## Using the `paleo-core` module
+
+Gradle:
+
+```groovy
+compile 'ch.netzwerg:paleo-core:0.1.2'
+```
+
+Maven:
+
+```xml
+<dependency>
+    <groupId>ch.netzwerg</groupId>
+    <artifactId>paleo-core</artifactId>
+    <version>0.1.2</version>
+    <type>jar</type>
+</dependency>
+```
+
+## Using the `paleo-io` module (optional; requires `paleo-core`)
+
+Gradle:
+
+```groovy
+compile 'ch.netzwerg:paleo-io:0.1.2'
+```
+
+Maven:
+
+```xml
+<dependency>
+    <groupId>ch.netzwerg</groupId>
+    <artifactId>paleo-io</artifactId>
+    <version>0.1.2</version>
+    <type>jar</type>
+</dependency>
+```
+
+# Why The Name?
+
 The backing data structures are all about **raw** values and **primitive** types &mdash; this somehow reminded me of
 the paleo diet.
 
-&copy; by Rahel Lüthy
+&copy; 2015 Rahel Lüthy
