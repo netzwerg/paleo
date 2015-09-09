@@ -1,4 +1,4 @@
-# Paleo  [![Build Status](https://travis-ci.org/netzwerg/paleo.svg?branch=master)](https://travis-ci.org/netzwerg/paleo)
+# Paleo  [![Build Status](https://travis-ci.org/netzwerg/paleo.svg?branch=master)](https://travis-ci.org/netzwerg/paleo) [ ![Download](https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg) ](https://bintray.com/netzwerg/maven/paleo/_latestVersion)
 
 Immutable Java 8 data frames with typed columns.
 
