@@ -33,15 +33,24 @@ import static org.junit.Assert.*;
 public class DataFrameTest {
 
     private static final StringColumnId NAME = ColumnIds.stringCol("Name");
-    private static final IntColumnId AGE = ColumnIds.intCol("Age" );
-    private static final DoubleColumnId HEIGHT = ColumnIds.doubleCol("Height" );
-    private static final BooleanColumnId VEGETARIAN = ColumnIds.booleanCol("Vegetarian" );
+    private static final IntColumnId AGE = ColumnIds.intCol("Age");
+    private static final DoubleColumnId HEIGHT = ColumnIds.doubleCol("Height");
+    private static final BooleanColumnId VEGETARIAN = ColumnIds.booleanCol("Vegetarian");
     private static final TimestampColumnId DATE_OF_BIRTH = ColumnIds.timestampCol("Date Of Birth");
     private static final CategoryColumnId GENDER = ColumnIds.categoryCol("Gender");
 
     private static final Instant AUG_26_1975 = Instant.parse("1975-08-26T12:08:30.00Z");
     private static final Instant JAN_08_2006 = Instant.parse("2006-01-08T23:43:30.00Z");
     private static final Instant OCT_26_1947 = Instant.parse("1947-10-26T03:23:36.00Z");
+
+    @Test
+    public void empty() {
+        DataFrame dataFrame = new DataFrame();
+        assertEquals(0, dataFrame.getRowCount());
+        assertEquals(0, dataFrame.getColumnCount());
+        assertTrue(dataFrame.getColumnIds().isEmpty());
+        assertTrue(dataFrame.getColumnNames().isEmpty());
+    }
 
     @Test
     public void defaultColumnTypes() {
@@ -53,7 +62,7 @@ public class DataFrameTest {
         TimestampColumn dateOfBirthColumn = new TimestampColumn(DATE_OF_BIRTH, asList(AUG_26_1975, JAN_08_2006, OCT_26_1947));
         CategoryColumn genderColumn = CategoryColumn.builder(GENDER).addAll("Female", "Male", "Female").build();
 
-        DataFrame df = new DataFrame(3, nameColumn, ageColumn, heightColumn, vegetarianColumn, dateOfBirthColumn, genderColumn);
+        DataFrame df = new DataFrame(nameColumn, ageColumn, heightColumn, vegetarianColumn, dateOfBirthColumn, genderColumn);
 
         assertEquals(3, df.getRowCount());
         assertEquals(6, df.getColumnCount());
@@ -123,7 +132,7 @@ public class DataFrameTest {
         File fileB = new File("/path/to/b.txt");
         GenericColumn<File,GenericColumnId> fileColumn = new GenericColumn<>(fileColumnId, Arrays.asList(fileA, fileB));
 
-        DataFrame df = new DataFrame(2, fileColumn);
+        DataFrame df = new DataFrame(fileColumn);
         assertEquals(2, df.getRowCount());
         assertEquals(1, df.getColumnCount());
 
@@ -132,6 +141,13 @@ public class DataFrameTest {
 
         File fileValue = df.getValueAt(1, fileColumnId);
         assertEquals(fileB, fileValue);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void failOnDifferingColumnSizes() {
+        StringColumn oneRowColumn = StringColumn.builder(NAME).add("foo").build();
+        IntColumn threeRowColumn = IntColumn.builder(AGE).addAll(1, 2, 3).build();
+        new DataFrame(oneRowColumn, threeRowColumn);
     }
 
 }

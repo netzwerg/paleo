@@ -20,10 +20,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
 import static java.util.stream.Collectors.toList;
@@ -33,26 +31,32 @@ public final class DataFrame {
     private final Map<ColumnId, Column<?>> columns;
     private final int rowCount;
 
-    public DataFrame(int rowCount, Column<?>... columns) {
-        this(rowCount, Arrays.asList(columns));
+    public DataFrame(Column<?>... columns) {
+        this(Arrays.asList(columns));
     }
 
-    public DataFrame(int rowCount, List<Column<?>> columns) {
-        this.rowCount = rowCount;
-        this.columns = createImmutableMap(this.rowCount, columns);
+    public DataFrame(List<Column<?>> columns) {
+        this.rowCount = inferRowCount(columns);
+        this.columns = createImmutableMap(columns);
     }
 
-    private static Map<ColumnId, Column<?>> createImmutableMap(int rowCount, List<Column<?>> columns) {
-        Map<ColumnId, Column<?>> map = new LinkedHashMap<>();
-        columns.forEach(c -> {
-            if (rowCount != c.getRowCount()) {
-                String format = "Illegal row count in column '%s' (expected '%s', actual '%s')";
-                String msg = String.format(format, c.getId(), rowCount, c.getRowCount());
-                throw new IllegalArgumentException(msg);
+    private static int inferRowCount(List<Column<?>> columns) {
+        if (columns.isEmpty()) {
+            return 0;
+        } else {
+            Set<Integer> rowCounts = columns.stream().map(Column::getRowCount).distinct().collect(Collectors.<Integer>toSet());
+            if (rowCounts.size() > 1) {
+                throw new IllegalArgumentException("Differing number of rows (i.e. column sizes)");
+            } else {
+                return rowCounts.iterator().next();
             }
-            map.put(c.getId(), c);
-        });
-        return ImmutableMap.copyOf(map);
+        }
+    }
+
+    private static Map<ColumnId, Column<?>> createImmutableMap(List<Column<?>> columns) {
+        ImmutableMap.Builder<ColumnId, Column<?>> mapBuilder = ImmutableMap.builder();
+        columns.forEach(c -> mapBuilder.put(c.getId(), c));
+        return mapBuilder.build();
     }
 
     public int getRowCount() {

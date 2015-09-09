@@ -10,7 +10,7 @@ data type, which allows for type-safe value access. The following column types a
 * **Boolean**: Primitive `boolean` values
 * **String**: `java.lang.String` values
 * **Timestamp**: `java.time.Instant` values
-* **Category**: Categorical `String` values (aka Factors)
+* **Category**: Categorical `String` values (aka factors)
 
 Columns can be created via a fluent builder API, or populated from text files.
 
@@ -24,13 +24,13 @@ final StringColumnId NAME = ColumnIds.stringCol("Name");
 final CategoryColumnId COLOR = ColumnIds.categoryCol("Color");
 final DoubleColumnId SERVING_SIZE = ColumnIds.doubleCol("Serving Size (g)");
 
-// Builder API for convenient creation
+// Builder API for convenient column creation
 StringColumn nameColumn = StringColumn.builder(NAME).addAll("Banana", "Blueberry", "Lemon", "Apple").build();
 CategoryColumn colorColumn = CategoryColumn.builder(COLOR).addAll("Yellow", "Blue", "Yellow", "Green").build();
 DoubleColumn servingSizeColumn = DoubleColumn.builder(SERVING_SIZE).addAll(118, 148, 83, 182).build();
 
-// Creating a data frame by enumerating its columns
-DataFrame dataFrame = new DataFrame(4, nameColumn, colorColumn, servingSizeColumn);
+// Straight-forward data frame creation
+DataFrame dataFrame = new DataFrame(nameColumn, colorColumn, servingSizeColumn);
 
 // Typed random access to individual values (based on rowIndex / columnId)
 String lemon = dataFrame.getValueAt(2, NAME);

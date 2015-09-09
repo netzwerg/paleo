@@ -69,7 +69,7 @@ public final class Parser {
 
         ImmutableList.Builder<Column<?>> columns = ImmutableList.builder();
         columnBuilders.forEach(columnBuilder -> columns.add(columnBuilder.build()));
-        return new DataFrame(rowCount, columns.build());
+        return new DataFrame(columns.build());
     }
 
     private static List<FromStringColumnBuilder> createColumnBuilders(CSVRecord columnNames, CSVRecord columnTypes, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
