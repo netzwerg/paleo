@@ -118,7 +118,9 @@ Maven:
 </dependency>
 ```
 
-## Using the `paleo-io` module (optional; requires `paleo-core`)
+## Using the `paleo-io` module
+
+Optional (requires `paleo-core`)
 
 Gradle:
 
