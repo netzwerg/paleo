@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// bintray plugin is applied in root (to use new plugins {} block)
+apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
 task sourcesJar(type: Jar, dependsOn: classes) {
