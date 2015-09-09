@@ -1,4 +1,10 @@
+sudo: false
 language: java
-jdk: oraclejdk8
+jdk:
+  - oraclejdk8
+env:
+  - TERM=dumb
+install:
+  - /bin/true
 script:
   - ./gradlew -PBINTRAY_USER -PBINTRAY_API_KEY build
