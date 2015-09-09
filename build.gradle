@@ -29,18 +29,43 @@ plugins {
 
 apply from: 'gradle/dependencies.gradle'
 
+allprojects {
+
+    apply plugin: 'com.jfrog.bintray'
+
+    group = 'ch.netzwerg'
+    version = rootProject.version
+
+    bintray {
+        dryRun = project.hasProperty('dryRun') && project.dryRun.toBoolean()
+        user = "$BINTRAY_USER"
+        key = "$BINTRAY_API_KEY"
+        configurations = ['published', 'archives']
+        pkg {
+            repo = 'maven'
+            name = 'paleo'
+            licenses = ['Apache-2.0']
+            desc = 'Immutable Java 8 data frames with typed columns'
+            websiteUrl = 'https://github.com/netzwerg/paleo'
+            issueTrackerUrl = 'https://github.com/netzwerg/paleo/issues'
+            vcsUrl = 'https://github.com/netzwerg/paleo.git'
+            version {
+                name = project.version
+                vcsTag = project.release.tagName
+            }
+        }
+    }
+}
+
 subprojects {
 
     apply plugin: 'java'
-    apply from: '../gradle/publish.gradle'
+    apply plugin: 'maven'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     compileJava.options.encoding = 'UTF-8'
-
-    group = 'ch.netzwerg'
-    version = rootProject.version
 
     repositories {
         jcenter()
@@ -51,6 +76,23 @@ subprojects {
         testCompile libraries.chabis
     }
 
+    configurations {
+        published
+    }
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
+
+    artifacts {
+        published sourceJar
+    }
+
+}
+
+configurations {
+    published
 }
 
 release {
