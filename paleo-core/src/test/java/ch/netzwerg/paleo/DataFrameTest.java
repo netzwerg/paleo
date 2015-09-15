@@ -49,6 +49,7 @@ public class DataFrameTest {
         assertEquals(0, dataFrame.getColumnCount());
         assertTrue(dataFrame.getColumnIds().isEmpty());
         assertTrue(dataFrame.getColumnNames().isEmpty());
+        assertTrue(dataFrame.getColumns().isEmpty());
     }
 
     @Test
@@ -67,6 +68,7 @@ public class DataFrameTest {
         assertEquals(6, df.getColumnCount());
 
         assertEquals(Arrays.asList(NAME, AGE, HEIGHT, VEGETARIAN, DATE_OF_BIRTH, GENDER), df.getColumnIds());
+        assertEquals(Arrays.asList(nameColumn, ageColumn, heightColumn, vegetarianColumn, dateOfBirthColumn, genderColumn), df.getColumns());
         assertEquals(Arrays.asList("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
 
         assertEquals("String", NAME.getType().getDescription());

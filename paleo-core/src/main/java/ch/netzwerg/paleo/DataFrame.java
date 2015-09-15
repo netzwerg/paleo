@@ -71,6 +71,10 @@ public final class DataFrame {
         return ImmutableList.copyOf(this.columns.keySet());
     }
 
+    public List<Column<?>> getColumns() {
+        return ImmutableList.copyOf(this.columns.values());
+    }
+
     public List<String> getColumnNames() {
         return this.columns.keySet().stream().map(ColumnId::getName).collect(toList());
     }
