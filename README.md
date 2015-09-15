@@ -74,7 +74,7 @@ String yellow = dataFrame.getValueAt(2, COLOR);
 
 # Usage
 
-All modules are available via [Bintray](https://bintray.com/netzwerg/maven/paleo/view).
+All modules are available via [Bintray/JCenter](https://bintray.com/netzwerg/maven/paleo/view).
 
 ## Repository Configuration
 
@@ -82,9 +82,7 @@ Gradle:
 
 ```groovy
 repositories {
-    maven {
-        url 'https://dl.bintray.com/netzwerg/maven'
-    }
+    jcenter()
 }
 ```
 
@@ -93,11 +91,11 @@ Maven `settings.xml`:
 ```xml
 <repository>
     <snapshots>
-        <enabled>false</enabled>
+      <enabled>false</enabled>
     </snapshots>
-    <id>bintray-netzwerg-maven</id>
+    <id>central</id>
     <name>bintray</name>
-    <url>http://dl.bintray.com/netzwerg/maven</url>
+    <url>http://jcenter.bintray.com</url>
 </repository>
 ```
 
