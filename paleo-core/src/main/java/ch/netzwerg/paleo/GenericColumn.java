@@ -51,7 +51,7 @@ public class GenericColumn<V, I extends GenericColumnId> implements Column<I> {
         return this.values;
     }
 
-    protected static abstract class Builder<V, I extends GenericColumnId, C extends GenericColumn<V, I>> implements Column.Builder<C> {
+    public static abstract class Builder<V, I extends GenericColumnId, C extends GenericColumn<V, I>> implements Column.Builder<C> {
 
         protected final I id;
         protected final ImmutableList.Builder<V> valueBuilder;
