@@ -17,13 +17,15 @@
 package ch.netzwerg.paleo.io;
 
 import ch.netzwerg.paleo.*;
-import ch.netzwerg.paleo.io.Parser;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.time.*;
+import java.time.Instant;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.function.Function;
 
@@ -46,11 +48,11 @@ public class ParserTest {
 
         DataFrame df = Parser.parseTabDelimited(reader, "yyyyMMddHHmmss");
         assertEquals(6, df.getColumnCount());
-        assertEquals(Arrays.asList("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender" ), df.getColumnNames());
+        assertEquals(Arrays.asList("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
 
         StringColumnId nameColumnId = df.getColumnId(0, ColumnType.STRING);
         StringColumn nameColumn = df.getColumn(nameColumnId);
-        assertEquals(asList("Ada", "Homer", "Hillary" ), nameColumn.getValues().collect(toList()));
+        assertEquals(asList("Ada", "Homer", "Hillary"), nameColumn.getValues());
 
         IntColumnId ageColumnId = df.getColumnId(1, ColumnType.INT);
         IntColumn ageColumn = df.getColumn(ageColumnId);
@@ -67,7 +69,7 @@ public class ParserTest {
         TimestampColumnId dateOfBirthColumnId = df.getColumnId(4, ColumnType.TIMESTAMP);
         TimestampColumn dateOfBirthColumn = df.getColumn(dateOfBirthColumnId);
         Function<? super Instant, Month> toMonth = instant -> instant.atZone(ZoneId.from(ZoneOffset.UTC)).getMonth();
-        assertEquals(asList(Month.AUGUST, Month.JANUARY, Month.OCTOBER), dateOfBirthColumn.getValues().map(toMonth).collect(toList()));
+        assertEquals(asList(Month.AUGUST, Month.JANUARY, Month.OCTOBER), dateOfBirthColumn.getValues().stream().map(toMonth).collect(toList()));
 
         CategoryColumnId genderColumnId = df.getColumnId(5, ColumnType.CATEGORY);
         CategoryColumn genderColumn = df.getColumn(genderColumnId);

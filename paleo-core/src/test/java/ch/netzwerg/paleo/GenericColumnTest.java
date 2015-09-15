@@ -21,7 +21,6 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Arrays;
 
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 
 public class GenericColumnTest {
@@ -46,7 +45,7 @@ public class GenericColumnTest {
         assertEquals(id, column.getId());
         assertEquals(4, column.getRowCount());
         assertEquals(FILE_B, column.getValueAt(1));
-        assertEquals(Arrays.asList(FILE_A, FILE_B, FILE_A, FILE_A), column.getValues().collect(toList()));
+        assertEquals(Arrays.asList(FILE_A, FILE_B, FILE_A, FILE_A), column.getValues());
     }
 
 }

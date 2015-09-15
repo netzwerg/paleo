@@ -19,12 +19,11 @@ package ch.netzwerg.paleo.io;
 import ch.netzwerg.paleo.ColumnType;
 import ch.netzwerg.paleo.DataFrame;
 import ch.netzwerg.paleo.StringColumn;
-import ch.netzwerg.paleo.io.Parser;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.stream.Stream;
+import java.util.List;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
 
@@ -52,7 +51,7 @@ public class ReadmeTest {
 
         // Use identifier to access columns & values
         StringColumn nameColumn = dataFrame.getColumn(NAME);
-        Stream<String> nameValues = nameColumn.getValues();
+        List<String> nameValues = nameColumn.getValues();
 
         // ... or access individual values via row index / column id
         String yellow = dataFrame.getValueAt(2, COLOR);

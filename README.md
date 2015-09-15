@@ -66,7 +66,7 @@ final DoubleColumnId SERVING_SIZE = dataFrame.getColumnId(2, ColumnType.DOUBLE);
 
 // Use identifier to access columns & values
 StringColumn nameColumn = dataFrame.getColumn(NAME);
-Stream<String> nameValues = nameColumn.getValues();
+List<String> nameValues = nameColumn.getValues();
 
 // ... or access individual values via row index / column id 
 String yellow = dataFrame.getValueAt(2, COLOR);

@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static ch.netzwerg.paleo.ColumnIds.GenericColumnId;
 
@@ -48,8 +47,8 @@ public class GenericColumn<V, I extends GenericColumnId> implements Column<I> {
         return this.values.get(index);
     }
 
-    public Stream<V> getValues() {
-        return this.values.stream();
+    public List<V> getValues() {
+        return this.values;
     }
 
     protected static abstract class Builder<V, I extends GenericColumnId, C extends GenericColumn<V, I>> implements Column.Builder<C> {

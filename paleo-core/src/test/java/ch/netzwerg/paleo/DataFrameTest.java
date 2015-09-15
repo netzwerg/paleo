@@ -27,7 +27,6 @@ import java.util.stream.IntStream;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 
 public class DataFrameTest {
@@ -73,7 +72,7 @@ public class DataFrameTest {
         assertEquals("String", NAME.getType().getDescription());
         assertEquals(NAME, df.getColumnId(0, ColumnType.STRING));
         assertEquals(nameColumn, df.getColumn(NAME));
-        assertEquals(asList("Ada", "Homer", "Hillary"), nameColumn.getValues().collect(toList()));
+        assertEquals(asList("Ada", "Homer", "Hillary"), nameColumn.getValues());
 
         assertEquals("Int", AGE.getType().getDescription());
         assertEquals(AGE, df.getColumnId(1, ColumnType.INT));
@@ -93,7 +92,7 @@ public class DataFrameTest {
         assertEquals("Timestamp", DATE_OF_BIRTH.getType().getDescription());
         assertEquals(DATE_OF_BIRTH, df.getColumnId(4, ColumnType.TIMESTAMP));
         assertEquals(dateOfBirthColumn, df.getColumn(DATE_OF_BIRTH));
-        assertEquals(asList(AUG_26_1975, JAN_08_2006, OCT_26_1947), dateOfBirthColumn.getValues().collect(toList()));
+        assertEquals(asList(AUG_26_1975, JAN_08_2006, OCT_26_1947), dateOfBirthColumn.getValues());
 
         assertEquals("Category", GENDER.getType().getDescription());
         assertEquals(GENDER, df.getColumnId(5, ColumnType.CATEGORY));
@@ -130,7 +129,7 @@ public class DataFrameTest {
         GenericColumnId fileColumnId = new GenericColumnId("File", new ColumnType<>("File", GenericColumnId.class));
         File fileA = new File("/path/to/a.txt");
         File fileB = new File("/path/to/b.txt");
-        GenericColumn<File,GenericColumnId> fileColumn = new GenericColumn<>(fileColumnId, Arrays.asList(fileA, fileB));
+        GenericColumn<File, GenericColumnId> fileColumn = new GenericColumn<>(fileColumnId, Arrays.asList(fileA, fileB));
 
         DataFrame df = new DataFrame(fileColumn);
         assertEquals(2, df.getRowCount());
