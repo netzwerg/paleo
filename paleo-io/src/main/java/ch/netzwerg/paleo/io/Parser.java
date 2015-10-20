@@ -17,12 +17,13 @@
 package ch.netzwerg.paleo.io;
 
 import ch.netzwerg.paleo.*;
+import ch.netzwerg.paleo.schema.Field;
+import ch.netzwerg.paleo.schema.Schema;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -49,6 +50,29 @@ public final class Parser {
 
         List<FromStringColumnBuilder> columnBuilders = createColumnBuilders(columnNames, columnTypes, formatter, columnBuilderFactories);
 
+        return parseDataFrame(it, columnBuilders, 2);
+    }
+
+    public static DataFrame parseTabDelimited(Schema schema, File parentDir) throws IOException {
+        try (FileReader fileReader = new FileReader(new File(parentDir, schema.getDataFileName()))) {
+            return parseTabDelimited(schema, fileReader);
+        }
+    }
+
+    public static DataFrame parseTabDelimited(Schema schema) throws IOException {
+        try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+            return parseTabDelimited(schema, inputStreamReader);
+        }
+    }
+
+    private static DataFrame parseTabDelimited(Schema schema, Reader reader) throws IOException {
+        Iterator<CSVRecord> it = CSVFormat.TDF.parse(reader).iterator();
+        List<FromStringColumnBuilder> columnBuilders = createColumnBuilders(schema.getFields());
+        return parseDataFrame(it, columnBuilders, 0);
+    }
+
+    private static DataFrame parseDataFrame(Iterator<CSVRecord> it, List<FromStringColumnBuilder> columnBuilders, int rowOffset) {
         int rowCount = 0;
         while (it.hasNext()) {
             rowCount++;
@@ -56,7 +80,7 @@ public final class Parser {
 
             if (row.size() != columnBuilders.size()) {
                 String msgFormat = "Row '%s' contains '%s' values (but should match column count '%s')";
-                String msg = String.format(msgFormat, rowCount + 2, row.size(), columnBuilders.size());
+                String msg = String.format(msgFormat, rowCount + rowOffset, row.size(), columnBuilders.size());
                 throw new IllegalArgumentException(msg);
             }
 
@@ -95,18 +119,36 @@ public final class Parser {
         return resultBuilder.build();
     }
 
-    private static FromStringColumnBuilder<?> createColumnBuilder(String name, String type, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
-        if (columnBuilderFactories.containsKey(type)) {
-            return columnBuilderFactories.get(type).create(name, type);
-        } else if (ColumnType.INT.getDescription().equalsIgnoreCase(type)) {
+    private static List<FromStringColumnBuilder> createColumnBuilders(List<Field> fields) {
+        ImmutableList.Builder<FromStringColumnBuilder> result = ImmutableList.builder();
+        for (Field field : fields) {
+            ColumnType<?> type = field.getType();
+            Optional<DateTimeFormatter> formatter = field.getFormat().map(DateTimeFormatter::ofPattern);
+            FromStringColumnBuilder<?> columnBuilder = createColumnBuilder(field.getName(), formatter, type);
+            result.add(columnBuilder);
+        }
+        return result.build();
+    }
+
+    private static FromStringColumnBuilder<?> createColumnBuilder(String name, String typeDesc, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
+        if (columnBuilderFactories.containsKey(typeDesc)) {
+            return columnBuilderFactories.get(typeDesc).create(name, typeDesc);
+        } else {
+            ColumnType<?> type = ColumnType.getByDescriptionOrDefault(typeDesc, ColumnType.STRING);
+            return createColumnBuilder(name, formatter, type);
+        }
+    }
+
+    private static FromStringColumnBuilder<?> createColumnBuilder(String name, Optional<DateTimeFormatter> formatter, ColumnType<?> type) {
+        if (ColumnType.INT.equals(type)) {
             return intColumnBuilder(name);
-        } else if (ColumnType.DOUBLE.getDescription().equalsIgnoreCase(type)) {
+        } else if (ColumnType.DOUBLE.equals(type)) {
             return doubleColumnBuilder(name);
-        } else if (ColumnType.BOOLEAN.getDescription().equalsIgnoreCase(type)) {
+        } else if (ColumnType.BOOLEAN.equals(type)) {
             return booleanColumnBuilder(name);
-        } else if (ColumnType.TIMESTAMP.getDescription().equalsIgnoreCase(type)) {
+        } else if (ColumnType.TIMESTAMP.equals(type)) {
             return timestampColumnBuilder(name, formatter);
-        } else if (ColumnType.CATEGORY.getDescription().equalsIgnoreCase(type)) {
+        } else if (ColumnType.CATEGORY.equals(type)) {
             return categoryColumnBuilder(name);
         } else {
             return stringColumnBuilder(name);

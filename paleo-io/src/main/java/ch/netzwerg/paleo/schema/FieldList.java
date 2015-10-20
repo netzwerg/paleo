@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-dependencies {
-    compile project(':paleo-core')
-    compile libraries.commons_csv
-    compile libraries.jackson
+package ch.netzwerg.paleo.schema;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Helper class to work around the fact that the JSON (de)serializer is not able to infer
+ * type information of <code>List&lt;FieldDescriptor&gt;</code> due to Java's type erasure.
+ */
+@SuppressWarnings("unused") // needed for JSON (de)serialization
+public final class FieldList extends ArrayList<Field> {
+
+    public FieldList() {
+        super();
+    }
+
+    public FieldList(List<Field> fields) {
+        super(fields);
+    }
+
 }

@@ -19,6 +19,8 @@ ext {
 }
 
 libraries.guava = 'com.google.guava:guava:18.0'
-libraries.junit = 'junit:junit:4.11'
 libraries.commons_csv = 'org.apache.commons:commons-csv:1.2'
+libraries.jackson = 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
+
+libraries.junit = 'junit:junit:4.11'
 libraries.chabis = 'ch.netzwerg:chabis:0.2.0'

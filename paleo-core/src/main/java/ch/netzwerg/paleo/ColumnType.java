@@ -16,6 +16,10 @@
 
 package ch.netzwerg.paleo;
 
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
 import static ch.netzwerg.paleo.ColumnIds.*;
 
 public final class ColumnType<T extends ColumnId> {
@@ -26,6 +30,14 @@ public final class ColumnType<T extends ColumnId> {
     public static final ColumnType<StringColumnId> STRING = new ColumnType<>("String", StringColumnId.class);
     public static final ColumnType<TimestampColumnId> TIMESTAMP = new ColumnType<>("Timestamp", TimestampColumnId.class);
     public static final ColumnType<CategoryColumnId> CATEGORY = new ColumnType<>("Category", CategoryColumnId.class);
+
+    private static final Map<String, ColumnType<?>> TYPES_BY_DESCRIPTION = ImmutableMap.<String, ColumnType<?>>builder().
+            put(ColumnType.INT.getDescription(), ColumnType.INT).
+            put(ColumnType.DOUBLE.getDescription(), ColumnType.DOUBLE).
+            put(ColumnType.BOOLEAN.getDescription(), ColumnType.BOOLEAN).
+            put(ColumnType.STRING.getDescription(), ColumnType.STRING).
+            put(ColumnType.TIMESTAMP.getDescription(), ColumnType.TIMESTAMP).
+            put(ColumnType.CATEGORY.getDescription(), ColumnType.CATEGORY).build();
 
     private final String description;
     private final Class<T> idType;
@@ -41,6 +53,15 @@ public final class ColumnType<T extends ColumnId> {
 
     public Class<T> getIdType() {
         return idType;
+    }
+
+    public static ColumnType<?> getByDescriptionOrDefault(String description, ColumnType<?> defaultType) {
+        return TYPES_BY_DESCRIPTION.getOrDefault(description, defaultType);
+    }
+
+    @Override
+    public String toString() {
+        return this.description;
     }
 
 }

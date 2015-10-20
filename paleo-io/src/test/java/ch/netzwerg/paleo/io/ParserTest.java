@@ -17,9 +17,11 @@
 package ch.netzwerg.paleo.io;
 
 import ch.netzwerg.paleo.*;
+import ch.netzwerg.paleo.schema.Schema;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.Instant;
@@ -36,17 +38,75 @@ import static org.junit.Assert.*;
 
 public class ParserTest {
 
-    public static final String CONTENTS = "Name\tAge\tHeight\tVegetarian\tDate Of Birth\tGender\n" +
+    private static final String CONTENTS_WITH_HEADER = "Name\tAge\tHeight\tVegetarian\tDate Of Birth\tGender\n" +
             "String\tInt\tDouble\tBoolean\tTimestamp\tCategory\n" +
             "Ada\t42\t1.74\ttrue\t19750826050916\tFemale\n" +
             "Homer\t99\t1.20\tF\t20060108050916\tMale\n" +
             "Hillary\t67\t1.70\t1\t19471026050916\tFemale\n";
 
+    private static final String FIELDS = "  \"fields\": [\n" +
+            "    {\n" +
+            "      \"name\": \"Name\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"name\": \"Age\",\n" +
+            "      \"type\": \"Int\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"name\": \"Height\",\n" +
+            "      \"type\": \"Double\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"name\": \"Vegetarian\",\n" +
+            "      \"type\": \"Boolean\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"name\": \"Date Of Birth\",\n" +
+            "      \"type\": \"Timestamp\",\n" +
+            "      \"format\": \"yyyyMMddHHmmss\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"name\": \"Gender\",\n" +
+            "      \"type\": \"Category\"\n" +
+            "    }\n" +
+            "  ]\n";
+
+    private static final String SCHEMA_STREAM_BASED = "{\n" +
+            "  \"dataFileName\": \"/data.txt\",\n" +
+            FIELDS +
+            "}";
+
+    private static final String SCHEMA_FILE_BASED = "{\n" +
+            "  \"dataFileName\": \"data.txt\",\n" +
+            FIELDS +
+            "}";
+
     @Test
     public void parseTabDelimited() throws IOException {
-        StringReader reader = new StringReader(CONTENTS);
-
+        StringReader reader = new StringReader(CONTENTS_WITH_HEADER);
         DataFrame df = Parser.parseTabDelimited(reader, "yyyyMMddHHmmss");
+        assertDataFrameParsedCorrectly(df);
+    }
+
+    @Test
+    public void parseTabDelimitedFromSchemaStreamBased() throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_STREAM_BASED);
+        Schema schema = Schema.parseJson(schemaReader);
+        DataFrame df = Parser.parseTabDelimited(schema);
+        assertDataFrameParsedCorrectly(df);
+    }
+
+    @Test
+    public void parseTabDelimitedFromSchemaFileBased() throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_FILE_BASED);
+        Schema schema = Schema.parseJson(schemaReader);
+        // some trickery to find physical location of resources folder...
+        File resourceFolder = new File(ParserTest.class.getResource("/data.txt").getPath()).getParentFile();
+        DataFrame df = Parser.parseTabDelimited(schema, resourceFolder);
+        assertDataFrameParsedCorrectly(df);
+    }
+
+    private static void assertDataFrameParsedCorrectly(DataFrame df) {
         assertEquals(6, df.getColumnCount());
         assertEquals(Arrays.asList("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
 
