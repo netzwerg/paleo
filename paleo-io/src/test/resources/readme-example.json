@@ -1,0 +1,23 @@
+{
+  "title": "Example Schema",
+  "dataFileName": "example-data.txt",
+  "fields": [
+    {
+      "name": "Name",
+      "type": "String"
+    },
+    {
+      "name": "Color",
+      "type": "Category"
+    },
+    {
+      "name": "Serving Size (g)",
+      "type": "Double"
+    },
+    {
+      "name": "Exemplary Date",
+      "type": "Timestamp",
+      "format": "yyyyMMddHHmmss"
+    }
+  ]
+}

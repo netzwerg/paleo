@@ -46,7 +46,79 @@ Set<String> colors = colorColumn.getCategories();
 
 # Parsing From Text / File
 
-The `paleo-io` module parses data frames from tab-delimited text representations:
+The `paleo-io` module parses data frames from tab-delimited text representations. The structure of the
+data frame (i.e. the names and types of its columns) can be defined in one of two ways:
+
+## Header Rows
+
+In its simplest format, the tab-delimited text representation directly contains the column meta-data in the form of two
+header rows. The first row specifies the column names, the second row specifies the column types (actual data starting
+on third row):
+
+```
+1 Name    Color
+2 String  Category
+3 Banana  Yellow
+...
+n Apple   Green
+```
+
+The contents can then be parsed via `Parser.parseTabDelimited(Reader in)`, e.g. like:
+
+```java
+final String EXAMPLE =
+            "Name\tColor\tServing Size (g)\n" +
+            "String\tCategory\tDouble\n" +
+            "Banana\tYellow\t118\n" +
+            "Blueberry\tBlue\t148\n" +
+            "Lemon\tYellow\t83\n" +
+            "Apple\tGreen\t182";
+
+DataFrame dataFrame = Parser.parseTabDelimited(new StringReader(EXAMPLE));
+```
+
+## External JSON Schema
+
+Generally it is advisable to separate the structural information from the actual data. Paleo therefore supports the
+definition of an external JSON schema. The format is inspired by the [JSON Table Schema](http://dataprotocols.org/json-table-schema):
+
+```json
+{
+  "title": "Example Schema",
+  "dataFileName": "data.txt",
+  "fields": [
+    {
+      "name": "Name",
+      "type": "String"
+    },
+    {
+      "name": "Color",
+      "type": "Category"
+    },
+    {
+      "name": "Serving Size (g)",
+      "type": "Double"
+    },
+    {
+      "name": "Exemplary Date",
+      "type": "Timestamp",
+      "format": "yyyyMMddHHmmss"
+    }
+  ]
+}
+```
+
+Dedicated parsing methods allow to first parse the schema from JSON, and subsequently use it to create a `DataFrame`.
+A given base directory is used to load the actual data (i.e. to resolve the location of the configured `dataFileName`):
+
+```java
+Schema schema = Schema.parseJson(new StringReader(EXAMPLE_SCHEMA));
+DataFrame dataFrame = Parser.parseTabDelimited(schema, baseDir);
+```
+
+## Working With Parsed Data Frames
+
+Once a `DataFrame` instance has been parsed, its data can be accessed through a type-safe API:
 
 ```java
 final String EXAMPLE =
@@ -104,7 +176,7 @@ Maven `settings.xml`:
 Gradle:
 
 ```groovy
-compile 'ch.netzwerg:paleo-core:0.2.1'
+compile 'ch.netzwerg:paleo-core:0.3.0'
 ```
 
 Maven:
@@ -113,7 +185,7 @@ Maven:
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-core</artifactId>
-    <version>0.2.1</version>
+    <version>0.3.0</version>
     <type>jar</type>
 </dependency>
 ```
@@ -125,7 +197,7 @@ Optional (requires `paleo-core`)
 Gradle:
 
 ```groovy
-compile 'ch.netzwerg:paleo-io:0.2.1'
+compile 'ch.netzwerg:paleo-io:0.3.0'
 ```
 
 Maven:
@@ -134,7 +206,7 @@ Maven:
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-io</artifactId>
-    <version>0.2.1</version>
+    <version>0.3.0</version>
     <type>jar</type>
 </dependency>
 ```

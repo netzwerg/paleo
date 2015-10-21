@@ -19,8 +19,10 @@ package ch.netzwerg.paleo.io;
 import ch.netzwerg.paleo.ColumnType;
 import ch.netzwerg.paleo.DataFrame;
 import ch.netzwerg.paleo.StringColumn;
+import ch.netzwerg.paleo.schema.Schema;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
@@ -56,6 +58,39 @@ public class ReadmeTest {
         // ... or access individual values via row index / column id
         String yellow = dataFrame.getValueAt(2, COLOR);
 
+    }
+
+    @Test
+    public void demoViaSchema() throws IOException {
+        final String EXAMPLE_SCHEMA = "{\n" +
+                "  \"title\": \"Example Schema\",\n" +
+                "  \"dataFileName\": \"example-data.txt\",\n" +
+                "  \"fields\": [\n" +
+                "    {\n" +
+                "      \"name\": \"Name\",\n" +
+                "      \"type\": \"String\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"name\": \"Color\",\n" +
+                "      \"type\": \"Category\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"name\": \"Serving Size (g)\",\n" +
+                "      \"type\": \"Double\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"name\": \"Exemplary Date\",\n" +
+                "      \"type\": \"Timestamp\",\n" +
+                "      \"format\": \"yyyyMMddHHmmss\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        // some trickery to find physical location of resources folder...
+        File baseDir = new File(ParserTest.class.getResource("/example-data.txt").getPath()).getParentFile();
+
+        Schema schema = Schema.parseJson(new StringReader(EXAMPLE_SCHEMA));
+        DataFrame dataFrame = Parser.parseTabDelimited(schema, baseDir);
     }
 
 }
