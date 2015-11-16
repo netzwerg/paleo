@@ -16,29 +16,60 @@
 
 package ch.netzwerg.paleo;
 
-import java.util.List;
+import javaslang.collection.Array;
+import javaslang.collection.List;
+import javaslang.collection.Stream;
 
 import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
 
 public final class StringColumn extends GenericColumn<String, StringColumnId> {
 
-    public StringColumn(StringColumnId id, List<String> values) {
+    private StringColumn(StringColumnId id, Array<String> values) {
         super(id, values);
     }
 
-    public static Builder builder(StringColumnId id) {
-        return new Builder(id);
+    public static StringColumn of(StringColumnId id, String value) {
+        return builder(id).add(value).build();
     }
 
-    public static final class Builder extends GenericColumn.Builder<String, StringColumnId, StringColumn> {
+    public static StringColumn ofAll(StringColumnId id, String... values) {
+        return builder(id).addAll(values).build();
+    }
 
-        public Builder(StringColumnId id) {
-            super(id);
+    public static StringColumn ofAll(StringColumnId id, Iterable<String> values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static Builder builder(StringColumnId id) {
+        return new Builder(id, List.empty());
+    }
+
+    public static final class Builder implements Column.Builder<String, StringColumn> {
+
+        private final StringColumnId id;
+        private final List<String> acc;
+
+        private Builder(StringColumnId id, List<String> acc) {
+            this.id = id;
+            this.acc = acc;
+        }
+
+        @Override
+        public Builder add(String value) {
+            return new Builder(id, acc.prepend(value));
+        }
+
+        public Builder addAll(String... values) {
+            return addAll(Stream.ofAll(values));
+        }
+
+        public Builder addAll(Iterable<String> values) {
+            return new Builder(id, acc.prependAll(List.ofAll(values).reverse()));
         }
 
         @Override
         public StringColumn build() {
-            return new StringColumn(this.id, this.valueBuilder.build());
+            return new StringColumn(id, acc.reverse().toArray());
         }
 
     }

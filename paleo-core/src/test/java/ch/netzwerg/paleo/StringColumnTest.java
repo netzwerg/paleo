@@ -27,9 +27,7 @@ public class StringColumnTest {
     @Test
     public void build() {
         StringColumnId id = stringCol("test");
-        StringColumn.Builder builder = StringColumn.builder(id);
-        builder.add("bli").addAll("bla", "blu").add("zzz");
-        StringColumn column = builder.build();
+        StringColumn column = StringColumn.builder(id).add("bli").addAll("bla", "blu").add("zzz").build();
         assertEquals(id, column.getId());
         assertEquals(4, column.getRowCount());
         assertEquals("bli", column.getValueAt(0));

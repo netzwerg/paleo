@@ -16,99 +16,100 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
+import javaslang.collection.Array;
+import javaslang.collection.List;
+import javaslang.collection.Set;
+import javaslang.collection.Stream;
 
-import java.util.*;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+public final class CategoryColumn implements Column<CategoryColumnId> {
 
-public final class CategoryColumn implements Column<ColumnIds.CategoryColumnId> {
+    private final CategoryColumnId id;
+    private final Array<String> categories;
+    private final Array<Integer> categoryIndexPerRowIndex;
 
-    public interface Lookup {
-        int getCategoryIndex(int rowIndex);
-    }
-
-    private final ColumnIds.CategoryColumnId id;
-    private final int rowCount;
-    private final List<String> categories;
-    private final Lookup lookup;
-
-    public CategoryColumn(ColumnIds.CategoryColumnId id, int rowCount, List<String> categories, Lookup lookup) {
+    private CategoryColumn(CategoryColumnId id, Array<String> categories, Array<Integer> categoryIndexPerRowIndex) {
         this.id = id;
-        this.rowCount = rowCount;
-        this.categories = ImmutableList.copyOf(categories);
-        this.lookup = lookup;
+        this.categories = categories;
+        this.categoryIndexPerRowIndex = categoryIndexPerRowIndex;
     }
 
-    public static Builder builder(ColumnIds.CategoryColumnId id) {
-        return new Builder(id);
+    public static CategoryColumn of(CategoryColumnId id, String value) {
+        return builder(id).add(value).build();
+    }
+
+    public static CategoryColumn ofAll(CategoryColumnId id, String... values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static CategoryColumn ofAll(CategoryColumnId id, Iterable<String> values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static Builder builder(CategoryColumnId id) {
+        return new Builder(id, Array.empty(), List.empty());
     }
 
     @Override
-    public ColumnIds.CategoryColumnId getId() {
-        return this.id;
+    public CategoryColumnId getId() {
+        return id;
     }
 
     @Override
     public int getRowCount() {
-        return this.rowCount;
+        return categoryIndexPerRowIndex.length();
     }
 
     public String getValueAt(int rowIndex) {
-        int categoryIndex = this.lookup.getCategoryIndex(rowIndex);
-        return categories.get(categoryIndex);
+        return categories.get(categoryIndexPerRowIndex.get(rowIndex));
     }
 
     public Set<String> getCategories() {
-        return ImmutableSet.copyOf(this.categories);
+        return categories.toSet();
     }
 
     /**
      * Creates a stream of individual row values (i.e. "explodes" categories).
      */
     public Stream<String> createValues() {
-        return IntStream.range(0, this.rowCount).mapToObj(this::getValueAt);
+        return Stream.range(0, getRowCount()).map(this::getValueAt);
     }
 
-    public static final class Builder implements Column.Builder<CategoryColumn> {
+    public static final class Builder implements Column.Builder<String, CategoryColumn> {
 
-        private final ColumnIds.CategoryColumnId id;
-        private final IntStream.Builder categoryIndexByRowIndexBuilder;
-        private final List<String> categories;
-        private final HashMap<String, Integer> categoryIndexByCategory;
+        private final CategoryColumnId id;
+        private final Array<String> categories;
+        private final List<Integer> categoryIndexPerRowIndex;
 
-        private Builder(ColumnIds.CategoryColumnId id) {
+        private Builder(CategoryColumnId id, Array<String> categories, List<Integer> categoryIndexPerRowIndex) {
             this.id = id;
-            this.categoryIndexByRowIndexBuilder = IntStream.builder();
-            this.categories = new ArrayList<>();
-            this.categoryIndexByCategory = new HashMap<>();
+            this.categories = categories;
+            this.categoryIndexPerRowIndex = categoryIndexPerRowIndex;
         }
 
-        public Builder addAll(Iterable<String> values) {
-            values.forEach(this::add);
-            return this;
+        @Override
+        public Builder add(String value) {
+            int categoryIndex = categories.indexOf(value);
+            Array<String> newCategories = categories;
+            if (categoryIndex < 0) {
+                newCategories = categories.append(value);
+                categoryIndex = newCategories.length() - 1;
+            }
+            List<Integer> newRowIndicesPerCategory = categoryIndexPerRowIndex.prepend(categoryIndex);
+            return new Builder(id, newCategories, newRowIndicesPerCategory);
         }
 
         public Builder addAll(String... values) {
-            return addAll(Arrays.asList(values));
+            return addAll(Stream.ofAll(values));
         }
 
-        public Builder add(String value) {
-            Integer categoryIndex = this.categoryIndexByCategory.get(value);
-            if (categoryIndex == null) {
-                categoryIndex = this.categories.size();
-                this.categoryIndexByCategory.put(value, categoryIndex);
-                this.categories.add(value);
-            }
-            this.categoryIndexByRowIndexBuilder.add(categoryIndex);
-            return this;
+        public Builder addAll(Iterable<String> values) {
+            return Stream.ofAll(values).foldLeft(this, Builder::add);
         }
+
 
         public CategoryColumn build() {
-            int[] categoryIndexByRowIndex = this.categoryIndexByRowIndexBuilder.build().toArray();
-            CategoryColumn.Lookup lookup = rowIndex -> categoryIndexByRowIndex[rowIndex];
-            return new CategoryColumn(this.id, categoryIndexByRowIndex.length, this.categories, lookup);
+            return new CategoryColumn(id, categories, categoryIndexPerRowIndex.reverse().toArray());
         }
 
     }

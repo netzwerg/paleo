@@ -17,7 +17,8 @@
 package ch.netzwerg.paleo;
 
 import ch.netzwerg.chabis.WordGenerator;
-import com.google.common.collect.ImmutableSet;
+import javaslang.collection.Array;
+import javaslang.collection.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,7 +27,6 @@ import java.util.Random;
 
 import static ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
 import static ch.netzwerg.paleo.ColumnIds.categoryCol;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 
 public class CategoryColumnTest {
@@ -40,25 +40,22 @@ public class CategoryColumnTest {
 
     @Test
     public void builder() {
-        CategoryColumnId id = categoryCol("test" );
-        CategoryColumn.Builder builder = CategoryColumn.builder(id);
-        builder.add("foo" ).add("bar" ).addAll("foo", "baz", "bar" ).add("foo" );
-        CategoryColumn column = builder.build();
+        CategoryColumnId id = categoryCol("test");
+        CategoryColumn column = CategoryColumn.builder(id).add("foo").add("bar").addAll("foo", "baz", "bar").add("foo").build();
         assertEquals(id, column.getId());
         assertEquals(6, column.getRowCount());
-        assertEquals(ImmutableSet.of("foo", "bar", "baz" ), column.getCategories());
+        assertEquals(HashSet.ofAll("foo", "bar", "baz"), column.getCategories());
         assertEquals("foo", column.getValueAt(0));
         assertEquals("bar", column.getValueAt(1));
     }
 
     @Test
     public void createValues() {
-        CategoryColumnId id = categoryCol("test" );
-        CategoryColumn.Builder builder = CategoryColumn.builder(id);
-        List<String> values = this.wordGenerator.randomWords(100);
-        CategoryColumn column = builder.addAll(values).build();
-        assertEquals(93, column.getCategories().size());
-        assertEquals(values, column.createValues().collect(toList()));
+        CategoryColumnId id = categoryCol("test");
+        Array<String> values = Array.ofAll(this.wordGenerator.randomWords(100));
+        CategoryColumn column = CategoryColumn.builder(id).addAll(values).build();
+        assertEquals(93, column.getCategories().length());
+        assertEquals(values, column.createValues().toArray());
     }
 
 }

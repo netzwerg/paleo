@@ -16,9 +16,9 @@
 
 package ch.netzwerg.paleo;
 
+import javaslang.collection.Set;
 import org.junit.Test;
 
-import java.util.Set;
 import java.util.stream.DoubleStream;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
@@ -40,7 +40,7 @@ public class ReadmeTest {
         DoubleColumn servingSizeColumn = DoubleColumn.builder(SERVING_SIZE).addAll(118, 148, 83, 182).build();
 
         // Straight-forward data frame creation
-        DataFrame dataFrame = new DataFrame(nameColumn, colorColumn, servingSizeColumn);
+        DataFrame dataFrame = DataFrame.ofAll(nameColumn, colorColumn, servingSizeColumn);
 
         // Typed random access to individual values (based on rowIndex / columnId)
         String lemon = dataFrame.getValueAt(2, NAME);

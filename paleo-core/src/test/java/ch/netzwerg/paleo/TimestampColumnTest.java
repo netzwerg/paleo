@@ -16,10 +16,10 @@
 
 package ch.netzwerg.paleo;
 
+import javaslang.collection.Array;
 import org.junit.Test;
 
 import java.time.Instant;
-import java.util.Arrays;
 
 import static ch.netzwerg.paleo.ColumnIds.TimestampColumnId;
 import static ch.netzwerg.paleo.ColumnIds.timestampCol;
@@ -38,7 +38,7 @@ public class TimestampColumnTest {
         assertEquals(id, column.getId());
         assertEquals(3, column.getRowCount());
         assertEquals(JAN_08_2008, column.getValueAt(1));
-        assertEquals(Arrays.asList(AUG_26_1975, JAN_08_2008, OCT_26_1947), column.getValues());
+        assertEquals(Array.ofAll(AUG_26_1975, JAN_08_2008, OCT_26_1947), column.getValues());
     }
 
 }

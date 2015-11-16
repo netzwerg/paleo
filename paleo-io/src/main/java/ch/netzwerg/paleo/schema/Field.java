@@ -49,15 +49,15 @@ public final class Field {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public ColumnType<?> getType() {
-        return this.type;
+        return type;
     }
 
     public Optional<String> getFormat() {
-        return this.format;
+        return format;
     }
 
 }

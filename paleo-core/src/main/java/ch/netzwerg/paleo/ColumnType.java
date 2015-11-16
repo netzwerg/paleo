@@ -16,11 +16,11 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableMap;
-
-import java.util.Map;
+import javaslang.collection.HashMap;
+import javaslang.collection.Map;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
+import static javaslang.Tuple.of;
 
 public final class ColumnType<T extends ColumnId> {
 
@@ -31,13 +31,13 @@ public final class ColumnType<T extends ColumnId> {
     public static final ColumnType<TimestampColumnId> TIMESTAMP = new ColumnType<>("Timestamp", TimestampColumnId.class);
     public static final ColumnType<CategoryColumnId> CATEGORY = new ColumnType<>("Category", CategoryColumnId.class);
 
-    private static final Map<String, ColumnType<?>> TYPES_BY_DESCRIPTION = ImmutableMap.<String, ColumnType<?>>builder().
-            put(ColumnType.INT.getDescription(), ColumnType.INT).
-            put(ColumnType.DOUBLE.getDescription(), ColumnType.DOUBLE).
-            put(ColumnType.BOOLEAN.getDescription(), ColumnType.BOOLEAN).
-            put(ColumnType.STRING.getDescription(), ColumnType.STRING).
-            put(ColumnType.TIMESTAMP.getDescription(), ColumnType.TIMESTAMP).
-            put(ColumnType.CATEGORY.getDescription(), ColumnType.CATEGORY).build();
+    private static final Map<String, ColumnType<?>> TYPES_BY_DESCRIPTION = HashMap.<String, ColumnType<?>>ofAll(
+            of(ColumnType.INT.getDescription(), ColumnType.INT),
+            of(ColumnType.DOUBLE.getDescription(), ColumnType.DOUBLE),
+            of(ColumnType.BOOLEAN.getDescription(), ColumnType.BOOLEAN),
+            of(ColumnType.STRING.getDescription(), ColumnType.STRING),
+            of(ColumnType.TIMESTAMP.getDescription(), ColumnType.TIMESTAMP),
+            of(ColumnType.CATEGORY.getDescription(), ColumnType.CATEGORY));
 
     private final String description;
     private final Class<T> idType;
@@ -56,12 +56,12 @@ public final class ColumnType<T extends ColumnId> {
     }
 
     public static ColumnType<?> getByDescriptionOrDefault(String description, ColumnType<?> defaultType) {
-        return TYPES_BY_DESCRIPTION.getOrDefault(description, defaultType);
+        return TYPES_BY_DESCRIPTION.get(description).orElse(defaultType);
     }
 
     @Override
     public String toString() {
-        return this.description;
+        return description;
     }
 
 }

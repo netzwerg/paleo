@@ -28,7 +28,7 @@ public class DoubleColumnTest {
     @Test
     public void builder() {
         DoubleColumnId id = doubleCol("test");
-        DoubleColumn column = DoubleColumn.builder(id).add(1).addAll(2, 9).add(0).build();
+        DoubleColumn column = DoubleColumn.builder(id).add(1d).addAll(2, 9).add(0d).build();
         assertEquals(id, column.getId());
         assertEquals(4, column.getRowCount());
         assertEquals(1, column.getValueAt(0), 0.01);

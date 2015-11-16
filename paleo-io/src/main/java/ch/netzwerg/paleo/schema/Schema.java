@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
+import javaslang.collection.IndexedSeq;
+import javaslang.collection.Vector;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Collections;
-import java.util.List;
 
 public final class Schema {
 
@@ -33,7 +32,7 @@ public final class Schema {
 
     private final String title;
     private final String dataFileName;
-    private final List<Field> fields;
+    private final Vector<Field> fields;
 
     @JsonCreator
     public Schema(@JsonProperty("title") String title, @JsonProperty("dataFileName") String dataFileName, @JsonProperty("fields") FieldList fields) {
@@ -46,20 +45,20 @@ public final class Schema {
         return s == null ? DEFAULT_STRING : s;
     }
 
-    private static List<Field> safeFields(FieldList fields) {
-        return fields == null ? Collections.emptyList() : ImmutableList.copyOf(fields);
+    private static Vector<Field> safeFields(FieldList fields) {
+        return fields == null ? Vector.empty() : Vector.ofAll(fields);
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public String getDataFileName() {
-        return this.dataFileName;
+        return dataFileName;
     }
 
-    public List<Field> getFields() {
-        return this.fields;
+    public IndexedSeq<Field> getFields() {
+        return fields;
     }
 
     public static Schema parseJson(Reader in) throws IOException {

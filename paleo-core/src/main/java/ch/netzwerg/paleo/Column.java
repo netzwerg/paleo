@@ -22,8 +22,9 @@ public interface Column<T extends ColumnId> {
 
     int getRowCount();
 
-    interface Builder<T extends Column<?>> {
-        T build();
+    interface Builder<V, C extends Column<?>> {
+        Builder<V, C> add(V value);
+        C build();
     }
 
 }

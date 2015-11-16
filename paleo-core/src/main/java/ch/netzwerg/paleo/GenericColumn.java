@@ -16,66 +16,54 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableList;
-
-import java.util.Arrays;
-import java.util.List;
+import javaslang.collection.Array;
+import javaslang.collection.IndexedSeq;
 
 import static ch.netzwerg.paleo.ColumnIds.GenericColumnId;
 
 public class GenericColumn<V, I extends GenericColumnId> implements Column<I> {
 
     private final I id;
-    private final ImmutableList<V> values;
+    private final IndexedSeq<V> values;
 
-    protected GenericColumn(I id, List<V> values) {
+    protected GenericColumn(I id, IndexedSeq<V> values) {
         this.id = id;
-        this.values = ImmutableList.copyOf(values);
+        this.values = values;
+    }
+
+    public static <V, I extends GenericColumnId> GenericColumn<V, I> of(I id, V value) {
+        return new GenericColumn<>(id, Array.of(value));
+    }
+
+    @SafeVarargs
+    public static <V, I extends GenericColumnId> GenericColumn<V, I> ofAll(I id, V... values) {
+        return new GenericColumn<>(id, Array.ofAll(values));
+    }
+
+    public static <V, I extends GenericColumnId> GenericColumn<V, I> ofAll(I id, Iterable<V> values) {
+        return new GenericColumn<>(id, Array.ofAll(values));
+    }
+
+    public static <V, I extends GenericColumnId> GenericColumn<V, I> ofAll(I id, IndexedSeq<V> values) {
+        return new GenericColumn<>(id, values);
     }
 
     @Override
     public I getId() {
-        return this.id;
+        return id;
     }
 
     @Override
     public int getRowCount() {
-        return this.values.size();
+        return values.length();
     }
 
     public V getValueAt(int index) {
-        return this.values.get(index);
+        return values.get(index);
     }
 
-    public List<V> getValues() {
-        return this.values;
-    }
-
-    public static abstract class Builder<V, I extends GenericColumnId, C extends GenericColumn<V, I>> implements Column.Builder<C> {
-
-        protected final I id;
-        protected final ImmutableList.Builder<V> valueBuilder;
-
-        public Builder(I id) {
-            this.id = id;
-            this.valueBuilder = ImmutableList.builder();
-        }
-
-        public final Builder<V, I, C> addAll(Iterable<V> values) {
-            values.forEach(this::add);
-            return this;
-        }
-
-        @SafeVarargs
-        public final Builder<V, I, C> addAll(V... values) {
-            return addAll(Arrays.asList(values));
-        }
-
-        public final Builder<V, I, C> add(V value) {
-            this.valueBuilder.add(value);
-            return this;
-        }
-
+    public IndexedSeq<V> getValues() {
+        return values;
     }
 
 }

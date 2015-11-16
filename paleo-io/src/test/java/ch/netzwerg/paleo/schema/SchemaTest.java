@@ -52,7 +52,7 @@ public class SchemaTest {
         Schema schema = Schema.parseJson(new StringReader(JSON));
         assertEquals("Paleo Schema Title", schema.getTitle());
         assertEquals("data.txt", schema.getDataFileName());
-        assertEquals(3, schema.getFields().size());
+        assertEquals(3, schema.getFields().length());
 
         Field fooField = schema.getFields().get(0);
         assertEquals("Foo", fooField.getName());

@@ -16,36 +16,28 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import javaslang.collection.*;
 
 import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
-import static java.util.stream.Collectors.toList;
 
-public final class DataFrame {
+public final class DataFrame implements Iterable<Column<?>> {
 
-    private final Map<ColumnId, Column<?>> columns;
+    private final Array<Column<?>> columns;
     private final int rowCount;
 
-    public DataFrame(Column<?>... columns) {
-        this(Arrays.asList(columns));
-    }
-
-    public DataFrame(List<Column<?>> columns) {
+    private DataFrame(Array<Column<?>> columns) {
+        this.columns = columns;
         this.rowCount = inferRowCount(columns);
-        this.columns = createImmutableMap(columns);
     }
 
-    private static int inferRowCount(List<Column<?>> columns) {
+    private static int inferRowCount(IndexedSeq<Column<?>> columns) {
         if (columns.isEmpty()) {
             return 0;
         } else {
-            Set<Integer> rowCounts = columns.stream().map(Column::getRowCount).distinct().collect(Collectors.<Integer>toSet());
-            if (rowCounts.size() > 1) {
+            Set<Integer> rowCounts = columns.map(Column::getRowCount).distinct().toSet();
+            if (rowCounts.length() > 1) {
                 throw new IllegalArgumentException("Differing number of rows (i.e. column sizes)");
             } else {
                 return rowCounts.iterator().next();
@@ -53,35 +45,45 @@ public final class DataFrame {
         }
     }
 
-    private static Map<ColumnId, Column<?>> createImmutableMap(List<Column<?>> columns) {
-        ImmutableMap.Builder<ColumnId, Column<?>> mapBuilder = ImmutableMap.builder();
-        columns.forEach(c -> mapBuilder.put(c.getId(), c));
-        return mapBuilder.build();
+    public static DataFrame empty() {
+        return new DataFrame(Array.empty());
+    }
+
+    public static DataFrame of(Column<?> column) {
+        return ofAll(Array.ofAll(column));
+    }
+
+    public static DataFrame ofAll(Column<?> ... columns) {
+        return ofAll(Array.ofAll(columns));
+    }
+
+    public static DataFrame ofAll(Iterable<Column<?>> columns) {
+        return new DataFrame(Array.ofAll(columns));
     }
 
     public int getRowCount() {
-        return this.rowCount;
+        return rowCount;
     }
 
     public int getColumnCount() {
-        return this.columns.size();
+        return columns.length();
     }
 
-    public List<ColumnId> getColumnIds() {
-        return ImmutableList.copyOf(this.columns.keySet());
+    public IndexedSeq<ColumnId> getColumnIds() {
+        return columns.map(Column::getId);
     }
 
-    public List<Column<?>> getColumns() {
-        return ImmutableList.copyOf(this.columns.values());
+    public IndexedSeq<Column<?>> getColumns() {
+        return columns;
     }
 
-    public List<String> getColumnNames() {
-        return this.columns.keySet().stream().map(ColumnId::getName).collect(toList());
+    public IndexedSeq<String> getColumnNames() {
+        return getColumnIds().map(ColumnId::getName);
     }
 
     public <C extends ColumnId> C getColumnId(int columnIndex, ColumnType<C> type) {
         Class<C> idType = type.getIdType();
-        return idType.cast(ImmutableList.copyOf(this.columns.keySet()).get(columnIndex));
+        return idType.cast(columns.get(columnIndex).getId());
     }
 
     public IntColumn getColumn(IntColumnId columnId) {
@@ -149,7 +151,15 @@ public final class DataFrame {
 
     @SuppressWarnings("unchecked")
     private <T extends Column<?>> T getTypedColumn(ColumnId columnId) {
-        return (T) this.columns.get(columnId);
+        return (T) columns.findFirst(c -> c.getId().equals(columnId)).getOption().orElseThrow(() -> {
+            String msg = String.format("Unknown column id '%s'", columnId);
+            throw new IllegalArgumentException(msg);
+        });
+    }
+
+    @Override
+    public Iterator<Column<?>> iterator() {
+        return columns.iterator();
     }
 
 }

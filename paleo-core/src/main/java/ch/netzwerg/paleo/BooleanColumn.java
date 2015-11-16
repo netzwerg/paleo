@@ -16,73 +16,87 @@
 
 package ch.netzwerg.paleo;
 
+import ch.netzwerg.paleo.ColumnIds.BooleanColumnId;
+import javaslang.collection.Stream;
+
 import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-public final class BooleanColumn implements Column<ColumnIds.BooleanColumnId> {
+public final class BooleanColumn implements Column<BooleanColumnId> {
 
-    private final ColumnIds.BooleanColumnId id;
+    private final BooleanColumnId id;
     private final int rowCount;
     private final BitSet values;
 
-    public BooleanColumn(ColumnIds.BooleanColumnId id, int rowCount, BitSet values) {
+    private BooleanColumn(BooleanColumnId id, int rowCount, BitSet values) {
         this.id = id;
         this.rowCount = rowCount;
         this.values = (BitSet) values.clone();
     }
 
+    public static BooleanColumn of(BooleanColumnId id, boolean value) {
+        return builder(id).add(value).build();
+    }
+
+    public static BooleanColumn ofAll(BooleanColumnId id, boolean... values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static BooleanColumn ofAll(BooleanColumnId id, Iterable<Boolean> values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static Builder builder(BooleanColumnId id) {
+        return new Builder(id);
+    }
+
     @Override
-    public ColumnIds.BooleanColumnId getId() {
-        return this.id;
+    public BooleanColumnId getId() {
+        return id;
     }
 
     @Override
     public int getRowCount() {
-        return this.rowCount;
+        return rowCount;
     }
-    
+
     public boolean getValueAt(int rowIndex) {
-        return this.values.get(rowIndex);
+        return values.get(rowIndex);
     }
 
     public Stream<Boolean> getValues() {
-        IntStream rowIndexStream = IntStream.range(0, this.rowCount);
-        return rowIndexStream.mapToObj(this.values::get);
+        return Stream.range(0, rowCount).map(values::get);
     }
 
-    public static Builder builder(ColumnIds.BooleanColumnId id) {
-        return new Builder(id);
-    }
+    public static final class Builder implements Column.Builder<Boolean, BooleanColumn> {
 
-    public static final class Builder implements Column.Builder<BooleanColumn> {
-
-        private final ColumnIds.BooleanColumnId id;
+        private final BooleanColumnId id;
         private final AtomicInteger rowIndex;
         private final BitSet values;
 
-        public Builder(ColumnIds.BooleanColumnId id) {
+        private Builder(BooleanColumnId id) {
             this.id = id;
             this.rowIndex = new AtomicInteger();
             this.values = new BitSet();
         }
 
-        public Builder addAll(boolean... values) {
-            for (boolean value : values) {
-                add(value);
-            }
+        @Override
+        public Builder add(Boolean value) {
+            values.set(rowIndex.getAndIncrement(), value);
             return this;
         }
 
-        public Builder add(boolean value) {
-            this.values.set(this.rowIndex.getAndIncrement(), value);
-            return this;
+        public Builder addAll(boolean... values) {
+            return addAll(Stream.ofAll(values));
+        }
+
+        public Builder addAll(Iterable<Boolean> values) {
+            return Stream.ofAll(values).foldLeft(this, Builder::add);
         }
 
         @Override
         public BooleanColumn build() {
-            return new BooleanColumn(this.id, this.rowIndex.get(), this.values);
+            return new BooleanColumn(id, rowIndex.get(), values);
         }
 
     }
