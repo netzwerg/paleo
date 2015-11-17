@@ -12,7 +12,7 @@ data type, which allows for type-safe value access. The following column types a
 * **Timestamp**: `java.time.Instant` values
 * **Category**: Categorical `String` values (aka factors)
 
-Columns can be created via a fluent builder API, or populated from text files.
+Columns can be created via simple factory methods, or populated from text files.
 
 # Hello Paleo
 
@@ -24,13 +24,13 @@ final StringColumnId NAME = ColumnIds.stringCol("Name");
 final CategoryColumnId COLOR = ColumnIds.categoryCol("Color");
 final DoubleColumnId SERVING_SIZE = ColumnIds.doubleCol("Serving Size (g)");
 
-// Builder API for convenient column creation
-StringColumn nameColumn = StringColumn.builder(NAME).addAll("Banana", "Blueberry", "Lemon", "Apple").build();
-CategoryColumn colorColumn = CategoryColumn.builder(COLOR).addAll("Yellow", "Blue", "Yellow", "Green").build();
-DoubleColumn servingSizeColumn = DoubleColumn.builder(SERVING_SIZE).addAll(118, 148, 83, 182).build();
+// Convenient column creation
+StringColumn nameColumn = StringColumn.ofAll(NAME, "Banana", "Blueberry", "Lemon", "Apple");
+CategoryColumn colorColumn = CategoryColumn.ofAll(COLOR, "Yellow", "Blue", "Yellow", "Green");
+DoubleColumn servingSizeColumn = DoubleColumn.ofAll(SERVING_SIZE, 118, 148, 83, 182);
 
-// Straight-forward data frame creation
-DataFrame dataFrame = new DataFrame(nameColumn, colorColumn, servingSizeColumn);
+// Grouping columns into a data frame
+DataFrame dataFrame = DataFrame.ofAll(nameColumn, colorColumn, servingSizeColumn);
 
 // Typed random access to individual values (based on rowIndex / columnId)
 String lemon = dataFrame.getValueAt(2, NAME);
@@ -138,7 +138,7 @@ final DoubleColumnId SERVING_SIZE = dataFrame.getColumnId(2, ColumnType.DOUBLE);
 
 // Use identifier to access columns & values
 StringColumn nameColumn = dataFrame.getColumn(NAME);
-List<String> nameValues = nameColumn.getValues();
+IndexedSeq<String> nameValues = nameColumn.getValues();
 
 // ... or access individual values via row index / column id 
 String yellow = dataFrame.getValueAt(2, COLOR);
@@ -210,6 +210,18 @@ Maven:
     <type>jar</type>
 </dependency>
 ```
+
+# Javaslang
+
+Paleo makes extensive use of the [Javaslang](https://github.com/javaslang/javaslang) library. Javaslang provides
+awesome collection classes which offer functionality way beyond the standard JDK. Working with the Javaslang classes
+is highly recommended, but it is always possible to back out and convert to JDK standards (e.g. with `toJavaList()`).
+
+# Factory-Methods vs. Builders
+
+Paleo tries to make the best compromise between parsing speed, index-based value lookup, and memory usage. That's why
+it offers two ways to create columns: Static factory methods allow for convenient construction if all values are already
+available. Individual column builders should be used if columns are constructed via successive value addition.
 
 # Why The Name?
 
