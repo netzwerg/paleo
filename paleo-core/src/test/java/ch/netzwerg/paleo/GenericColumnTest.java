@@ -36,7 +36,7 @@ public class GenericColumnTest {
         assertEquals(id, column.getId());
         assertEquals(4, column.getRowCount());
         assertEquals(FILE_B, column.getValueAt(1));
-        assertEquals(Array.ofAll(FILE_A, FILE_B, FILE_A, FILE_A), column.getValues());
+        assertEquals(Array.ofAll(FILE_A, FILE_B, FILE_A, FILE_A), column.getValues().toArray());
     }
 
 }

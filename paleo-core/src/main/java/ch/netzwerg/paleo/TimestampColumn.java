@@ -24,7 +24,7 @@ import java.time.Instant;
 
 import static ch.netzwerg.paleo.ColumnIds.TimestampColumnId;
 
-public final class TimestampColumn extends GenericColumn<Instant, TimestampColumnId> {
+public final class TimestampColumn extends AbstractColumn<Instant, TimestampColumnId> {
 
     private TimestampColumn(TimestampColumnId id, Array<Instant> values) {
         super(id, values);

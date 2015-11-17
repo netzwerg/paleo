@@ -16,7 +16,10 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.*;
+import javaslang.collection.Array;
+import javaslang.collection.IndexedSeq;
+import javaslang.collection.Iterator;
+import javaslang.collection.Set;
 
 import java.time.Instant;
 
@@ -53,7 +56,7 @@ public final class DataFrame implements Iterable<Column<?>> {
         return ofAll(Array.ofAll(column));
     }
 
-    public static DataFrame ofAll(Column<?> ... columns) {
+    public static DataFrame ofAll(Column<?>... columns) {
         return ofAll(Array.ofAll(columns));
     }
 

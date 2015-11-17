@@ -22,7 +22,7 @@ import javaslang.collection.Stream;
 
 import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
 
-public final class StringColumn extends GenericColumn<String, StringColumnId> {
+public final class StringColumn extends AbstractColumn<String, StringColumnId> {
 
     private StringColumn(StringColumnId id, Array<String> values) {
         super(id, values);
