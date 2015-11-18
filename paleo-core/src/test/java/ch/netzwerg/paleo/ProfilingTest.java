@@ -16,6 +16,7 @@
 
 package ch.netzwerg.paleo;
 
+import javaslang.Function2;
 import javaslang.collection.Stream;
 import javaslang.collection.Vector;
 import org.junit.Ignore;
@@ -53,6 +54,13 @@ public class ProfilingTest {
         assertEquals(COUNT, list.size());
         ResultWrapper<java.util.List<Integer>> resultWrapper = new ResultWrapper<>(list);
         keepProfilerAlive(resultWrapper);
+    }
+
+    @Test
+    public void stackOverflow() {
+        StringColumn.Builder columnBuilder = StringColumn.builder(ColumnIds.stringCol("test"));
+        Function2<StringColumn.Builder, String, StringColumn.Builder> append = (b, s) -> b.add(s);
+        StringColumn column = Stream.range(0, COUNT).map(String::valueOf).foldLeft(columnBuilder, append).build();
     }
 
     private static void keepProfilerAlive(ResultWrapper<?> resultWrapper) {
