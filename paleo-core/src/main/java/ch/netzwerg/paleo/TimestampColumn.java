@@ -71,7 +71,7 @@ public final class TimestampColumn extends AbstractColumn<Instant, TimestampColu
 
         @Override
         public TimestampColumn build() {
-            return new TimestampColumn(this.id, this.acc.reverse().toArray());
+            return new TimestampColumn(this.id, this.acc.toStream().reverse().toArray());
         }
 
     }

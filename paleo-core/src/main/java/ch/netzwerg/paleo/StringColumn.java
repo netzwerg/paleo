@@ -69,7 +69,7 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
 
         @Override
         public StringColumn build() {
-            return new StringColumn(id, acc.reverse().toArray());
+            return new StringColumn(id, acc.toStream().reverse().toArray());
         }
 
     }

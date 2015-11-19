@@ -109,7 +109,7 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
 
 
         public CategoryColumn build() {
-            return new CategoryColumn(id, categories, categoryIndexPerRowIndex.reverse().toArray());
+            return new CategoryColumn(id, categories, categoryIndexPerRowIndex.toStream().reverse().toArray());
         }
 
     }
