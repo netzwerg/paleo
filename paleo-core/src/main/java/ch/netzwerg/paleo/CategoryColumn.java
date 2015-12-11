@@ -100,7 +100,7 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
         }
 
         public Builder addAll(String... values) {
-            return addAll(Stream.ofAll(values));
+            return addAll(Stream.of(values));
         }
 
         public Builder addAll(Iterable<String> values) {

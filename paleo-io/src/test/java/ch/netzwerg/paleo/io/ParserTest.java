@@ -107,11 +107,11 @@ public class ParserTest {
 
     private static void assertDataFrameParsedCorrectly(DataFrame df) {
         assertEquals(6, df.getColumnCount());
-        assertEquals(Array.ofAll("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
+        assertEquals(Array.of("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
 
         StringColumnId nameColumnId = df.getColumnId(0, ColumnType.STRING);
         StringColumn nameColumn = df.getColumn(nameColumnId);
-        assertEquals(Array.ofAll("Ada", "Homer", "Hillary"), nameColumn.getValues());
+        assertEquals(Array.of("Ada", "Homer", "Hillary"), nameColumn.getValues());
 
         IntColumnId ageColumnId = df.getColumnId(1, ColumnType.INT);
         IntColumn ageColumn = df.getColumn(ageColumnId);
@@ -123,7 +123,7 @@ public class ParserTest {
 
         BooleanColumnId vegetarianColumnId = df.getColumnId(3, ColumnType.BOOLEAN);
         BooleanColumn vegetarianColumn = df.getColumn(vegetarianColumnId);
-        assertEquals(Array.ofAll(true, false, false), vegetarianColumn.getValues().toArray());
+        assertEquals(Array.of(true, false, false), vegetarianColumn.getValues().toArray());
 
         TimestampColumnId dateOfBirthColumnId = df.getColumnId(4, ColumnType.TIMESTAMP);
         TimestampColumn dateOfBirthColumn = df.getColumn(dateOfBirthColumnId);
@@ -132,7 +132,7 @@ public class ParserTest {
 
         CategoryColumnId genderColumnId = df.getColumnId(5, ColumnType.CATEGORY);
         CategoryColumn genderColumn = df.getColumn(genderColumnId);
-        assertEquals(HashSet.ofAll("Female", "Male"), genderColumn.getCategories());
+        assertEquals(HashSet.of("Female", "Male"), genderColumn.getCategories());
 
         // typed random access for String values
         String stringValue = df.getValueAt(0, nameColumnId);

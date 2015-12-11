@@ -44,7 +44,7 @@ public class CategoryColumnTest {
         CategoryColumn column = CategoryColumn.builder(id).add("foo").add("bar").addAll("foo", "baz", "bar").add("foo").build();
         assertEquals(id, column.getId());
         assertEquals(6, column.getRowCount());
-        assertEquals(HashSet.ofAll("foo", "bar", "baz"), column.getCategories());
+        assertEquals(HashSet.of("foo", "bar", "baz"), column.getCategories());
         assertEquals("foo", column.getValueAt(0));
         assertEquals("bar", column.getValueAt(1));
     }

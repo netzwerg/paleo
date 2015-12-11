@@ -60,7 +60,7 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
         }
 
         public Builder addAll(String... values) {
-            return addAll(Stream.ofAll(values));
+            return addAll(Stream.of(values));
         }
 
         public Builder addAll(Iterable<String> values) {

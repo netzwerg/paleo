@@ -53,11 +53,11 @@ public final class DataFrame implements Iterable<Column<?>> {
     }
 
     public static DataFrame of(Column<?> column) {
-        return ofAll(Array.ofAll(column));
+        return ofAll(Array.of(column));
     }
 
     public static DataFrame ofAll(Column<?>... columns) {
-        return ofAll(Array.ofAll(columns));
+        return ofAll(Array.of(columns));
     }
 
     public static DataFrame ofAll(Iterable<Column<?>> columns) {

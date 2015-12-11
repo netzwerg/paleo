@@ -32,7 +32,7 @@ public class BooleanColumnTest {
         assertEquals(5, column.getRowCount());
         assertEquals(true, column.getValueAt(0));
         assertEquals(false, column.getValueAt(column.getRowCount() - 1));
-        assertEquals(Array.ofAll(true, false, false, true, false), column.getValues().toArray());
+        assertEquals(Array.of(true, false, false, true, false), column.getValues().toArray());
     }
 
 }

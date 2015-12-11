@@ -64,14 +64,14 @@ public class DataFrameTest {
         assertEquals(3, df.getRowCount());
         assertEquals(6, df.getColumnCount());
 
-        assertEquals(Array.ofAll(NAME, AGE, HEIGHT, VEGETARIAN, DATE_OF_BIRTH, GENDER), df.getColumnIds());
-        assertEquals(Array.ofAll(nameColumn, ageColumn, heightColumn, vegetarianColumn, dateOfBirthColumn, genderColumn), df.getColumns());
-        assertEquals(Array.ofAll("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
+        assertEquals(Array.of(NAME, AGE, HEIGHT, VEGETARIAN, DATE_OF_BIRTH, GENDER), df.getColumnIds());
+        assertEquals(Array.of(nameColumn, ageColumn, heightColumn, vegetarianColumn, dateOfBirthColumn, genderColumn), df.getColumns());
+        assertEquals(Array.of("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
 
         assertEquals("String", NAME.getType().getDescription());
         assertEquals(NAME, df.getColumnId(0, ColumnType.STRING));
         assertEquals(nameColumn, df.getColumn(NAME));
-        assertEquals(Array.ofAll("Ada", "Homer", "Hillary"), nameColumn.getValues());
+        assertEquals(Array.of("Ada", "Homer", "Hillary"), nameColumn.getValues());
 
         assertEquals("Int", AGE.getType().getDescription());
         assertEquals(AGE, df.getColumnId(1, ColumnType.INT));
@@ -86,17 +86,17 @@ public class DataFrameTest {
         assertEquals("Boolean", VEGETARIAN.getType().getDescription());
         assertEquals(VEGETARIAN, df.getColumnId(3, ColumnType.BOOLEAN));
         assertEquals(vegetarianColumn, df.getColumn(VEGETARIAN));
-        assertEquals(Array.ofAll(true, false, false), vegetarianColumn.getValues().toArray());
+        assertEquals(Array.of(true, false, false), vegetarianColumn.getValues().toArray());
 
         assertEquals("Timestamp", DATE_OF_BIRTH.getType().getDescription());
         assertEquals(DATE_OF_BIRTH, df.getColumnId(4, ColumnType.TIMESTAMP));
         assertEquals(dateOfBirthColumn, df.getColumn(DATE_OF_BIRTH));
-        assertEquals(Array.ofAll(AUG_26_1975, JAN_08_2006, OCT_26_1947), dateOfBirthColumn.getValues());
+        assertEquals(Array.of(AUG_26_1975, JAN_08_2006, OCT_26_1947), dateOfBirthColumn.getValues());
 
         assertEquals("Category", GENDER.getType().getDescription());
         assertEquals(GENDER, df.getColumnId(5, ColumnType.CATEGORY));
         assertEquals(genderColumn, df.getColumn(GENDER));
-        assertEquals(HashSet.ofAll("Female", "Male"), genderColumn.getCategories());
+        assertEquals(HashSet.of("Female", "Male"), genderColumn.getCategories());
 
         // typed random access for String values
         String stringValue = df.getValueAt(0, NAME);

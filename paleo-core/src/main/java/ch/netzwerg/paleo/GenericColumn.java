@@ -30,7 +30,7 @@ public final class GenericColumn<V, I extends ColumnIds.GenericColumnId> extends
 
     @SafeVarargs
     public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> ofAll(I id, V... values) {
-        return new GenericColumn<>(id, Array.ofAll(values));
+        return new GenericColumn<>(id, Array.of(values));
     }
 
     public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> ofAll(I id, Iterable<V> values) {
