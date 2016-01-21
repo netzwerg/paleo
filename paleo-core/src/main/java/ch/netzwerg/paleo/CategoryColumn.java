@@ -79,7 +79,7 @@ public final class CategoryColumn implements Column<ColumnIds.CategoryColumnId> 
     }
 
     @Override
-    public ImmutableMap<String, String> getMetaData() {
+    public Map<String, String> getMetaData() {
         return metaData;
     }
 

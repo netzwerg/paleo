@@ -63,7 +63,7 @@ public final class BooleanColumn implements Column<ColumnIds.BooleanColumnId> {
     }
 
     @Override
-    public ImmutableMap<String, String> getMetaData() {
+    public Map<String, String> getMetaData() {
         return metaData;
     }
 

@@ -61,7 +61,7 @@ public class GenericColumn<V, I extends GenericColumnId> implements Column<I> {
     }
 
     @Override
-    public ImmutableMap<String, String> getMetaData() {
+    public Map<String, String> getMetaData() {
         return metaData;
     }
 
