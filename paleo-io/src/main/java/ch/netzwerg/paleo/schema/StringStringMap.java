@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 
 package ch.netzwerg.paleo.schema;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Helper class to work around the fact that the JSON (de)serializer is not able to infer
- * type information of <code>List&lt;Field&gt;</code> due to Java's type erasure.
+ * type information of <code>Map&lt;String, String&gt;</code> due to Java's type erasure.
  */
 @SuppressWarnings("unused") // needed for JSON (de)serialization
-public final class FieldList extends ArrayList<Field> {
+public class StringStringMap extends LinkedHashMap<String, String> {
 
-    public FieldList() {
+    public StringStringMap() {
     }
 
-    public FieldList(List<Field> fields) {
-        super(fields);
+    public StringStringMap(Map<String, String> map) {
+        super(map);
     }
 
 }

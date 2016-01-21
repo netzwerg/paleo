@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package ch.netzwerg.paleo;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import static ch.netzwerg.paleo.ColumnIds.IntColumnId;
@@ -25,10 +29,16 @@ public final class IntColumn implements Column<IntColumnId> {
 
     private final IntColumnId id;
     private final int[] values;
+    private final Map<String, String> metaData;
 
     public IntColumn(IntColumnId id, IntStream values) {
+        this(id, values, Collections.emptyMap());
+    }
+
+    public IntColumn(IntColumnId id, IntStream values, Map<String, String> metaData) {
         this.id = id;
         this.values = values.toArray();
+        this.metaData = ImmutableMap.copyOf(metaData);
     }
 
     public static Builder builder(IntColumnId id) {
@@ -45,6 +55,11 @@ public final class IntColumn implements Column<IntColumnId> {
         return this.values.length;
     }
 
+    @Override
+    public Map<String, String> getMetaData() {
+        return this.metaData;
+    }
+
     public int getValueAt(int index) {
         return this.values[index];
     }
@@ -57,10 +72,12 @@ public final class IntColumn implements Column<IntColumnId> {
 
         private final IntColumnId id;
         private final IntStream.Builder valueBuilder;
+        private final ImmutableMap.Builder<String, String> metaDataBuilder;
 
         public Builder(IntColumnId id) {
             this.id = id;
             this.valueBuilder = IntStream.builder();
+            this.metaDataBuilder = ImmutableMap.builder();
         }
 
         public Builder addAll(int... values) {
@@ -76,8 +93,20 @@ public final class IntColumn implements Column<IntColumnId> {
         }
 
         @Override
+        public Builder putMetaData(String key, String value) {
+            metaDataBuilder.put(key, value);
+            return this;
+        }
+
+        @Override
+        public Builder putAllMetaData(Map<String, String> metaData) {
+            metaDataBuilder.putAll(metaData);
+            return this;
+        }
+
+        @Override
         public IntColumn build() {
-            return new IntColumn(this.id, this.valueBuilder.build());
+            return new IntColumn(id, valueBuilder.build(), metaDataBuilder.build());
         }
 
     }

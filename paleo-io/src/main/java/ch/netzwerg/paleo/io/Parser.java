@@ -48,7 +48,7 @@ public final class Parser {
         CSVRecord columnNames = it.next();
         CSVRecord columnTypes = it.next();
 
-        List<FromStringColumnBuilder> columnBuilders = createColumnBuilders(columnNames, columnTypes, formatter, columnBuilderFactories);
+        List<FromStringColumnBuilder<?>> columnBuilders = createColumnBuilders(columnNames, columnTypes, formatter, columnBuilderFactories);
 
         return parseDataFrame(it, columnBuilders, 2);
     }
@@ -68,11 +68,11 @@ public final class Parser {
 
     private static DataFrame parseTabDelimited(Schema schema, Reader reader) throws IOException {
         Iterator<CSVRecord> it = CSVFormat.TDF.parse(reader).iterator();
-        List<FromStringColumnBuilder> columnBuilders = createColumnBuilders(schema.getFields());
+        List<FromStringColumnBuilder<?>> columnBuilders = createColumnBuilders(schema.getFields());
         return parseDataFrame(it, columnBuilders, 0);
     }
 
-    private static DataFrame parseDataFrame(Iterator<CSVRecord> it, List<FromStringColumnBuilder> columnBuilders, int rowOffset) {
+    private static DataFrame parseDataFrame(Iterator<CSVRecord> it, List<FromStringColumnBuilder<?>> columnBuilders, int rowOffset) {
         int rowCount = 0;
         while (it.hasNext()) {
             rowCount++;
@@ -85,7 +85,7 @@ public final class Parser {
             }
 
             Iterator<String> valueIt = row.iterator();
-            Iterator<FromStringColumnBuilder> columnBuildersIt = columnBuilders.iterator();
+            Iterator<FromStringColumnBuilder<?>> columnBuildersIt = columnBuilders.iterator();
             while (valueIt.hasNext()) {
                 columnBuildersIt.next().add(valueIt.next());
             }
@@ -96,7 +96,7 @@ public final class Parser {
         return new DataFrame(columns.build());
     }
 
-    private static List<FromStringColumnBuilder> createColumnBuilders(CSVRecord columnNames, CSVRecord columnTypes, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
+    private static List<FromStringColumnBuilder<?>> createColumnBuilders(CSVRecord columnNames, CSVRecord columnTypes, Optional<DateTimeFormatter> formatter, Map<String, ColumnBuilderFactory> columnBuilderFactories) {
 
         if (columnNames.size() != columnTypes.size()) {
             String msg = String.format(
@@ -106,7 +106,7 @@ public final class Parser {
             throw new IllegalArgumentException(msg);
         }
 
-        ImmutableList.Builder<FromStringColumnBuilder> resultBuilder = ImmutableList.builder();
+        ImmutableList.Builder<FromStringColumnBuilder<?>> resultBuilder = ImmutableList.builder();
 
         Iterator<String> nameIt = columnNames.iterator();
         Iterator<String> typeIt = columnTypes.iterator();
@@ -119,12 +119,13 @@ public final class Parser {
         return resultBuilder.build();
     }
 
-    private static List<FromStringColumnBuilder> createColumnBuilders(List<Field> fields) {
-        ImmutableList.Builder<FromStringColumnBuilder> result = ImmutableList.builder();
+    private static List<FromStringColumnBuilder<?>> createColumnBuilders(List<Field> fields) {
+        ImmutableList.Builder<FromStringColumnBuilder<?>> result = ImmutableList.builder();
         for (Field field : fields) {
             ColumnType<?> type = field.getType();
             Optional<DateTimeFormatter> formatter = field.getFormat().map(DateTimeFormatter::ofPattern);
             FromStringColumnBuilder<?> columnBuilder = createColumnBuilder(field.getName(), formatter, type);
+            columnBuilder.putAllMetaData(field.getMetaData());
             result.add(columnBuilder);
         }
         return result.build();
@@ -172,6 +173,18 @@ public final class Parser {
         @Override
         public FromStringColumnBuilder<C> add(String stringValue) {
             this.valueAccepter.accept(stringValue);
+            return this;
+        }
+
+        @Override
+        public FromStringColumnBuilder<C> putMetaData(String key, String value) {
+            delegateBuilder.putMetaData(key, value);
+            return this;
+        }
+
+        @Override
+        public FromStringColumnBuilder<C> putAllMetaData(Map<String, String> metaData) {
+            delegateBuilder.putAllMetaData(metaData);
             return this;
         }
 

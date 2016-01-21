@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,20 @@
 package ch.netzwerg.paleo;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static ch.netzwerg.paleo.ColumnIds.TimestampColumnId;
 
 public final class TimestampColumn extends GenericColumn<Instant, TimestampColumnId> {
 
     public TimestampColumn(TimestampColumnId id, List<Instant> values) {
-        super(id, values);
+        this(id, values, Collections.emptyMap());
+    }
+
+    public TimestampColumn(TimestampColumnId id, List<Instant> values, Map<String, String> metaData) {
+        super(id, values, metaData);
     }
 
     public static Builder builder(TimestampColumnId id) {
@@ -39,7 +45,7 @@ public final class TimestampColumn extends GenericColumn<Instant, TimestampColum
 
         @Override
         public TimestampColumn build() {
-            return new TimestampColumn(this.id, this.valueBuilder.build());
+            return new TimestampColumn(id, valueBuilder.build(), metaDataBuilder.build());
         }
 
     }

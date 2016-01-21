@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,20 @@
 
 package ch.netzwerg.paleo;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
 
 public final class StringColumn extends GenericColumn<String, StringColumnId> {
 
     public StringColumn(StringColumnId id, List<String> values) {
-        super(id, values);
+        this(id, values, Collections.emptyMap());
+    }
+
+    public StringColumn(StringColumnId id, List<String> values, Map<String, String> metaData) {
+        super(id, values, metaData);
     }
 
     public static Builder builder(StringColumnId id) {
@@ -38,7 +44,7 @@ public final class StringColumn extends GenericColumn<String, StringColumnId> {
 
         @Override
         public StringColumn build() {
-            return new StringColumn(this.id, this.valueBuilder.build());
+            return new StringColumn(id, valueBuilder.build(), metaDataBuilder.build());
         }
 
     }

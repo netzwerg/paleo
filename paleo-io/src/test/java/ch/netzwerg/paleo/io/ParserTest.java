@@ -29,6 +29,7 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Function;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
@@ -54,7 +55,8 @@ public class ParserTest {
             "    },\n" +
             "    {\n" +
             "      \"name\": \"Height\",\n" +
-            "      \"type\": \"Double\"\n" +
+            "      \"type\": \"Double\",\n" +
+            "      \"metaData\": {\"unit\":\"m\"}\n" +
             "    },\n" +
             "    {\n" +
             "      \"name\": \"Vegetarian\",\n" +
@@ -94,6 +96,7 @@ public class ParserTest {
         Schema schema = Schema.parseJson(schemaReader);
         DataFrame df = Parser.parseTabDelimited(schema);
         assertDataFrameParsedCorrectly(df);
+        assertMetaDataParsedCorrectly(df);
     }
 
     @Test
@@ -104,6 +107,7 @@ public class ParserTest {
         File resourceFolder = new File(ParserTest.class.getResource("/data.txt").getPath()).getParentFile();
         DataFrame df = Parser.parseTabDelimited(schema, resourceFolder);
         assertDataFrameParsedCorrectly(df);
+        assertMetaDataParsedCorrectly(df);
     }
 
     private static void assertDataFrameParsedCorrectly(DataFrame df) {
@@ -154,6 +158,12 @@ public class ParserTest {
         // typed random access for categories
         String categoryValue = df.getValueAt(2, genderColumnId);
         assertEquals("Female", categoryValue);
+    }
+
+    private static void assertMetaDataParsedCorrectly(DataFrame df) {
+        Map<String, String> metaData = df.getColumn(df.getColumnId(2, ColumnType.DOUBLE)).getMetaData();
+        assertEquals(1, metaData.size());
+        assertEquals("m", metaData.get("unit"));
     }
 
 }

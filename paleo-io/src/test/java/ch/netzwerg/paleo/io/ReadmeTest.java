@@ -75,8 +75,9 @@ public class ReadmeTest {
                 "      \"type\": \"Category\"\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"name\": \"Serving Size (g)\",\n" +
-                "      \"type\": \"Double\"\n" +
+                "      \"name\": \"Serving Size\",\n" +
+                "      \"type\": \"Double\",\n" +
+                "      \"metaData\": {\"unit\": \"g\"}\n" +
                 "    },\n" +
                 "    {\n" +
                 "      \"name\": \"Exemplary Date\",\n" +

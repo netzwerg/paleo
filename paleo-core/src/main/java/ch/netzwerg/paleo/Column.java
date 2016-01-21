@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,19 @@
 
 package ch.netzwerg.paleo;
 
+import java.util.Map;
+
 public interface Column<T extends ColumnId> {
 
     T getId();
 
     int getRowCount();
 
+    Map<String, String> getMetaData();
+
     interface Builder<T extends Column<?>> {
+        Builder<T> putMetaData(String key, String value);
+        Builder<T> putAllMetaData(Map<String, String> metaData);
         T build();
     }
 

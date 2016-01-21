@@ -96,8 +96,9 @@ definition of an external JSON schema. The format is inspired by the [JSON Table
       "type": "Category"
     },
     {
-      "name": "Serving Size (g)",
-      "type": "Double"
+      "name": "Serving Size",
+      "type": "Double",
+      "metaData": { "unit": "g" }
     },
     {
       "name": "Exemplary Date",
@@ -176,7 +177,7 @@ Maven `settings.xml`:
 Gradle:
 
 ```groovy
-compile 'ch.netzwerg:paleo-core:0.3.0'
+compile 'ch.netzwerg:paleo-core:0.4.0'
 ```
 
 Maven:
@@ -185,7 +186,7 @@ Maven:
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-core</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <type>jar</type>
 </dependency>
 ```
@@ -197,7 +198,7 @@ Optional (requires `paleo-core`)
 Gradle:
 
 ```groovy
-compile 'ch.netzwerg:paleo-io:0.3.0'
+compile 'ch.netzwerg:paleo-io:0.4.0'
 ```
 
 Maven:
@@ -206,7 +207,7 @@ Maven:
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-io</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <type>jar</type>
 </dependency>
 ```
@@ -216,4 +217,4 @@ Maven:
 The backing data structures are all about **raw** values and **primitive** types &mdash; this somehow reminded me of
 the paleo diet.
 
-&copy; 2015 Rahel Lüthy
+&copy; 2016 Rahel Lüthy

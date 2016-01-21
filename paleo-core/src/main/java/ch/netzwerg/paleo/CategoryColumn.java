@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package ch.netzwerg.paleo;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.*;
@@ -33,12 +34,18 @@ public final class CategoryColumn implements Column<ColumnIds.CategoryColumnId> 
     private final int rowCount;
     private final List<String> categories;
     private final Lookup lookup;
+    private final ImmutableMap<String, String> metaData;
 
     public CategoryColumn(ColumnIds.CategoryColumnId id, int rowCount, List<String> categories, Lookup lookup) {
+        this(id, rowCount, categories, lookup, Collections.emptyMap());
+    }
+
+    public CategoryColumn(ColumnIds.CategoryColumnId id, int rowCount, List<String> categories, Lookup lookup, Map<String, String> metaData) {
         this.id = id;
         this.rowCount = rowCount;
         this.categories = ImmutableList.copyOf(categories);
         this.lookup = lookup;
+        this.metaData = ImmutableMap.copyOf(metaData);
     }
 
     public static Builder builder(ColumnIds.CategoryColumnId id) {
@@ -71,18 +78,25 @@ public final class CategoryColumn implements Column<ColumnIds.CategoryColumnId> 
         return IntStream.range(0, this.rowCount).mapToObj(this::getValueAt);
     }
 
+    @Override
+    public ImmutableMap<String, String> getMetaData() {
+        return metaData;
+    }
+
     public static final class Builder implements Column.Builder<CategoryColumn> {
 
         private final ColumnIds.CategoryColumnId id;
         private final IntStream.Builder categoryIndexByRowIndexBuilder;
         private final List<String> categories;
-        private final HashMap<String, Integer> categoryIndexByCategory;
+        private final Map<String, Integer> categoryIndexByCategory;
+        private final ImmutableMap.Builder<String, String> metaDataBuilder;
 
         private Builder(ColumnIds.CategoryColumnId id) {
             this.id = id;
             this.categoryIndexByRowIndexBuilder = IntStream.builder();
             this.categories = new ArrayList<>();
             this.categoryIndexByCategory = new HashMap<>();
+            this.metaDataBuilder = ImmutableMap.builder();
         }
 
         public Builder addAll(Iterable<String> values) {
@@ -105,10 +119,22 @@ public final class CategoryColumn implements Column<ColumnIds.CategoryColumnId> 
             return this;
         }
 
+        @Override
+        public Builder putMetaData(String key, String value) {
+            metaDataBuilder.put(key, value);
+            return this;
+        }
+
+        @Override
+        public Builder putAllMetaData(Map<String, String> metaData) {
+            metaDataBuilder.putAll(metaData);
+            return this;
+        }
+
         public CategoryColumn build() {
-            int[] categoryIndexByRowIndex = this.categoryIndexByRowIndexBuilder.build().toArray();
+            int[] categoryIndexByRowIndex = categoryIndexByRowIndexBuilder.build().toArray();
             CategoryColumn.Lookup lookup = rowIndex -> categoryIndexByRowIndex[rowIndex];
-            return new CategoryColumn(this.id, categoryIndexByRowIndex.length, this.categories, lookup);
+            return new CategoryColumn(id, categoryIndexByRowIndex.length, categories, lookup, metaDataBuilder.build());
         }
 
     }
