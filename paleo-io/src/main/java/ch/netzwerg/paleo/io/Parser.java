@@ -96,9 +96,7 @@ public final class Parser {
             String msg = String.format(msgFormat, rowIndex + rowOffset, values.size(), accumulators.length());
             throw new IllegalArgumentException(msg);
         }
-        // TODO: Why is this substantially faster than zipping accumulators with values?
-        Iterator<String> valueIt = values.iterator();
-        return accumulators.map(accumulator -> accumulator.add(valueIt.next()));
+        return Stream.ofAll(accumulators).zip(values).map(t -> t._1.add(t._2));
     }
 
     private static Stream<? extends Acc<?, ?>> createColumnAccumulators(CSVRecord columnNames, CSVRecord columnTypes, Option<DateTimeFormatter> formatter) {
