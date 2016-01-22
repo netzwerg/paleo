@@ -17,8 +17,9 @@
 package ch.netzwerg.paleo;
 
 import javaslang.collection.Array;
-import javaslang.collection.List;
 import javaslang.collection.Stream;
+
+import java.util.ArrayList;
 
 import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
 
@@ -41,22 +42,23 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
     }
 
     public static Builder builder(StringColumnId id) {
-        return new Builder(id, List.empty());
+        return new Builder(id);
     }
 
     public static final class Builder implements Column.Builder<String, StringColumn> {
 
         private final StringColumnId id;
-        private final List<String> acc;
+        private final java.util.List<String> values;
 
-        private Builder(StringColumnId id, List<String> acc) {
+        private Builder(StringColumnId id) {
             this.id = id;
-            this.acc = acc;
+            this.values = new ArrayList<>();
         }
 
         @Override
         public Builder add(String value) {
-            return new Builder(id, acc.prepend(value));
+            values.add(value);
+            return this;
         }
 
         public Builder addAll(String... values) {
@@ -64,12 +66,12 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
         }
 
         public Builder addAll(Iterable<String> values) {
-            return new Builder(id, acc.prependAll(List.ofAll(values).reverse()));
+            return Stream.ofAll(values).foldLeft(this, Builder::add);
         }
 
         @Override
         public StringColumn build() {
-            return new StringColumn(id, acc.toStream().reverse().toArray());
+            return new StringColumn(id, Array.ofAll(values));
         }
 
     }

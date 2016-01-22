@@ -18,9 +18,10 @@ package ch.netzwerg.paleo;
 
 import ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
 import javaslang.collection.Array;
-import javaslang.collection.List;
 import javaslang.collection.Set;
 import javaslang.collection.Stream;
+
+import java.util.ArrayList;
 
 public final class CategoryColumn implements Column<CategoryColumnId> {
 
@@ -47,7 +48,7 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
     }
 
     public static Builder builder(CategoryColumnId id) {
-        return new Builder(id, Array.empty(), List.empty());
+        return new Builder(id);
     }
 
     @Override
@@ -78,25 +79,24 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
     public static final class Builder implements Column.Builder<String, CategoryColumn> {
 
         private final CategoryColumnId id;
-        private final Array<String> categories;
-        private final List<Integer> categoryIndexPerRowIndex;
+        private final java.util.List<String> categories;
+        private final java.util.List<Integer> categoryIndexPerRowIndex;
 
-        private Builder(CategoryColumnId id, Array<String> categories, List<Integer> categoryIndexPerRowIndex) {
+        private Builder(CategoryColumnId id) {
             this.id = id;
-            this.categories = categories;
-            this.categoryIndexPerRowIndex = categoryIndexPerRowIndex;
+            this.categories = new ArrayList<>();
+            this.categoryIndexPerRowIndex = new ArrayList<>();
         }
 
         @Override
         public Builder add(String value) {
             int categoryIndex = categories.indexOf(value);
-            Array<String> newCategories = categories;
             if (categoryIndex < 0) {
-                newCategories = categories.append(value);
-                categoryIndex = newCategories.length() - 1;
+                categories.add(value);
+                categoryIndex = categories.size() - 1;
             }
-            List<Integer> newRowIndicesPerCategory = categoryIndexPerRowIndex.prepend(categoryIndex);
-            return new Builder(id, newCategories, newRowIndicesPerCategory);
+            categoryIndexPerRowIndex.add(categoryIndex);
+            return this;
         }
 
         public Builder addAll(String... values) {
@@ -109,7 +109,7 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
 
 
         public CategoryColumn build() {
-            return new CategoryColumn(id, categories, categoryIndexPerRowIndex.toStream().reverse().toArray());
+            return new CategoryColumn(id, Array.ofAll(categories), Array.ofAll(categoryIndexPerRowIndex));
         }
 
     }

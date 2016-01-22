@@ -17,10 +17,10 @@
 package ch.netzwerg.paleo;
 
 import javaslang.collection.Array;
-import javaslang.collection.List;
 import javaslang.collection.Stream;
 
 import java.time.Instant;
+import java.util.ArrayList;
 
 import static ch.netzwerg.paleo.ColumnIds.TimestampColumnId;
 
@@ -43,22 +43,23 @@ public final class TimestampColumn extends AbstractColumn<Instant, TimestampColu
     }
 
     public static Builder builder(TimestampColumnId id) {
-        return new Builder(id, List.empty());
+        return new Builder(id);
     }
 
     public static final class Builder implements Column.Builder<Instant, TimestampColumn> {
 
         private final TimestampColumnId id;
-        private final List<Instant> acc;
+        private final java.util.List<Instant> values;
 
-        private Builder(TimestampColumnId id, List<Instant> acc) {
+        private Builder(TimestampColumnId id) {
             this.id = id;
-            this.acc = acc;
+            this.values = new ArrayList<>();
         }
 
         @Override
         public Builder add(Instant value) {
-            return new Builder(id, acc.prepend(value));
+            values.add(value);
+            return this;
         }
 
         public Builder addAll(Instant... values) {
@@ -66,12 +67,12 @@ public final class TimestampColumn extends AbstractColumn<Instant, TimestampColu
         }
 
         public Builder addAll(Iterable<Instant> values) {
-            return new Builder(id, acc.prependAll(List.ofAll(values).reverse()));
+            return Stream.ofAll(values).foldLeft(this, Builder::add);
         }
 
         @Override
         public TimestampColumn build() {
-            return new TimestampColumn(this.id, this.acc.toStream().reverse().toArray());
+            return new TimestampColumn(id, Array.ofAll(values));
         }
 
     }

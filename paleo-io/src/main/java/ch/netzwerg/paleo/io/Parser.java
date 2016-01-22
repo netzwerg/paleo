@@ -156,8 +156,8 @@ public final class Parser {
 
         public Acc<V, C> add(String stringValue) {
             V value = parseLogic.apply(stringValue);
-            Column.Builder<V, C> newBuilder = builder.add(value);
-            return new Acc<>(newBuilder, parseLogic);
+            builder.add(value);
+            return this;
         }
 
         public C getColumn() {
