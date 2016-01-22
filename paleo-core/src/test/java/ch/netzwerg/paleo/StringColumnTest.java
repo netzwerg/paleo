@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,19 @@ import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
 import static ch.netzwerg.paleo.ColumnIds.stringCol;
 import static org.junit.Assert.assertEquals;
 
-public class StringColumnTest {
+public class StringColumnTest extends AbstractBaseColumnTest<String, StringColumn> {
+
+    private static final StringColumnId ID = stringCol("test");
+
+    @Override
+    protected StringColumn.Builder builder() {
+        return StringColumn.builder(ID);
+    }
 
     @Test
-    public void build() {
-        StringColumnId id = stringCol("test");
-        StringColumn column = StringColumn.builder(id).add("bli").addAll("bla", "blu").add("zzz").build();
-        assertEquals(id, column.getId());
+    public void valueTypeSpecificBuilding() {
+        StringColumn column = builder().add("bli").addAll("bla", "blu").add("zzz").build();
+        assertEquals(ID, column.getId());
         assertEquals(4, column.getRowCount());
         assertEquals("bli", column.getValueAt(0));
         assertEquals("zzz", column.getValueAt(column.getRowCount() - 1));

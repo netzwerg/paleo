@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,19 @@ import org.junit.Test;
 import static ch.netzwerg.paleo.ColumnIds.booleanCol;
 import static org.junit.Assert.assertEquals;
 
-public class BooleanColumnTest {
+public class BooleanColumnTest extends AbstractBaseColumnTest<Boolean, BooleanColumn> {
+
+    private static final ColumnIds.BooleanColumnId ID = booleanCol("test");
+
+    @Override
+    protected BooleanColumn.Builder builder() {
+        return BooleanColumn.builder(ID);
+    }
 
     @Test
-    public void builder() {
-        ColumnIds.BooleanColumnId id = booleanCol("test");
-        BooleanColumn column = BooleanColumn.builder(id).add(true).addAll(false, false, true).add(false).build();
-        assertEquals(id, column.getId());
+    public void valueTypeSpecificBuilding() {
+        BooleanColumn column = builder().add(true).addAll(false, false, true).add(false).build();
+        assertEquals(ID, column.getId());
         assertEquals(5, column.getRowCount());
         assertEquals(true, column.getValueAt(0));
         assertEquals(false, column.getValueAt(column.getRowCount() - 1));

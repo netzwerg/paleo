@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,19 @@ import static ch.netzwerg.paleo.ColumnIds.intCol;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class IntColumnTest {
+public class IntColumnTest extends AbstractBaseColumnTest<Integer, IntColumn> {
+
+    private static final IntColumnId ID = intCol("test");
+
+    @Override
+    protected IntColumn.Builder builder() {
+        return IntColumn.builder(ID);
+    }
 
     @Test
-    public void builder() {
-        IntColumnId id = intCol("test");
-        IntColumn column = IntColumn.builder(id).add(42).addAll(33, 69).add(99).build();
-        assertEquals(id, column.getId());
+    public void valueTypeSpecificBuilding() {
+        IntColumn column = builder().add(42).addAll(33, 69).add(99).build();
+        assertEquals(ID, column.getId());
         assertEquals(4, column.getRowCount());
         assertEquals(42, column.getValueAt(0));
         assertEquals(99, column.getValueAt(column.getRowCount() - 1));

@@ -29,7 +29,7 @@ public class GenericColumnTest {
     private static final File FILE_B = new File("/path/to/b.txt");
 
     @Test
-    public void builder() {
+    public void ofAll() {
         ColumnType<ColumnIds.GenericColumnId> type = new ColumnType<>("CUSTOM", ColumnIds.GenericColumnId.class);
         ColumnIds.GenericColumnId id = ColumnIds.genericCol("test", type);
         GenericColumn<File, ColumnIds.GenericColumnId> column = GenericColumn.ofAll(id, FILE_A, FILE_B, FILE_A, FILE_A);

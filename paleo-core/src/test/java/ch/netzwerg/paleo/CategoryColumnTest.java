@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,15 @@ import javaslang.collection.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.Random;
 
 import static ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
 import static ch.netzwerg.paleo.ColumnIds.categoryCol;
 import static org.junit.Assert.assertEquals;
 
-public class CategoryColumnTest {
+public class CategoryColumnTest extends AbstractBaseColumnTest<String, CategoryColumn> {
+
+    private static final CategoryColumnId ID = categoryCol("test");
 
     private WordGenerator wordGenerator;
 
@@ -38,11 +39,15 @@ public class CategoryColumnTest {
         this.wordGenerator = new WordGenerator(new Random(42));
     }
 
+    @Override
+    protected CategoryColumn.Builder builder() {
+        return CategoryColumn.builder(ID);
+    }
+
     @Test
-    public void builder() {
-        CategoryColumnId id = categoryCol("test");
-        CategoryColumn column = CategoryColumn.builder(id).add("foo").add("bar").addAll("foo", "baz", "bar").add("foo").build();
-        assertEquals(id, column.getId());
+    public void valueTypeSpecificBuilding() {
+        CategoryColumn column = builder().add("foo").add("bar").addAll("foo", "baz", "bar").add("foo").build();
+        assertEquals(ID, column.getId());
         assertEquals(6, column.getRowCount());
         assertEquals(HashSet.of("foo", "bar", "baz"), column.getCategories());
         assertEquals("foo", column.getValueAt(0));
