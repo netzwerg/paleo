@@ -16,8 +16,8 @@
 
 package ch.netzwerg.paleo;
 
+import ch.netzwerg.paleo.util.LinkedHashMapUtil;
 import javaslang.collection.Array;
-import javaslang.collection.LinkedHashMap;
 import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
@@ -53,12 +53,12 @@ public final class TimestampColumn extends AbstractColumn<Instant, TimestampColu
 
         private final TimestampColumnId id;
         private final java.util.List<Instant> values;
-        private Map<String, String> metaData;
+        private final java.util.Map<String, String> metaData;
 
         private Builder(TimestampColumnId id) {
             this.id = id;
             this.values = new ArrayList<>();
-            this.metaData = LinkedHashMap.empty();
+            this.metaData = new java.util.LinkedHashMap<>();
         }
 
         @Override
@@ -77,13 +77,15 @@ public final class TimestampColumn extends AbstractColumn<Instant, TimestampColu
 
         @Override
         public Builder withMetaData(Map<String, String> metaData) {
-            this.metaData = Objects.requireNonNull(metaData, "metaData is null");
+            Objects.requireNonNull(metaData, "metaData is null");
+            this.metaData.clear();
+            metaData.forEach(t -> this.metaData.put(t._1, t._2));
             return this;
         }
 
         @Override
         public TimestampColumn build() {
-            return new TimestampColumn(id, Array.ofAll(values), metaData);
+            return new TimestampColumn(id, Array.ofAll(values), LinkedHashMapUtil.ofAll(metaData));
         }
 
     }

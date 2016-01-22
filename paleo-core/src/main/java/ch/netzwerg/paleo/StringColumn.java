@@ -16,8 +16,8 @@
 
 package ch.netzwerg.paleo;
 
+import ch.netzwerg.paleo.util.LinkedHashMapUtil;
 import javaslang.collection.Array;
-import javaslang.collection.LinkedHashMap;
 import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
@@ -52,12 +52,12 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
 
         private final StringColumnId id;
         private final java.util.List<String> values;
-        private Map<String, String> metaData;
+        private final java.util.Map<String, String> metaData;
 
         private Builder(StringColumnId id) {
             this.id = id;
             this.values = new ArrayList<>();
-            this.metaData = LinkedHashMap.empty();
+            this.metaData = new java.util.LinkedHashMap<>();
         }
 
         @Override
@@ -76,13 +76,15 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
 
         @Override
         public Builder withMetaData(Map<String, String> metaData) {
-            this.metaData = Objects.requireNonNull(metaData, "metaData is null");
+            Objects.requireNonNull(metaData, "metaData is null");
+            this.metaData.clear();
+            metaData.forEach(t -> this.metaData.put(t._1, t._2));
             return this;
         }
 
         @Override
         public StringColumn build() {
-            return new StringColumn(id, Array.ofAll(values), metaData);
+            return new StringColumn(id, Array.ofAll(values), LinkedHashMapUtil.ofAll(metaData));
         }
 
     }

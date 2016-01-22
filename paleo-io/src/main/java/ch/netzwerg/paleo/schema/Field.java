@@ -18,15 +18,13 @@ package ch.netzwerg.paleo.schema;
 
 import ch.netzwerg.paleo.ColumnIds;
 import ch.netzwerg.paleo.ColumnType;
+import ch.netzwerg.paleo.util.LinkedHashMapUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import javaslang.Tuple2;
 import javaslang.collection.LinkedHashMap;
 import javaslang.collection.Map;
 import javaslang.control.Option;
-
-import java.util.stream.Stream;
 
 public final class Field {
 
@@ -58,9 +56,7 @@ public final class Field {
         if (javaMap == null) {
             return LinkedHashMap.empty();
         } else {
-            // TODO: Find out how to properly construct a LinkedHashMap from its java.util cousin
-            Stream<Tuple2<String, String>> entries = javaMap.entrySet().stream().map(e -> new Tuple2<>(e.getKey(), e.getValue()));
-            return entries.collect(LinkedHashMap.collector());
+            return LinkedHashMapUtil.ofAll(javaMap);
         }
     }
 

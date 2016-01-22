@@ -17,7 +17,7 @@
 package ch.netzwerg.paleo;
 
 import ch.netzwerg.paleo.ColumnIds.BooleanColumnId;
-import javaslang.collection.LinkedHashMap;
+import ch.netzwerg.paleo.util.LinkedHashMapUtil;
 import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
@@ -83,13 +83,13 @@ public final class BooleanColumn implements Column<BooleanColumnId> {
         private final BooleanColumnId id;
         private final AtomicInteger rowIndex;
         private final BitSet values;
-        private Map<String, String> metaData;
+        private final java.util.Map<String, String> metaData;
 
         private Builder(BooleanColumnId id) {
             this.id = id;
             this.rowIndex = new AtomicInteger();
             this.values = new BitSet();
-            this.metaData = LinkedHashMap.empty();
+            this.metaData = new java.util.LinkedHashMap<>();
         }
 
         @Override
@@ -108,13 +108,15 @@ public final class BooleanColumn implements Column<BooleanColumnId> {
 
         @Override
         public Builder withMetaData(Map<String, String> metaData) {
-            this.metaData = Objects.requireNonNull(metaData, "metaData is null");
+            Objects.requireNonNull(metaData, "metaData is null");
+            this.metaData.clear();
+            metaData.forEach(t -> this.metaData.put(t._1, t._2));
             return this;
         }
 
         @Override
         public BooleanColumn build() {
-            return new BooleanColumn(id, rowIndex.get(), values, metaData);
+            return new BooleanColumn(id, rowIndex.get(), values, LinkedHashMapUtil.ofAll(metaData));
         }
 
     }
