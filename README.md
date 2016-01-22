@@ -12,7 +12,7 @@ data type, which allows for type-safe value access. The following column types a
 * **Timestamp**: `java.time.Instant` values
 * **Category**: Categorical `String` values (aka factors)
 
-Columns can be created via simple factory methods, or populated from text files.
+Columns can be created via simple factory methods, through a fluent builder API, or from text files.
 
 # Hello Paleo
 
@@ -96,8 +96,9 @@ definition of an external JSON schema. The format is inspired by the [JSON Table
       "type": "Category"
     },
     {
-      "name": "Serving Size (g)",
-      "type": "Double"
+      "name": "Serving Size",
+      "type": "Double",
+      "metaData": { "unit": "g" }
     },
     {
       "name": "Exemplary Date",
@@ -221,11 +222,12 @@ is highly recommended, but it is always possible to back out and convert to JDK 
 
 Paleo tries to make the best compromise between parsing speed, index-based value lookup, and memory usage. That's why
 it offers two ways to create columns: Static factory methods allow for convenient construction if all values are already
-available. Individual column builders should be used if columns are constructed via successive value addition.
+available. Individual column builders should be used if columns are constructed via successive value addition. Please be
+aware that the builders are not thread-safe.
 
 # Why The Name?
 
 The backing data structures are all about **raw** values and **primitive** types &mdash; this somehow reminded me of
 the paleo diet.
 
-&copy; 2015 Rahel Lüthy
+&copy; 2016 Rahel Lüthy

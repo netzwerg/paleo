@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,36 @@
 package ch.netzwerg.paleo;
 
 import javaslang.collection.Array;
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.Map;
+
+import java.util.Objects;
 
 public final class GenericColumn<V, I extends ColumnIds.GenericColumnId> extends AbstractColumn<V, I> {
 
-    private GenericColumn(I id, Array<V> values) {
-        super(id, values);
+    private GenericColumn(I id, Array<V> values, Map<String, String> metaData) {
+        super(id, values, metaData);
     }
 
     public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> of(I id, V value) {
-        return new GenericColumn<>(id, Array.of(value));
+        return of(id, value, LinkedHashMap.empty());
+    }
+
+    public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> of(I id, V value, Map<String, String> metaData) {
+        return new GenericColumn<>(id, Array.of(value), Objects.requireNonNull(metaData, "metaData is null"));
     }
 
     @SafeVarargs
     public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> ofAll(I id, V... values) {
-        return new GenericColumn<>(id, Array.of(values));
+        return new GenericColumn<>(id, Array.of(values), LinkedHashMap.empty());
     }
 
     public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> ofAll(I id, Iterable<V> values) {
-        return new GenericColumn<>(id, Array.ofAll(values));
+        return ofAll(id, values, LinkedHashMap.empty());
+    }
+
+    public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> ofAll(I id, Iterable<V> values, Map<String, String> metaData) {
+        return new GenericColumn<>(id, Array.ofAll(values), Objects.requireNonNull(metaData, "metaData is null"));
     }
 
 }

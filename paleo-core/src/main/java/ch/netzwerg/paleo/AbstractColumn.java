@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package ch.netzwerg.paleo;
 
 import javaslang.collection.IndexedSeq;
+import javaslang.collection.Map;
 
 import static ch.netzwerg.paleo.ColumnIds.GenericColumnId;
 
@@ -24,10 +25,12 @@ abstract class AbstractColumn<V, I extends GenericColumnId> implements Column<I>
 
     private final I id;
     private final IndexedSeq<V> values;
+    private final Map<String, String> metaData;
 
-    protected AbstractColumn(I id, IndexedSeq<V> values) {
+    protected AbstractColumn(I id, IndexedSeq<V> values, Map<String, String> metaData) {
         this.id = id;
         this.values = values;
+        this.metaData = metaData;
     }
 
     @Override
@@ -40,11 +43,16 @@ abstract class AbstractColumn<V, I extends GenericColumnId> implements Column<I>
         return values.length();
     }
 
-    public IndexedSeq<V> getValues() {
+    @Override
+    public final Map<String, String> getMetaData() {
+        return metaData;
+    }
+
+    public final IndexedSeq<V> getValues() {
         return values;
     }
 
-    public V getValueAt(int index) {
+    public final V getValueAt(int index) {
         return values.get(index);
     }
 

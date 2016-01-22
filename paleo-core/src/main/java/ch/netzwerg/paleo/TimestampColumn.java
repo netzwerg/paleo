@@ -17,17 +17,20 @@
 package ch.netzwerg.paleo;
 
 import javaslang.collection.Array;
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static ch.netzwerg.paleo.ColumnIds.TimestampColumnId;
 
 public final class TimestampColumn extends AbstractColumn<Instant, TimestampColumnId> {
 
-    private TimestampColumn(TimestampColumnId id, Array<Instant> values) {
-        super(id, values);
+    private TimestampColumn(TimestampColumnId id, Array<Instant> values, Map<String, String> metaData) {
+        super(id, values, metaData);
     }
 
     public static TimestampColumn of(TimestampColumnId id, Instant value) {
@@ -50,10 +53,12 @@ public final class TimestampColumn extends AbstractColumn<Instant, TimestampColu
 
         private final TimestampColumnId id;
         private final java.util.List<Instant> values;
+        private Map<String, String> metaData;
 
         private Builder(TimestampColumnId id) {
             this.id = id;
             this.values = new ArrayList<>();
+            this.metaData = LinkedHashMap.empty();
         }
 
         @Override
@@ -71,8 +76,14 @@ public final class TimestampColumn extends AbstractColumn<Instant, TimestampColu
         }
 
         @Override
+        public Builder withMetaData(Map<String, String> metaData) {
+            this.metaData = Objects.requireNonNull(metaData, "metaData is null");
+            return this;
+        }
+
+        @Override
         public TimestampColumn build() {
-            return new TimestampColumn(id, Array.ofAll(values));
+            return new TimestampColumn(id, Array.ofAll(values), metaData);
         }
 
     }

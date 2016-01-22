@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package ch.netzwerg.paleo.schema;
 import ch.netzwerg.paleo.ColumnIds;
 import ch.netzwerg.paleo.ColumnType;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
@@ -30,7 +29,7 @@ public final class ColumnTypeDeserializer extends JsonDeserializer<ColumnType<?>
     public static final ColumnType<ColumnIds.StringColumnId> DEFAULT_TYPE = ColumnType.STRING;
 
     @Override
-    public ColumnType<?> deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+    public ColumnType<?> deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         String typeValue = parser.getCodec().readValue(parser, String.class);
         return ColumnType.getByDescriptionOrDefault(typeValue, DEFAULT_TYPE);
     }

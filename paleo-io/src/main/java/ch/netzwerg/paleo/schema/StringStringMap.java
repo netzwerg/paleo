@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package ch.netzwerg.paleo;
+package ch.netzwerg.paleo.schema;
 
-import javaslang.collection.Map;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public interface Column<T extends ColumnId> {
+/**
+ * Helper class to work around the fact that the JSON (de)serializer is not able to infer
+ * type information of <code>Map&lt;String, String&gt;</code> due to Java's type erasure.
+ */
+@SuppressWarnings("unused") // needed for JSON (de)serialization
+public class StringStringMap extends LinkedHashMap<String, String> {
 
-    T getId();
+    public StringStringMap() {
+    }
 
-    int getRowCount();
-
-    Map<String, String> getMetaData();
-
-    interface Builder<V, C extends Column<?>> {
-
-        Builder<V, C> add(V value);
-
-        Builder<V, C> withMetaData(Map<String, String> metaData);
-
-        C build();
+    public StringStringMap(Map<String, String> map) {
+        super(map);
     }
 
 }

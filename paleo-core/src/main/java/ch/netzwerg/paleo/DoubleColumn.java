@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package ch.netzwerg.paleo;
 
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.Map;
+
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.DoubleStream;
 
 import static ch.netzwerg.paleo.ColumnIds.DoubleColumnId;
@@ -25,10 +29,12 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
 
     private final DoubleColumnId id;
     private final double[] values;
+    private final Map<String, String> metaData;
 
-    private DoubleColumn(DoubleColumnId id, DoubleStream values) {
+    private DoubleColumn(DoubleColumnId id, DoubleStream values, Map<String, String> metaData) {
         this.id = id;
         this.values = values.toArray();
+        this.metaData = metaData;
     }
 
     public static DoubleColumn of(DoubleColumnId id, double value) {
@@ -57,6 +63,11 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
         return values.length;
     }
 
+    @Override
+    public Map<String, String> getMetaData() {
+        return metaData;
+    }
+
     public double getValueAt(int index) {
         return values[index];
     }
@@ -69,10 +80,12 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
 
         private final DoubleColumnId id;
         private final DoubleStream.Builder valueBuilder;
+        private Map<String, String> metaData;
 
         private Builder(DoubleColumnId id) {
             this.id = id;
             this.valueBuilder = DoubleStream.builder();
+            this.metaData = LinkedHashMap.empty();
         }
 
         @Override
@@ -91,8 +104,14 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
         }
 
         @Override
+        public Builder withMetaData(Map<String, String> metaData) {
+            this.metaData = Objects.requireNonNull(metaData, "metaData is null");
+            return this;
+        }
+
+        @Override
         public DoubleColumn build() {
-            return new DoubleColumn(id, valueBuilder.build());
+            return new DoubleColumn(id, valueBuilder.build(), metaData);
         }
 
     }

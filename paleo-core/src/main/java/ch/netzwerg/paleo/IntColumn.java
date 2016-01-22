@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package ch.netzwerg.paleo;
 
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.Map;
+
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static ch.netzwerg.paleo.ColumnIds.IntColumnId;
@@ -25,10 +29,12 @@ public final class IntColumn implements Column<IntColumnId> {
 
     private final IntColumnId id;
     private final int[] values;
+    private final Map<String, String> metaData;
 
-    private IntColumn(IntColumnId id, IntStream values) {
+    private IntColumn(IntColumnId id, IntStream values, Map<String, String> metaData) {
         this.id = id;
         this.values = values.toArray();
+        this.metaData = metaData;
     }
 
     public static IntColumn of(IntColumnId id, int value) {
@@ -57,6 +63,11 @@ public final class IntColumn implements Column<IntColumnId> {
         return values.length;
     }
 
+    @Override
+    public Map<String, String> getMetaData() {
+        return metaData;
+    }
+
     public int getValueAt(int index) {
         return values[index];
     }
@@ -69,10 +80,12 @@ public final class IntColumn implements Column<IntColumnId> {
 
         private final IntColumnId id;
         private final IntStream.Builder valueBuilder;
+        private Map<String, String> metaData;
 
         private Builder(IntColumnId id) {
             this.id = id;
             this.valueBuilder = IntStream.builder();
+            this.metaData = LinkedHashMap.empty();
         }
 
         @Override
@@ -91,8 +104,14 @@ public final class IntColumn implements Column<IntColumnId> {
         }
 
         @Override
+        public Builder withMetaData(Map<String, String> metaData) {
+            this.metaData = Objects.requireNonNull(metaData, "metaData is null");
+            return this;
+        }
+
+        @Override
         public IntColumn build() {
-            return new IntColumn(id, valueBuilder.build());
+            return new IntColumn(id, valueBuilder.build(), metaData);
         }
 
     }

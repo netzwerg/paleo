@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 package ch.netzwerg.paleo;
 
 import ch.netzwerg.paleo.ColumnIds.BooleanColumnId;
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
 import java.util.BitSet;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class BooleanColumn implements Column<BooleanColumnId> {
@@ -27,11 +30,13 @@ public final class BooleanColumn implements Column<BooleanColumnId> {
     private final BooleanColumnId id;
     private final int rowCount;
     private final BitSet values;
+    private final Map<String, String> metaData;
 
-    private BooleanColumn(BooleanColumnId id, int rowCount, BitSet values) {
+    private BooleanColumn(BooleanColumnId id, int rowCount, BitSet values, Map<String, String> metaData) {
         this.id = id;
         this.rowCount = rowCount;
         this.values = (BitSet) values.clone();
+        this.metaData = metaData;
     }
 
     public static BooleanColumn of(BooleanColumnId id, boolean value) {
@@ -60,6 +65,11 @@ public final class BooleanColumn implements Column<BooleanColumnId> {
         return rowCount;
     }
 
+    @Override
+    public Map<String, String> getMetaData() {
+        return metaData;
+    }
+
     public boolean getValueAt(int rowIndex) {
         return values.get(rowIndex);
     }
@@ -73,11 +83,13 @@ public final class BooleanColumn implements Column<BooleanColumnId> {
         private final BooleanColumnId id;
         private final AtomicInteger rowIndex;
         private final BitSet values;
+        private Map<String, String> metaData;
 
         private Builder(BooleanColumnId id) {
             this.id = id;
             this.rowIndex = new AtomicInteger();
             this.values = new BitSet();
+            this.metaData = LinkedHashMap.empty();
         }
 
         @Override
@@ -95,8 +107,14 @@ public final class BooleanColumn implements Column<BooleanColumnId> {
         }
 
         @Override
+        public Builder withMetaData(Map<String, String> metaData) {
+            this.metaData = Objects.requireNonNull(metaData, "metaData is null");
+            return this;
+        }
+
+        @Override
         public BooleanColumn build() {
-            return new BooleanColumn(id, rowIndex.get(), values);
+            return new BooleanColumn(id, rowIndex.get(), values, metaData);
         }
 
     }

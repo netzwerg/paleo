@@ -17,16 +17,19 @@
 package ch.netzwerg.paleo;
 
 import javaslang.collection.Array;
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.Map;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
 
 public final class StringColumn extends AbstractColumn<String, StringColumnId> {
 
-    private StringColumn(StringColumnId id, Array<String> values) {
-        super(id, values);
+    private StringColumn(StringColumnId id, Array<String> values, Map<String, String> metaData) {
+        super(id, values, metaData);
     }
 
     public static StringColumn of(StringColumnId id, String value) {
@@ -49,10 +52,12 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
 
         private final StringColumnId id;
         private final java.util.List<String> values;
+        private Map<String, String> metaData;
 
         private Builder(StringColumnId id) {
             this.id = id;
             this.values = new ArrayList<>();
+            this.metaData = LinkedHashMap.empty();
         }
 
         @Override
@@ -70,8 +75,14 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
         }
 
         @Override
+        public Builder withMetaData(Map<String, String> metaData) {
+            this.metaData = Objects.requireNonNull(metaData, "metaData is null");
+            return this;
+        }
+
+        @Override
         public StringColumn build() {
-            return new StringColumn(id, Array.ofAll(values));
+            return new StringColumn(id, Array.ofAll(values), metaData);
         }
 
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import ch.netzwerg.paleo.schema.Field;
 import ch.netzwerg.paleo.schema.Schema;
 import javaslang.Tuple2;
 import javaslang.collection.IndexedSeq;
+import javaslang.collection.Map;
 import javaslang.collection.Stream;
+import javaslang.control.Option;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
@@ -31,21 +33,20 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.function.Function;
 
 public final class Parser {
 
     public static DataFrame parseTabDelimited(Reader in) throws IOException {
-        return parseTabDelimited(in, Optional.empty());
+        return parseTabDelimited(in, Option.none());
     }
 
     public static DataFrame parseTabDelimited(Reader in, String timestampPattern) throws IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(timestampPattern);
-        return parseTabDelimited(in, Optional.of(formatter));
+        return parseTabDelimited(in, Option.of(formatter));
     }
 
-    public static DataFrame parseTabDelimited(Reader in, Optional<DateTimeFormatter> formatter) throws IOException {
+    public static DataFrame parseTabDelimited(Reader in, Option<DateTimeFormatter> formatter) throws IOException {
         Iterator<CSVRecord> it = CSVFormat.TDF.parse(in).iterator();
 
         CSVRecord columnNames = it.next();
@@ -100,7 +101,7 @@ public final class Parser {
         return accumulators.map(accumulator -> accumulator.add(valueIt.next()));
     }
 
-    private static Stream<? extends Acc<?, ?>> createColumnAccumulators(CSVRecord columnNames, CSVRecord columnTypes, Optional<DateTimeFormatter> formatter) {
+    private static Stream<? extends Acc<?, ?>> createColumnAccumulators(CSVRecord columnNames, CSVRecord columnTypes, Option<DateTimeFormatter> formatter) {
 
         if (columnNames.size() != columnTypes.size()) {
             String msg = String.format(
@@ -123,12 +124,14 @@ public final class Parser {
     private static Stream<? extends Acc<?, ?>> createColumnAccumulators(IndexedSeq<Field> fields) {
         return fields.map(field -> {
             ColumnType<?> type = field.getType();
-            Optional<DateTimeFormatter> formatter = field.getFormat().map(DateTimeFormatter::ofPattern);
-            return createColumnAccumulator(field.getName(), type, formatter);
+            Option<DateTimeFormatter> formatter = field.getFormat().map(DateTimeFormatter::ofPattern);
+            Acc<?, ?> accumulator = createColumnAccumulator(field.getName(), type, formatter);
+            accumulator.setMetaData(field.getMetaData());
+            return accumulator;
         }).toStream();
     }
 
-    private static Acc<?, ?> createColumnAccumulator(String name, ColumnType<?> type, Optional<DateTimeFormatter> formatter) {
+    private static Acc<?, ?> createColumnAccumulator(String name, ColumnType<?> type, Option<DateTimeFormatter> formatter) {
         if (ColumnType.INT.equals(type)) {
             return intColumnAccumulator(name);
         } else if (ColumnType.DOUBLE.equals(type)) {
@@ -158,6 +161,10 @@ public final class Parser {
             V value = parseLogic.apply(stringValue);
             builder.add(value);
             return this;
+        }
+
+        public void setMetaData(Map<String, String> metaData) {
+            builder.withMetaData(metaData);
         }
 
         public C getColumn() {
@@ -196,10 +203,10 @@ public final class Parser {
         return new Acc<>(builder, parseLogic);
     }
 
-    private static Acc<Instant, TimestampColumn> timestampColumnAccumulator(String name, Optional<DateTimeFormatter> formatter) {
+    private static Acc<Instant, TimestampColumn> timestampColumnAccumulator(String name, Option<DateTimeFormatter> formatter) {
         TimestampColumn.Builder builder = TimestampColumn.builder(ColumnIds.timestampCol(name));
         Function<String, Instant> parseLogic = stringValue -> {
-            if (formatter.isPresent()) {
+            if (formatter.isDefined()) {
                 LocalDateTime dateTime = LocalDateTime.from(formatter.get().parse(stringValue));
                 return dateTime.atZone(ZoneId.systemDefault()).toInstant();
             } else {
