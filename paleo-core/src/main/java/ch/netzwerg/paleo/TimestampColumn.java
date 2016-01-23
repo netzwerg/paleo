@@ -72,7 +72,8 @@ public final class TimestampColumn extends AbstractColumn<Instant, TimestampColu
         }
 
         public Builder addAll(Iterable<Instant> values) {
-            return Stream.ofAll(values).foldLeft(this, Builder::add);
+            this.values.addAll(Stream.ofAll(values).toJavaList());
+            return this;
         }
 
         @Override

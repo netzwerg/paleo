@@ -71,7 +71,8 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
         }
 
         public Builder addAll(Iterable<String> values) {
-            return Stream.ofAll(values).foldLeft(this, Builder::add);
+            this.values.addAll(Stream.ofAll(values).toJavaList());
+            return this;
         }
 
         @Override

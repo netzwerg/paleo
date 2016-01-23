@@ -17,37 +17,30 @@
 package ch.netzwerg.paleo.io;
 
 import ch.netzwerg.paleo.DataFrame;
+import ch.netzwerg.paleo.schema.Schema;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @SuppressWarnings("All")
 @Ignore
 public class ProfileParserTest {
 
-    public static final String _100K = "/private/var/folders/sp/8sn5_q1j6k156y5tgv9kgzy00000gn/T/paleo-3757739999792798088.txt";
-    public static final String _1M = "/private/var/folders/sp/8sn5_q1j6k156y5tgv9kgzy00000gn/T/paleo-4599627887018509102.txt";
+    private static final String PARENT_DIR = "/Users/netzwerg/switchdrive/Projects/greenrad/Data/Simulated/1-mio/";
+    private static final String SCHEMA = PARENT_DIR + "artificial.json";
 
     @Test
-    public void run() {
-        File f = new File(_1M);
-        try (Reader r = new FileReader(f)) {
-            long start = System.currentTimeMillis();
-            DataFrame dataFrame = Parser.parseTabDelimited(r);
-            System.out.println("Done: " + (System.currentTimeMillis() - start));
-            while (true) {
-                // keep profiler running
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(ProfileParserTest.class.getName()).log(Level.SEVERE, null, ex);
+    public void run() throws IOException {
+        FileReader schema = new FileReader(SCHEMA);
+        long start = System.currentTimeMillis();
+        DataFrame dataFrame = Parser.parseTabDelimited(Schema.parseJson(schema), new File(PARENT_DIR));
+        System.out.println("Done: " + (System.currentTimeMillis() - start));
+        while (true) {
+            // keep profiler running
         }
-
     }
 
 }

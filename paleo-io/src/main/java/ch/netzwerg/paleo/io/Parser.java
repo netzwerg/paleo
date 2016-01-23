@@ -32,7 +32,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 public final class Parser {
@@ -47,7 +47,7 @@ public final class Parser {
     }
 
     public static DataFrame parseTabDelimited(Reader in, Option<DateTimeFormatter> formatter) throws IOException {
-        Iterator<CSVRecord> it = CSVFormat.TDF.parse(in).iterator();
+        java.util.Iterator<CSVRecord> it = CSVFormat.TDF.parse(in).iterator();
 
         CSVRecord columnNames = it.next();
         CSVRecord columnTypes = it.next();
@@ -78,25 +78,25 @@ public final class Parser {
 
     private static DataFrame parseDataFrame(Iterable<CSVRecord> rowRecords, Stream<? extends Acc<?, ?>> accumulators, int rowOffset) {
 
-        Stream<? extends Acc<?, ?>> fullAccumulators = Stream.ofAll(rowRecords).zipWithIndex().foldLeft(accumulators, (Stream<? extends Acc<?, ?>> accus, Tuple2<CSVRecord, Integer> rowWithIndex) -> {
+        // Purely functional variants (zipWithIndex, foldLeft) were considerably slower – GC?
 
-            CSVRecord row = rowWithIndex._1;
-            Integer rowIndex = rowWithIndex._2;
-            return appendRow(row, rowIndex, rowOffset, accus);
+        AtomicInteger rowIndex = new AtomicInteger();
+        rowRecords.forEach(values -> {
 
+            if (values.size() != accumulators.length()) {
+                String msgFormat = "Row '%s' contains '%s' values (but should match column count '%s')";
+                int oneBasedRowIndex = rowIndex.get() + rowOffset + 1;
+                String msg = String.format(msgFormat, oneBasedRowIndex, values.size(), accumulators.length());
+                throw new IllegalArgumentException(msg);
+            }
+
+            accumulators.zip(values).forEach(t -> t._1.add(t._2));
+
+            rowIndex.incrementAndGet();
         });
 
-        Iterable<Column<?>> columns = fullAccumulators.map(accumulator -> accumulator.getColumn());
+        Iterable<Column<?>> columns = accumulators.map(accumulator -> accumulator.getColumn());
         return DataFrame.ofAll(columns);
-    }
-
-    private static Stream<? extends Acc<?, ?>> appendRow(CSVRecord values, int rowIndex, int rowOffset, Stream<? extends Acc<?, ?>> accumulators) {
-        if (values.size() != accumulators.length()) {
-            String msgFormat = "Row '%s' contains '%s' values (but should match column count '%s')";
-            String msg = String.format(msgFormat, rowIndex + rowOffset, values.size(), accumulators.length());
-            throw new IllegalArgumentException(msg);
-        }
-        return Stream.ofAll(accumulators).zip(values).map(t -> t._1.add(t._2));
     }
 
     private static Stream<? extends Acc<?, ?>> createColumnAccumulators(CSVRecord columnNames, CSVRecord columnTypes, Option<DateTimeFormatter> formatter) {
