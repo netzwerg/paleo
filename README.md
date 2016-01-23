@@ -51,9 +51,8 @@ data frame (i.e. the names and types of its columns) can be defined in one of tw
 
 ## Header Rows
 
-In its simplest format, the tab-delimited text representation directly contains the column meta-data in the form of two
-header rows. The first row specifies the column names, the second row specifies the column types (actual data starting
-on third row):
+In its simplest format, the tab-delimited text representation directly contains column names and types in a header.
+The first row specifies the column names, the second row specifies the column types (actual data starting on third row):
 
 ```
 1 Name    Color
@@ -80,7 +79,8 @@ DataFrame dataFrame = Parser.parseTabDelimited(new StringReader(EXAMPLE));
 ## External JSON Schema
 
 Generally it is advisable to separate the structural information from the actual data. Paleo therefore supports the
-definition of an external JSON schema. The format is inspired by the [JSON Table Schema](http://dataprotocols.org/json-table-schema):
+definition of an external JSON schema. The format is inspired by the
+[JSON Table Schema](http://dataprotocols.org/json-table-schema):
 
 ```json
 {
