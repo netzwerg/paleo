@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ch.netzwerg.paleo.util;
+package ch.netzwerg.paleo.impl;
 
 import javaslang.Tuple2;
 import javaslang.collection.LinkedHashMap;

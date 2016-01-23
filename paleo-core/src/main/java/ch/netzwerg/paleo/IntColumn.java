@@ -16,11 +16,10 @@
 
 package ch.netzwerg.paleo;
 
-import ch.netzwerg.paleo.util.LinkedHashMapUtil;
+import ch.netzwerg.paleo.impl.MetaDataBuilder;
 import javaslang.collection.Map;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static ch.netzwerg.paleo.ColumnIds.IntColumnId;
@@ -80,12 +79,12 @@ public final class IntColumn implements Column<IntColumnId> {
 
         private final IntColumnId id;
         private final IntStream.Builder valueBuilder;
-        private final java.util.Map<String, String> metaData;
+        private final MetaDataBuilder metaDataBuilder;
 
         private Builder(IntColumnId id) {
             this.id = id;
             this.valueBuilder = IntStream.builder();
-            this.metaData = new java.util.LinkedHashMap<>();
+            this.metaDataBuilder = new MetaDataBuilder();
         }
 
         @Override
@@ -105,15 +104,13 @@ public final class IntColumn implements Column<IntColumnId> {
 
         @Override
         public Builder withMetaData(Map<String, String> metaData) {
-            Objects.requireNonNull(metaData, "metaData is null");
-            this.metaData.clear();
-            metaData.forEach(t -> this.metaData.put(t._1, t._2));
+            metaDataBuilder.withMetaData(metaData);
             return this;
         }
 
         @Override
         public IntColumn build() {
-            return new IntColumn(id, valueBuilder.build(), LinkedHashMapUtil.ofAll(metaData));
+            return new IntColumn(id, valueBuilder.build(), metaDataBuilder.build());
         }
 
     }

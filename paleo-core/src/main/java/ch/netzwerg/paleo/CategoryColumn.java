@@ -17,14 +17,13 @@
 package ch.netzwerg.paleo;
 
 import ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
-import ch.netzwerg.paleo.util.LinkedHashMapUtil;
+import ch.netzwerg.paleo.impl.MetaDataBuilder;
 import javaslang.collection.Array;
 import javaslang.collection.Map;
 import javaslang.collection.Set;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public final class CategoryColumn implements Column<CategoryColumnId> {
 
@@ -91,13 +90,13 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
         private final CategoryColumnId id;
         private final java.util.List<String> categories;
         private final java.util.List<Integer> categoryIndexPerRowIndex;
-        private final java.util.Map<String, String> metaData;
+        private final MetaDataBuilder metaDataBuilder;
 
         private Builder(CategoryColumnId id) {
             this.id = id;
             this.categories = new ArrayList<>();
             this.categoryIndexPerRowIndex = new ArrayList<>();
-            this.metaData = new java.util.LinkedHashMap<>();
+            this.metaDataBuilder = new MetaDataBuilder();
         }
 
         @Override
@@ -121,14 +120,12 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
 
         @Override
         public Builder withMetaData(Map<String, String> metaData) {
-            Objects.requireNonNull(metaData, "metaData is null");
-            this.metaData.clear();
-            metaData.forEach(t -> this.metaData.put(t._1, t._2));
+            metaDataBuilder.withMetaData(metaData);
             return this;
         }
 
         public CategoryColumn build() {
-            return new CategoryColumn(id, Array.ofAll(categories), Array.ofAll(categoryIndexPerRowIndex), LinkedHashMapUtil.ofAll(metaData));
+            return new CategoryColumn(id, Array.ofAll(categories), Array.ofAll(categoryIndexPerRowIndex), metaDataBuilder.build());
         }
 
     }

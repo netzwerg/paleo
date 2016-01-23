@@ -16,11 +16,10 @@
 
 package ch.netzwerg.paleo;
 
-import ch.netzwerg.paleo.util.LinkedHashMapUtil;
+import ch.netzwerg.paleo.impl.MetaDataBuilder;
 import javaslang.collection.Map;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.DoubleStream;
 
 import static ch.netzwerg.paleo.ColumnIds.DoubleColumnId;
@@ -80,12 +79,12 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
 
         private final DoubleColumnId id;
         private final DoubleStream.Builder valueBuilder;
-        private final java.util.Map<String, String> metaData;
+        private final MetaDataBuilder metaDataBuilder;
 
         private Builder(DoubleColumnId id) {
             this.id = id;
             this.valueBuilder = DoubleStream.builder();
-            this.metaData = new java.util.LinkedHashMap<>();
+            this.metaDataBuilder = new MetaDataBuilder();
         }
 
         @Override
@@ -105,15 +104,13 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
 
         @Override
         public Builder withMetaData(Map<String, String> metaData) {
-            Objects.requireNonNull(metaData, "metaData is null");
-            this.metaData.clear();
-            metaData.forEach(t -> this.metaData.put(t._1, t._2));
+            metaDataBuilder.withMetaData(metaData);
             return this;
         }
 
         @Override
         public DoubleColumn build() {
-            return new DoubleColumn(id, valueBuilder.build(), LinkedHashMapUtil.ofAll(metaData));
+            return new DoubleColumn(id, valueBuilder.build(), metaDataBuilder.build());
         }
 
     }

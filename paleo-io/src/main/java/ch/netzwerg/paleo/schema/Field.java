@@ -18,7 +18,7 @@ package ch.netzwerg.paleo.schema;
 
 import ch.netzwerg.paleo.ColumnIds;
 import ch.netzwerg.paleo.ColumnType;
-import ch.netzwerg.paleo.util.LinkedHashMapUtil;
+import ch.netzwerg.paleo.impl.LinkedHashMapUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
