@@ -124,7 +124,7 @@ public final class Parser {
             ColumnType<?> type = field.getType();
             Option<DateTimeFormatter> formatter = field.getFormat().map(DateTimeFormatter::ofPattern);
             Acc<?, ?> accumulator = createColumnAccumulator(field.getName(), type, formatter);
-            accumulator.setMetaData(field.getMetaData());
+            accumulator.putAllMetaData(field.getMetaData());
             return accumulator;
         }).toStream();
     }
@@ -161,8 +161,8 @@ public final class Parser {
             return this;
         }
 
-        public void setMetaData(Map<String, String> metaData) {
-            builder.withMetaData(metaData);
+        public void putAllMetaData(Map<String, String> metaData) {
+            builder.putAllMetaData(metaData);
         }
 
         public C getColumn() {

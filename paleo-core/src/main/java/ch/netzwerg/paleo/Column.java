@@ -30,7 +30,9 @@ public interface Column<T extends ColumnId> {
 
         Builder<V, C> add(V value);
 
-        Builder<V, C> withMetaData(Map<String, String> metaData);
+        Builder<V, C> putMetaData(String key, String value);
+
+        Builder<V, C> putAllMetaData(Map<String, String> metaData);
 
         C build();
     }

@@ -75,8 +75,14 @@ public final class StringColumn extends AbstractColumn<String, StringColumnId> {
         }
 
         @Override
-        public Builder withMetaData(Map<String, String> metaData) {
-            metaDataBuilder.withMetaData(metaData);
+        public Builder putMetaData(String key, String value) {
+            metaDataBuilder.putMetaData(key, value);
+            return this;
+        }
+
+        @Override
+        public Builder putAllMetaData(Map<String, String> metaData) {
+            metaDataBuilder.putAllMetaData(metaData);
             return this;
         }
 

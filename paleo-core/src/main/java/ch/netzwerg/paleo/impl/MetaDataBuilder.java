@@ -25,9 +25,12 @@ public final class MetaDataBuilder {
 
     private final java.util.LinkedHashMap<String, String> metaData = new LinkedHashMap<>();
 
-    public void withMetaData(Map<String, String> metaData) {
+    public void putMetaData(String key, String value) {
+        metaData.put(key, value);
+    }
+
+    public void putAllMetaData(Map<String, String> metaData) {
         Objects.requireNonNull(metaData, "metaData is null");
-        this.metaData.clear();
         metaData.forEach(t -> this.metaData.put(t._1, t._2));
     }
 

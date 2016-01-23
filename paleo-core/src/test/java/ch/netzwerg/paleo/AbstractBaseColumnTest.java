@@ -36,24 +36,25 @@ public abstract class AbstractBaseColumnTest<V, C extends Column<?>> {
         Tuple2<String, String> entry0 = Tuple.of("k0", "v0");
         Tuple2<String, String> entry1 = Tuple.of("k1", "v1");
 
+        // Simple inserts
         {
-            Map<String, String> metaData = LinkedHashMap.ofAll(entry0, entry1);
-            Column<?> column = builder().withMetaData(metaData).build();
-            assertEquals(metaData, column.getMetaData());
-            assertEquals("k0", column.getMetaData().toArray().get(0)._1);
+            Map<String, String> singleInserts = builder().putMetaData("k0", "v0").putMetaData("k1", "v1").build().getMetaData();
+            Map<String, String> bulkInserts = builder().putAllMetaData(LinkedHashMap.ofAll(entry0, entry1)).build().getMetaData();
+            assertEquals(singleInserts, bulkInserts);
+            assertEquals("k0", singleInserts.toArray().get(0)._1);
         }
 
-        // Insertion Order
+        // Insertion order
         {
             Map<String, String> metaData = LinkedHashMap.ofAll(entry1, entry0);
-            Column<?> column = builder().withMetaData(metaData).build();
+            Column<?> column = builder().putAllMetaData(metaData).build();
             assertEquals(metaData, column.getMetaData());
             assertEquals("k1", column.getMetaData().toArray().get(0)._1);
         }
 
         // Null-Safety
         try {
-            builder().withMetaData(null).build();
+            builder().putAllMetaData(null).build();
             fail("null values should lead to NPE");
         } catch (NullPointerException npe) {
             assertEquals("metaData is null", npe.getMessage());
