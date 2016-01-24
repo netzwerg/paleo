@@ -39,14 +39,14 @@ public abstract class AbstractBaseColumnTest<V, C extends Column<?>> {
         // Simple inserts
         {
             Map<String, String> singleInserts = builder().putMetaData("k0", "v0").putMetaData("k1", "v1").build().getMetaData();
-            Map<String, String> bulkInserts = builder().putAllMetaData(LinkedHashMap.ofAll(entry0, entry1)).build().getMetaData();
+            Map<String, String> bulkInserts = builder().putAllMetaData(LinkedHashMap.ofEntries(entry0, entry1)).build().getMetaData();
             assertEquals(singleInserts, bulkInserts);
             assertEquals("k0", singleInserts.toArray().get(0)._1);
         }
 
         // Insertion order
         {
-            Map<String, String> metaData = LinkedHashMap.ofAll(entry1, entry0);
+            Map<String, String> metaData = LinkedHashMap.ofEntries(entry1, entry0);
             Column<?> column = builder().putAllMetaData(metaData).build();
             assertEquals(metaData, column.getMetaData());
             assertEquals("k1", column.getMetaData().toArray().get(0)._1);

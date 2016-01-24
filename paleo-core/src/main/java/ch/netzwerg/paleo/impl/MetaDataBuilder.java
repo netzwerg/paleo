@@ -35,7 +35,7 @@ public final class MetaDataBuilder {
     }
 
     public javaslang.collection.LinkedHashMap<String, String> build() {
-        return LinkedHashMapUtil.ofAll(metaData);
+        return javaslang.collection.LinkedHashMap.ofAll(metaData);
     }
 
 }

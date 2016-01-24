@@ -18,7 +18,6 @@ package ch.netzwerg.paleo.schema;
 
 import ch.netzwerg.paleo.ColumnIds;
 import ch.netzwerg.paleo.ColumnType;
-import ch.netzwerg.paleo.impl.LinkedHashMapUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -56,7 +55,7 @@ public final class Field {
         if (javaMap == null) {
             return LinkedHashMap.empty();
         } else {
-            return LinkedHashMapUtil.ofAll(javaMap);
+            return LinkedHashMap.ofAll(javaMap);
         }
     }
 

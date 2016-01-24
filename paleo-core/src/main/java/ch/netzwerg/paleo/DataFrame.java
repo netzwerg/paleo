@@ -154,7 +154,7 @@ public final class DataFrame implements Iterable<Column<?>> {
 
     @SuppressWarnings("unchecked")
     private <T extends Column<?>> T getTypedColumn(ColumnId columnId) {
-        return (T) columns.findFirst(c -> c.getId().equals(columnId)).getOption().orElseThrow(() -> {
+        return (T) columns.find(c -> c.getId().equals(columnId)).getOption().getOrElseThrow(() -> {
             String msg = String.format("Unknown column id '%s'", columnId);
             throw new IllegalArgumentException(msg);
         });

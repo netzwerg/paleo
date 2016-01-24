@@ -31,7 +31,7 @@ public final class ColumnType<T extends ColumnId> {
     public static final ColumnType<TimestampColumnId> TIMESTAMP = new ColumnType<>("Timestamp", TimestampColumnId.class);
     public static final ColumnType<CategoryColumnId> CATEGORY = new ColumnType<>("Category", CategoryColumnId.class);
 
-    private static final Map<String, ColumnType<?>> TYPES_BY_DESCRIPTION = HashMap.<String, ColumnType<?>>ofAll(
+    private static final Map<String, ColumnType<?>> TYPES_BY_DESCRIPTION = HashMap.<String, ColumnType<?>>ofEntries(
             of(ColumnType.INT.getDescription(), ColumnType.INT),
             of(ColumnType.DOUBLE.getDescription(), ColumnType.DOUBLE),
             of(ColumnType.BOOLEAN.getDescription(), ColumnType.BOOLEAN),
@@ -56,7 +56,7 @@ public final class ColumnType<T extends ColumnId> {
     }
 
     public static ColumnType<?> getByDescriptionOrDefault(String description, ColumnType<?> defaultType) {
-        return TYPES_BY_DESCRIPTION.get(description).orElse(defaultType);
+        return TYPES_BY_DESCRIPTION.get(description).getOrElse(defaultType);
     }
 
     @Override
