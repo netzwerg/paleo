@@ -177,7 +177,7 @@ Maven `settings.xml`:
 Gradle:
 
 ```groovy
-compile 'ch.netzwerg:paleo-core:0.3.0'
+compile 'ch.netzwerg:paleo-core:0.4.1'
 ```
 
 Maven:
@@ -186,7 +186,7 @@ Maven:
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-core</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.1</version>
     <type>jar</type>
 </dependency>
 ```
@@ -198,7 +198,7 @@ Optional (requires `paleo-core`)
 Gradle:
 
 ```groovy
-compile 'ch.netzwerg:paleo-io:0.3.0'
+compile 'ch.netzwerg:paleo-io:0.4.1'
 ```
 
 Maven:
@@ -207,7 +207,7 @@ Maven:
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-io</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.1</version>
     <type>jar</type>
 </dependency>
 ```
