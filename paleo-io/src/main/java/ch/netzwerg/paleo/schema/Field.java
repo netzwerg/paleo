@@ -21,11 +21,9 @@ import ch.netzwerg.paleo.ColumnType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.collect.ImmutableMap;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.Map;
+import javaslang.control.Option;
 
 public final class Field {
 
@@ -34,14 +32,14 @@ public final class Field {
 
     private final String name;
     private final ColumnType<?> type;
-    private final Optional<String> format;
+    private final Option<String> format;
     private final Map<String, String> metaData;
 
     @JsonCreator
     public Field(@JsonProperty("name") String name, @JsonProperty("type") @JsonDeserialize(using = ColumnTypeDeserializer.class) ColumnType<?> type, @JsonProperty("format") String format, @JsonProperty("metaData") StringStringMap metaData) {
         this.name = safeName(name);
         this.type = safeType(type);
-        this.format = Optional.ofNullable(format);
+        this.format = Option.of(format);
         this.metaData = safeMetaData(metaData);
     }
 
@@ -53,8 +51,12 @@ public final class Field {
         return type == null ? DEFAULT_TYPE : type;
     }
 
-    private static Map<String, String> safeMetaData(StringStringMap metaData) {
-        return metaData == null ? Collections.emptyMap() : ImmutableMap.copyOf(metaData);
+    private static Map<String, String> safeMetaData(StringStringMap javaMap) {
+        if (javaMap == null) {
+            return LinkedHashMap.empty();
+        } else {
+            return LinkedHashMap.ofAll(javaMap);
+        }
     }
 
     public String getName() {
@@ -65,7 +67,7 @@ public final class Field {
         return type;
     }
 
-    public Optional<String> getFormat() {
+    public Option<String> getFormat() {
         return format;
     }
 

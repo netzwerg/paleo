@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package ch.netzwerg.paleo.io;
 
 import ch.netzwerg.paleo.*;
 import ch.netzwerg.paleo.schema.Schema;
-import com.google.common.collect.ImmutableSet;
+import javaslang.collection.Array;
+import javaslang.collection.HashSet;
+import javaslang.collection.Map;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.File;
@@ -28,13 +31,10 @@ import java.time.Instant;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.function.Function;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 
 public class ParserTest {
@@ -112,11 +112,11 @@ public class ParserTest {
 
     private static void assertDataFrameParsedCorrectly(DataFrame df) {
         assertEquals(6, df.getColumnCount());
-        assertEquals(Arrays.asList("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
+        assertEquals(Array.of("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());
 
         StringColumnId nameColumnId = df.getColumnId(0, ColumnType.STRING);
         StringColumn nameColumn = df.getColumn(nameColumnId);
-        assertEquals(asList("Ada", "Homer", "Hillary"), nameColumn.getValues());
+        assertEquals(Array.of("Ada", "Homer", "Hillary"), nameColumn.getValues());
 
         IntColumnId ageColumnId = df.getColumnId(1, ColumnType.INT);
         IntColumn ageColumn = df.getColumn(ageColumnId);
@@ -128,16 +128,16 @@ public class ParserTest {
 
         BooleanColumnId vegetarianColumnId = df.getColumnId(3, ColumnType.BOOLEAN);
         BooleanColumn vegetarianColumn = df.getColumn(vegetarianColumnId);
-        assertArrayEquals(new Boolean[]{true, false, false}, vegetarianColumn.getValues().toArray());
+        assertEquals(Array.of(true, false, false), vegetarianColumn.getValues().toArray());
 
         TimestampColumnId dateOfBirthColumnId = df.getColumnId(4, ColumnType.TIMESTAMP);
         TimestampColumn dateOfBirthColumn = df.getColumn(dateOfBirthColumnId);
         Function<? super Instant, Month> toMonth = instant -> instant.atZone(ZoneId.from(ZoneOffset.UTC)).getMonth();
-        assertEquals(asList(Month.AUGUST, Month.JANUARY, Month.OCTOBER), dateOfBirthColumn.getValues().stream().map(toMonth).collect(toList()));
+        assertEquals(asList(Month.AUGUST, Month.JANUARY, Month.OCTOBER), dateOfBirthColumn.getValues().map(toMonth).toJavaList());
 
         CategoryColumnId genderColumnId = df.getColumnId(5, ColumnType.CATEGORY);
         CategoryColumn genderColumn = df.getColumn(genderColumnId);
-        assertEquals(ImmutableSet.of("Female", "Male"), genderColumn.getCategories());
+        assertEquals(HashSet.of("Female", "Male"), genderColumn.getCategories());
 
         // typed random access for String values
         String stringValue = df.getValueAt(0, nameColumnId);
@@ -163,7 +163,7 @@ public class ParserTest {
     private static void assertMetaDataParsedCorrectly(DataFrame df) {
         Map<String, String> metaData = df.getColumn(df.getColumnId(2, ColumnType.DOUBLE)).getMetaData();
         assertEquals(1, metaData.size());
-        assertEquals("m", metaData.get("unit"));
+        assertEquals(Option.of("m"), metaData.get("unit"));
     }
 
 }

@@ -16,50 +16,52 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableMap;
+import ch.netzwerg.paleo.ColumnIds.BooleanColumnId;
+import ch.netzwerg.paleo.impl.MetaDataBuilder;
+import javaslang.collection.Map;
+import javaslang.collection.Stream;
 
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-public final class BooleanColumn implements Column<ColumnIds.BooleanColumnId> {
+public final class BooleanColumn implements Column<BooleanColumnId> {
 
-    private final ColumnIds.BooleanColumnId id;
+    private final BooleanColumnId id;
     private final int rowCount;
     private final BitSet values;
-    private final ImmutableMap<String, String> metaData;
+    private final Map<String, String> metaData;
 
-    public BooleanColumn(ColumnIds.BooleanColumnId id, int rowCount, BitSet values) {
-        this(id, rowCount, values, Collections.emptyMap());
-    }
-
-    public BooleanColumn(ColumnIds.BooleanColumnId id, int rowCount, BitSet values, Map<String, String> metaData) {
+    private BooleanColumn(BooleanColumnId id, int rowCount, BitSet values, Map<String, String> metaData) {
         this.id = id;
         this.rowCount = rowCount;
         this.values = (BitSet) values.clone();
-        this.metaData = ImmutableMap.copyOf(metaData);
+        this.metaData = metaData;
+    }
+
+    public static BooleanColumn of(BooleanColumnId id, boolean value) {
+        return builder(id).add(value).build();
+    }
+
+    public static BooleanColumn ofAll(BooleanColumnId id, boolean... values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static BooleanColumn ofAll(BooleanColumnId id, Iterable<Boolean> values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static Builder builder(BooleanColumnId id) {
+        return new Builder(id);
     }
 
     @Override
-    public ColumnIds.BooleanColumnId getId() {
-        return this.id;
+    public BooleanColumnId getId() {
+        return id;
     }
 
     @Override
     public int getRowCount() {
-        return this.rowCount;
-    }
-
-    public boolean getValueAt(int rowIndex) {
-        return this.values.get(rowIndex);
-    }
-
-    public Stream<Boolean> getValues() {
-        IntStream rowIndexStream = IntStream.range(0, this.rowCount);
-        return rowIndexStream.mapToObj(this.values::get);
+        return rowCount;
     }
 
     @Override
@@ -67,45 +69,51 @@ public final class BooleanColumn implements Column<ColumnIds.BooleanColumnId> {
         return metaData;
     }
 
-    public static Builder builder(ColumnIds.BooleanColumnId id) {
-        return new Builder(id);
+    public boolean getValueAt(int rowIndex) {
+        return values.get(rowIndex);
     }
 
-    public static final class Builder implements Column.Builder<BooleanColumn> {
+    public Stream<Boolean> getValues() {
+        return Stream.range(0, rowCount).map(values::get);
+    }
 
-        private final ColumnIds.BooleanColumnId id;
+    public static final class Builder implements Column.Builder<Boolean, BooleanColumn> {
+
+        private final BooleanColumnId id;
         private final AtomicInteger rowIndex;
         private final BitSet values;
-        private final ImmutableMap.Builder<String, String> metaDataBuilder;
+        private final MetaDataBuilder metaDataBuilder;
 
-        public Builder(ColumnIds.BooleanColumnId id) {
+        private Builder(BooleanColumnId id) {
             this.id = id;
             this.rowIndex = new AtomicInteger();
             this.values = new BitSet();
-            this.metaDataBuilder = ImmutableMap.builder();
+            this.metaDataBuilder = new MetaDataBuilder();
+        }
+
+        @Override
+        public Builder add(Boolean value) {
+            values.set(rowIndex.getAndIncrement(), value);
+            return this;
         }
 
         public Builder addAll(boolean... values) {
-            for (boolean value : values) {
-                add(value);
-            }
-            return this;
+            return addAll(Stream.ofAll(values));
         }
 
-        public Builder add(boolean value) {
-            this.values.set(this.rowIndex.getAndIncrement(), value);
-            return this;
+        public Builder addAll(Iterable<Boolean> values) {
+            return Stream.ofAll(values).foldLeft(this, Builder::add);
         }
 
         @Override
         public Builder putMetaData(String key, String value) {
-            metaDataBuilder.put(key, value);
+            metaDataBuilder.putMetaData(key, value);
             return this;
         }
 
         @Override
         public Builder putAllMetaData(Map<String, String> metaData) {
-            metaDataBuilder.putAll(metaData);
+            metaDataBuilder.putAllMetaData(metaData);
             return this;
         }
 

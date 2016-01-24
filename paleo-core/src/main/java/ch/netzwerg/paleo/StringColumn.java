@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Rahel Lüthy
+ * Copyright 2015 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,79 @@
 
 package ch.netzwerg.paleo;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import ch.netzwerg.paleo.impl.MetaDataBuilder;
+import javaslang.collection.Array;
+import javaslang.collection.Map;
+import javaslang.collection.Stream;
+
+import java.util.ArrayList;
 
 import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
 
-public final class StringColumn extends GenericColumn<String, StringColumnId> {
+public final class StringColumn extends AbstractColumn<String, StringColumnId> {
 
-    public StringColumn(StringColumnId id, List<String> values) {
-        this(id, values, Collections.emptyMap());
+    private StringColumn(StringColumnId id, Array<String> values, Map<String, String> metaData) {
+        super(id, values, metaData);
     }
 
-    public StringColumn(StringColumnId id, List<String> values, Map<String, String> metaData) {
-        super(id, values, metaData);
+    public static StringColumn of(StringColumnId id, String value) {
+        return builder(id).add(value).build();
+    }
+
+    public static StringColumn ofAll(StringColumnId id, String... values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static StringColumn ofAll(StringColumnId id, Iterable<String> values) {
+        return builder(id).addAll(values).build();
     }
 
     public static Builder builder(StringColumnId id) {
         return new Builder(id);
     }
 
-    public static final class Builder extends GenericColumn.Builder<String, StringColumnId, StringColumn> {
+    public static final class Builder implements Column.Builder<String, StringColumn> {
 
-        public Builder(StringColumnId id) {
-            super(id);
+        private final StringColumnId id;
+        private final java.util.List<String> values;
+        private final MetaDataBuilder metaDataBuilder;
+
+        private Builder(StringColumnId id) {
+            this.id = id;
+            this.values = new ArrayList<>();
+            this.metaDataBuilder = new MetaDataBuilder();
+        }
+
+        @Override
+        public Builder add(String value) {
+            values.add(value);
+            return this;
+        }
+
+        public Builder addAll(String... values) {
+            return addAll(Stream.of(values));
+        }
+
+        public Builder addAll(Iterable<String> values) {
+            this.values.addAll(Stream.ofAll(values).toJavaList());
+            return this;
+        }
+
+        @Override
+        public Builder putMetaData(String key, String value) {
+            metaDataBuilder.putMetaData(key, value);
+            return this;
+        }
+
+        @Override
+        public Builder putAllMetaData(Map<String, String> metaData) {
+            metaDataBuilder.putAllMetaData(metaData);
+            return this;
         }
 
         @Override
         public StringColumn build() {
-            return new StringColumn(id, valueBuilder.build(), metaDataBuilder.build());
+            return new StringColumn(id, Array.ofAll(values), metaDataBuilder.build());
         }
 
     }

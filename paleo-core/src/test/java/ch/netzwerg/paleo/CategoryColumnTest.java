@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,20 @@
 package ch.netzwerg.paleo;
 
 import ch.netzwerg.chabis.WordGenerator;
-import com.google.common.collect.ImmutableSet;
+import javaslang.collection.Array;
+import javaslang.collection.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.Random;
 
 import static ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
 import static ch.netzwerg.paleo.ColumnIds.categoryCol;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 
-public class CategoryColumnTest {
+public class CategoryColumnTest extends AbstractBaseColumnTest<String, CategoryColumn> {
+
+    private static final CategoryColumnId ID = categoryCol("test");
 
     private WordGenerator wordGenerator;
 
@@ -38,27 +39,28 @@ public class CategoryColumnTest {
         this.wordGenerator = new WordGenerator(new Random(42));
     }
 
+    @Override
+    protected CategoryColumn.Builder builder() {
+        return CategoryColumn.builder(ID);
+    }
+
     @Test
-    public void builder() {
-        CategoryColumnId id = categoryCol("test" );
-        CategoryColumn.Builder builder = CategoryColumn.builder(id);
-        builder.add("foo" ).add("bar" ).addAll("foo", "baz", "bar" ).add("foo" );
-        CategoryColumn column = builder.build();
-        assertEquals(id, column.getId());
+    public void valueTypeSpecificBuilding() {
+        CategoryColumn column = builder().add("foo").add("bar").addAll("foo", "baz", "bar").add("foo").build();
+        assertEquals(ID, column.getId());
         assertEquals(6, column.getRowCount());
-        assertEquals(ImmutableSet.of("foo", "bar", "baz" ), column.getCategories());
+        assertEquals(HashSet.of("foo", "bar", "baz"), column.getCategories());
         assertEquals("foo", column.getValueAt(0));
         assertEquals("bar", column.getValueAt(1));
     }
 
     @Test
     public void createValues() {
-        CategoryColumnId id = categoryCol("test" );
-        CategoryColumn.Builder builder = CategoryColumn.builder(id);
-        List<String> values = this.wordGenerator.randomWords(100);
-        CategoryColumn column = builder.addAll(values).build();
-        assertEquals(93, column.getCategories().size());
-        assertEquals(values, column.createValues().collect(toList()));
+        CategoryColumnId id = categoryCol("test");
+        Array<String> values = Array.ofAll(this.wordGenerator.randomWords(100));
+        CategoryColumn column = CategoryColumn.builder(id).addAll(values).build();
+        assertEquals(93, column.getCategories().length());
+        assertEquals(values, column.createValues().toArray());
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,35 @@
 
 package ch.netzwerg.paleo;
 
+import javaslang.collection.Array;
 import org.junit.Test;
 
 import java.time.Instant;
-import java.util.Arrays;
 
 import static ch.netzwerg.paleo.ColumnIds.TimestampColumnId;
 import static ch.netzwerg.paleo.ColumnIds.timestampCol;
 import static org.junit.Assert.assertEquals;
 
-public class TimestampColumnTest {
+public class TimestampColumnTest extends AbstractBaseColumnTest<Instant, TimestampColumn> {
 
     private static final Instant AUG_26_1975 = Instant.parse("1975-08-26T12:08:30.00Z");
     private static final Instant JAN_08_2008 = Instant.parse("2006-01-08T23:43:30.00Z");
     private static final Instant OCT_26_1947 = Instant.parse("1947-10-26T03:23:36.00Z");
 
+    private static final TimestampColumnId ID = timestampCol("test");
+
+    @Override
+    protected TimestampColumn.Builder builder() {
+        return TimestampColumn.builder(ID);
+    }
+
     @Test
-    public void builder() {
-        TimestampColumnId id = timestampCol("test");
-        TimestampColumn column = TimestampColumn.builder(id).add(AUG_26_1975).addAll(JAN_08_2008, OCT_26_1947).build();
-        assertEquals(id, column.getId());
+    public void valueTypeSpecificBuilding() {
+        TimestampColumn column = builder().add(AUG_26_1975).addAll(JAN_08_2008, OCT_26_1947).build();
+        assertEquals(ID, column.getId());
         assertEquals(3, column.getRowCount());
         assertEquals(JAN_08_2008, column.getValueAt(1));
-        assertEquals(Arrays.asList(AUG_26_1975, JAN_08_2008, OCT_26_1947), column.getValues());
+        assertEquals(Array.of(AUG_26_1975, JAN_08_2008, OCT_26_1947), column.getValues());
     }
 
 }

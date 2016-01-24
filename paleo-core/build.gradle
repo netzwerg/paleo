@@ -15,5 +15,5 @@
  */
 
 dependencies {
-    compile libraries.guava
+    compile libraries.javaslang
 }

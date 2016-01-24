@@ -16,11 +16,10 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableMap;
+import ch.netzwerg.paleo.impl.MetaDataBuilder;
+import javaslang.collection.Map;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 import java.util.stream.DoubleStream;
 
 import static ch.netzwerg.paleo.ColumnIds.DoubleColumnId;
@@ -31,14 +30,22 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
     private final double[] values;
     private final Map<String, String> metaData;
 
-    public DoubleColumn(DoubleColumnId id, DoubleStream values) {
-        this(id, values, Collections.emptyMap());
-    }
-
-    public DoubleColumn(DoubleColumnId id, DoubleStream values, Map<String, String> metaData) {
+    private DoubleColumn(DoubleColumnId id, DoubleStream values, Map<String, String> metaData) {
         this.id = id;
         this.values = values.toArray();
-        this.metaData = ImmutableMap.copyOf(metaData);
+        this.metaData = metaData;
+    }
+
+    public static DoubleColumn of(DoubleColumnId id, double value) {
+        return builder(id).add(value).build();
+    }
+
+    public static DoubleColumn ofAll(DoubleColumnId id, double... values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static DoubleColumn ofAll(DoubleColumnId id, DoubleStream values) {
+        return builder(id).addAll(values).build();
     }
 
     public static Builder builder(DoubleColumnId id) {
@@ -47,20 +54,12 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
 
     @Override
     public DoubleColumnId getId() {
-        return this.id;
+        return id;
     }
 
     @Override
     public int getRowCount() {
-        return this.values.length;
-    }
-
-    public double getValueAt(int index) {
-        return this.values[index];
-    }
-
-    public DoubleStream getValues() {
-        return Arrays.stream(this.values);
+        return values.length;
     }
 
     @Override
@@ -68,39 +67,50 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
         return metaData;
     }
 
-    public static final class Builder implements Column.Builder<DoubleColumn> {
+    public double getValueAt(int index) {
+        return values[index];
+    }
+
+    public DoubleStream getValues() {
+        return Arrays.stream(values);
+    }
+
+    public static final class Builder implements Column.Builder<Double, DoubleColumn> {
 
         private final DoubleColumnId id;
         private final DoubleStream.Builder valueBuilder;
-        private final ImmutableMap.Builder<String, String> metaDataBuilder;
+        private final MetaDataBuilder metaDataBuilder;
 
-        public Builder(DoubleColumnId id) {
+        private Builder(DoubleColumnId id) {
             this.id = id;
             this.valueBuilder = DoubleStream.builder();
-            this.metaDataBuilder = ImmutableMap.builder();
+            this.metaDataBuilder = new MetaDataBuilder();
         }
 
-        public Builder addAll(double ... values) {
-            for (double value: values) {
-                add(value);
-            }
+        @Override
+        public Builder add(Double value) {
+            valueBuilder.add(value);
             return this;
         }
 
-        public Builder add(double value) {
-            this.valueBuilder.add(value);
+        public Builder addAll(double... values) {
+            return addAll(Arrays.stream(values));
+        }
+
+        public Builder addAll(DoubleStream values) {
+            values.forEachOrdered(this::add);
             return this;
         }
 
         @Override
         public Builder putMetaData(String key, String value) {
-            metaDataBuilder.put(key, value);
+            metaDataBuilder.putMetaData(key, value);
             return this;
         }
 
         @Override
         public Builder putAllMetaData(Map<String, String> metaData) {
-            metaDataBuilder.putAll(metaData);
+            metaDataBuilder.putAllMetaData(metaData);
             return this;
         }
 

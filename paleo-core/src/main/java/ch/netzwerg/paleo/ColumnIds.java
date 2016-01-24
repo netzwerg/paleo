@@ -46,7 +46,7 @@ public final class ColumnIds {
         return new CategoryColumnId(name);
     }
 
-    public static GenericColumnId genericCol(String name, ColumnType type) {
+    public static GenericColumnId genericCol(String name, ColumnType<?> type) {
         return new GenericColumnId(name, type);
     }
 
@@ -89,21 +89,21 @@ public final class ColumnIds {
     public static class GenericColumnId implements ColumnId {
 
         private final String name;
-        private final ColumnType type;
+        private final ColumnType<?> type;
 
-        public GenericColumnId(String name, ColumnType type) {
+        public GenericColumnId(String name, ColumnType<?> type) {
             this.name = name;
             this.type = type;
         }
 
         @Override
         public String getName() {
-            return this.name;
+            return name;
         }
 
         @Override
-        public ColumnType getType() {
-            return this.type;
+        public ColumnType<?> getType() {
+            return type;
         }
 
     }

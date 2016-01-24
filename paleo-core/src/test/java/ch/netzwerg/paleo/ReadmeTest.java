@@ -16,9 +16,9 @@
 
 package ch.netzwerg.paleo;
 
+import javaslang.collection.Set;
 import org.junit.Test;
 
-import java.util.Set;
 import java.util.stream.DoubleStream;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
@@ -31,16 +31,16 @@ public class ReadmeTest {
 
         // Type-safe column identifiers
         final StringColumnId NAME = ColumnIds.stringCol("Name");
-        final CategoryColumnId COLOR = categoryCol("Color");
-        final DoubleColumnId SERVING_SIZE = doubleCol("Serving Size (g)");
+        final CategoryColumnId COLOR = ColumnIds.categoryCol("Color");
+        final DoubleColumnId SERVING_SIZE = ColumnIds.doubleCol("Serving Size (g)");
 
-        // Builder API for convenient column creation
-        StringColumn nameColumn = StringColumn.builder(NAME).addAll("Banana", "Blueberry", "Lemon", "Apple").build();
-        CategoryColumn colorColumn = CategoryColumn.builder(COLOR).addAll("Yellow", "Blue", "Yellow", "Green").build();
-        DoubleColumn servingSizeColumn = DoubleColumn.builder(SERVING_SIZE).addAll(118, 148, 83, 182).build();
+        // Convenient column creation
+        StringColumn nameColumn = StringColumn.ofAll(NAME, "Banana", "Blueberry", "Lemon", "Apple");
+        CategoryColumn colorColumn = CategoryColumn.ofAll(COLOR, "Yellow", "Blue", "Yellow", "Green");
+        DoubleColumn servingSizeColumn = DoubleColumn.ofAll(SERVING_SIZE, 118, 148, 83, 182);
 
-        // Straight-forward data frame creation
-        DataFrame dataFrame = new DataFrame(nameColumn, colorColumn, servingSizeColumn);
+        // Grouping columns into a data frame
+        DataFrame dataFrame = DataFrame.ofAll(nameColumn, colorColumn, servingSizeColumn);
 
         // Typed random access to individual values (based on rowIndex / columnId)
         String lemon = dataFrame.getValueAt(2, NAME);

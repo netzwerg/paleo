@@ -16,11 +16,10 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableMap;
+import ch.netzwerg.paleo.impl.MetaDataBuilder;
+import javaslang.collection.Map;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 import static ch.netzwerg.paleo.ColumnIds.IntColumnId;
@@ -31,14 +30,22 @@ public final class IntColumn implements Column<IntColumnId> {
     private final int[] values;
     private final Map<String, String> metaData;
 
-    public IntColumn(IntColumnId id, IntStream values) {
-        this(id, values, Collections.emptyMap());
-    }
-
-    public IntColumn(IntColumnId id, IntStream values, Map<String, String> metaData) {
+    private IntColumn(IntColumnId id, IntStream values, Map<String, String> metaData) {
         this.id = id;
         this.values = values.toArray();
-        this.metaData = ImmutableMap.copyOf(metaData);
+        this.metaData = metaData;
+    }
+
+    public static IntColumn of(IntColumnId id, int value) {
+        return builder(id).add(value).build();
+    }
+
+    public static IntColumn ofAll(IntColumnId id, int... values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static IntColumn ofAll(IntColumnId id, IntStream values) {
+        return builder(id).addAll(values).build();
     }
 
     public static Builder builder(IntColumnId id) {
@@ -47,60 +54,63 @@ public final class IntColumn implements Column<IntColumnId> {
 
     @Override
     public IntColumnId getId() {
-        return this.id;
+        return id;
     }
 
     @Override
     public int getRowCount() {
-        return this.values.length;
+        return values.length;
     }
 
     @Override
     public Map<String, String> getMetaData() {
-        return this.metaData;
+        return metaData;
     }
 
     public int getValueAt(int index) {
-        return this.values[index];
+        return values[index];
     }
 
     public IntStream getValues() {
-        return Arrays.stream(this.values);
+        return Arrays.stream(values);
     }
 
-    public static final class Builder implements Column.Builder<IntColumn> {
+    public static final class Builder implements Column.Builder<Integer, IntColumn> {
 
         private final IntColumnId id;
         private final IntStream.Builder valueBuilder;
-        private final ImmutableMap.Builder<String, String> metaDataBuilder;
+        private final MetaDataBuilder metaDataBuilder;
 
-        public Builder(IntColumnId id) {
+        private Builder(IntColumnId id) {
             this.id = id;
             this.valueBuilder = IntStream.builder();
-            this.metaDataBuilder = ImmutableMap.builder();
+            this.metaDataBuilder = new MetaDataBuilder();
         }
 
-        public Builder addAll(int... values) {
-            for (int value : values) {
-                add(value);
-            }
+        @Override
+        public Builder add(Integer value) {
+            valueBuilder.add(value);
             return this;
         }
 
-        public Builder add(int value) {
-            this.valueBuilder.add(value);
+        public Builder addAll(int... values) {
+            return addAll(Arrays.stream(values));
+        }
+
+        public Builder addAll(IntStream values) {
+            values.forEachOrdered(this::add);
             return this;
         }
 
         @Override
         public Builder putMetaData(String key, String value) {
-            metaDataBuilder.put(key, value);
+            metaDataBuilder.putMetaData(key, value);
             return this;
         }
 
         @Override
         public Builder putAllMetaData(Map<String, String> metaData) {
-            metaDataBuilder.putAll(metaData);
+            metaDataBuilder.putAllMetaData(metaData);
             return this;
         }
 

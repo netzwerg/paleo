@@ -19,6 +19,7 @@ package ch.netzwerg.paleo;
 public interface ColumnId {
 
     String getName();
-    ColumnType getType();
+
+    ColumnType<?> getType();
 
 }

@@ -16,93 +16,37 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import javaslang.collection.Array;
+import javaslang.collection.LinkedHashMap;
+import javaslang.collection.Map;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
-import static ch.netzwerg.paleo.ColumnIds.GenericColumnId;
+public final class GenericColumn<V, I extends ColumnIds.GenericColumnId> extends AbstractColumn<V, I> {
 
-public class GenericColumn<V, I extends GenericColumnId> implements Column<I> {
-
-    private final I id;
-    private final ImmutableList<V> values;
-    private final ImmutableMap<String, String> metaData;
-
-    protected GenericColumn(I id, List<V> values) {
-        this(id, values, Collections.emptyMap());
+    private GenericColumn(I id, Array<V> values, Map<String, String> metaData) {
+        super(id, values, metaData);
     }
 
-    protected GenericColumn(I id, List<V> values, Map<String, String> metaData) {
-        this.id = id;
-        this.values = ImmutableList.copyOf(values);
-        this.metaData = ImmutableMap.copyOf(metaData);
+    public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> of(I id, V value) {
+        return of(id, value, LinkedHashMap.empty());
     }
 
-    @Override
-    public I getId() {
-        return this.id;
+    public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> of(I id, V value, Map<String, String> metaData) {
+        return new GenericColumn<>(id, Array.of(value), Objects.requireNonNull(metaData, "metaData is null"));
     }
 
-    @Override
-    public int getRowCount() {
-        return this.values.size();
+    @SafeVarargs
+    public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> ofAll(I id, V... values) {
+        return new GenericColumn<>(id, Array.of(values), LinkedHashMap.empty());
     }
 
-    public V getValueAt(int index) {
-        return this.values.get(index);
+    public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> ofAll(I id, Iterable<V> values) {
+        return ofAll(id, values, LinkedHashMap.empty());
     }
 
-    public List<V> getValues() {
-        return this.values;
-    }
-
-    @Override
-    public Map<String, String> getMetaData() {
-        return metaData;
-    }
-
-    public static abstract class Builder<V, I extends GenericColumnId, C extends GenericColumn<V, I>> implements Column.Builder<C> {
-
-        protected final I id;
-        protected final ImmutableList.Builder<V> valueBuilder;
-        protected final ImmutableMap.Builder<String, String> metaDataBuilder;
-
-        public Builder(I id) {
-            this.id = id;
-            this.valueBuilder = ImmutableList.builder();
-            this.metaDataBuilder = ImmutableMap.builder();
-        }
-
-        public final Builder<V, I, C> addAll(Iterable<V> values) {
-            values.forEach(this::add);
-            return this;
-        }
-
-        @SafeVarargs
-        public final Builder<V, I, C> addAll(V... values) {
-            return addAll(Arrays.asList(values));
-        }
-
-        public final Builder<V, I, C> add(V value) {
-            this.valueBuilder.add(value);
-            return this;
-        }
-
-        @Override
-        public final Builder<V, I, C> putMetaData(String key, String value) {
-            metaDataBuilder.put(key, value);
-            return this;
-        }
-
-        public final Builder<V, I, C> putAllMetaData(Map<String, String> metaData) {
-            metaDataBuilder.putAll(metaData);
-            return this;
-        }
-
+    public static <V, I extends ColumnIds.GenericColumnId> GenericColumn<V, I> ofAll(I id, Iterable<V> values, Map<String, String> metaData) {
+        return new GenericColumn<>(id, Array.ofAll(values), Objects.requireNonNull(metaData, "metaData is null"));
     }
 
 }

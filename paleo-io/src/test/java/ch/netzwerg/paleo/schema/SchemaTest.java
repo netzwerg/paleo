@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Rahel Lüthy
+ * Copyright 2016 Rahel Lüthy
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,12 +52,12 @@ public class SchemaTest {
         Schema schema = Schema.parseJson(new StringReader(JSON));
         assertEquals("Paleo Schema Title", schema.getTitle());
         assertEquals("data.txt", schema.getDataFileName());
-        assertEquals(3, schema.getFields().size());
+        assertEquals(3, schema.getFields().length());
 
         Field fooField = schema.getFields().get(0);
         assertEquals("Foo", fooField.getName());
         assertEquals(ColumnType.INT, fooField.getType());
-        assertFalse(fooField.getFormat().isPresent());
+        assertFalse(fooField.getFormat().isDefined());
 
         Field barField = schema.getFields().get(1);
         assertEquals("Bar", barField.getName());
@@ -67,7 +67,7 @@ public class SchemaTest {
         Field emptyField = schema.getFields().get(2);
         assertEquals(Field.DEFAULT_NAME, emptyField.getName());
         assertEquals(ColumnType.CATEGORY, emptyField.getType());
-        assertFalse(emptyField.getFormat().isPresent());
+        assertFalse(emptyField.getFormat().isDefined());
     }
 
 }

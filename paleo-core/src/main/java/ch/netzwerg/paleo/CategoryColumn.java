@@ -16,66 +16,53 @@
 
 package ch.netzwerg.paleo;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
+import ch.netzwerg.paleo.impl.MetaDataBuilder;
+import javaslang.collection.Array;
+import javaslang.collection.Map;
+import javaslang.collection.Set;
+import javaslang.collection.Stream;
 
-import java.util.*;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.ArrayList;
 
-public final class CategoryColumn implements Column<ColumnIds.CategoryColumnId> {
+public final class CategoryColumn implements Column<CategoryColumnId> {
 
-    public interface Lookup {
-        int getCategoryIndex(int rowIndex);
-    }
+    private final CategoryColumnId id;
+    private final Array<String> categories;
+    private final Array<Integer> categoryIndexPerRowIndex;
+    private final Map<String, String> metaData;
 
-    private final ColumnIds.CategoryColumnId id;
-    private final int rowCount;
-    private final List<String> categories;
-    private final Lookup lookup;
-    private final ImmutableMap<String, String> metaData;
-
-    public CategoryColumn(ColumnIds.CategoryColumnId id, int rowCount, List<String> categories, Lookup lookup) {
-        this(id, rowCount, categories, lookup, Collections.emptyMap());
-    }
-
-    public CategoryColumn(ColumnIds.CategoryColumnId id, int rowCount, List<String> categories, Lookup lookup, Map<String, String> metaData) {
+    private CategoryColumn(CategoryColumnId id, Array<String> categories, Array<Integer> categoryIndexPerRowIndex, Map<String, String> metaData) {
         this.id = id;
-        this.rowCount = rowCount;
-        this.categories = ImmutableList.copyOf(categories);
-        this.lookup = lookup;
-        this.metaData = ImmutableMap.copyOf(metaData);
+        this.categories = categories;
+        this.categoryIndexPerRowIndex = categoryIndexPerRowIndex;
+        this.metaData = metaData;
     }
 
-    public static Builder builder(ColumnIds.CategoryColumnId id) {
+    public static CategoryColumn of(CategoryColumnId id, String value) {
+        return builder(id).add(value).build();
+    }
+
+    public static CategoryColumn ofAll(CategoryColumnId id, String... values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static CategoryColumn ofAll(CategoryColumnId id, Iterable<String> values) {
+        return builder(id).addAll(values).build();
+    }
+
+    public static Builder builder(CategoryColumnId id) {
         return new Builder(id);
     }
 
     @Override
-    public ColumnIds.CategoryColumnId getId() {
-        return this.id;
+    public CategoryColumnId getId() {
+        return id;
     }
 
     @Override
     public int getRowCount() {
-        return this.rowCount;
-    }
-
-    public String getValueAt(int rowIndex) {
-        int categoryIndex = this.lookup.getCategoryIndex(rowIndex);
-        return categories.get(categoryIndex);
-    }
-
-    public Set<String> getCategories() {
-        return ImmutableSet.copyOf(this.categories);
-    }
-
-    /**
-     * Creates a stream of individual row values (i.e. "explodes" categories).
-     */
-    public Stream<String> createValues() {
-        return IntStream.range(0, this.rowCount).mapToObj(this::getValueAt);
+        return categoryIndexPerRowIndex.length();
     }
 
     @Override
@@ -83,58 +70,68 @@ public final class CategoryColumn implements Column<ColumnIds.CategoryColumnId> 
         return metaData;
     }
 
-    public static final class Builder implements Column.Builder<CategoryColumn> {
+    public String getValueAt(int rowIndex) {
+        return categories.get(categoryIndexPerRowIndex.get(rowIndex));
+    }
 
-        private final ColumnIds.CategoryColumnId id;
-        private final IntStream.Builder categoryIndexByRowIndexBuilder;
-        private final List<String> categories;
-        private final Map<String, Integer> categoryIndexByCategory;
-        private final ImmutableMap.Builder<String, String> metaDataBuilder;
+    public Set<String> getCategories() {
+        return categories.toSet();
+    }
 
-        private Builder(ColumnIds.CategoryColumnId id) {
+    /**
+     * Creates a stream of individual row values (i.e. "explodes" categories).
+     */
+    public Stream<String> createValues() {
+        return Stream.range(0, getRowCount()).map(this::getValueAt);
+    }
+
+    public static final class Builder implements Column.Builder<String, CategoryColumn> {
+
+        private final CategoryColumnId id;
+        private final java.util.List<String> categories;
+        private final java.util.List<Integer> categoryIndexPerRowIndex;
+        private final MetaDataBuilder metaDataBuilder;
+
+        private Builder(CategoryColumnId id) {
             this.id = id;
-            this.categoryIndexByRowIndexBuilder = IntStream.builder();
             this.categories = new ArrayList<>();
-            this.categoryIndexByCategory = new HashMap<>();
-            this.metaDataBuilder = ImmutableMap.builder();
+            this.categoryIndexPerRowIndex = new ArrayList<>();
+            this.metaDataBuilder = new MetaDataBuilder();
         }
 
-        public Builder addAll(Iterable<String> values) {
-            values.forEach(this::add);
+        @Override
+        public Builder add(String value) {
+            int categoryIndex = categories.indexOf(value);
+            if (categoryIndex < 0) {
+                categories.add(value);
+                categoryIndex = categories.size() - 1;
+            }
+            categoryIndexPerRowIndex.add(categoryIndex);
             return this;
         }
 
         public Builder addAll(String... values) {
-            return addAll(Arrays.asList(values));
+            return addAll(Stream.of(values));
         }
 
-        public Builder add(String value) {
-            Integer categoryIndex = this.categoryIndexByCategory.get(value);
-            if (categoryIndex == null) {
-                categoryIndex = this.categories.size();
-                this.categoryIndexByCategory.put(value, categoryIndex);
-                this.categories.add(value);
-            }
-            this.categoryIndexByRowIndexBuilder.add(categoryIndex);
-            return this;
+        public Builder addAll(Iterable<String> values) {
+            return Stream.ofAll(values).foldLeft(this, Builder::add);
         }
 
         @Override
         public Builder putMetaData(String key, String value) {
-            metaDataBuilder.put(key, value);
+            metaDataBuilder.putMetaData(key, value);
             return this;
         }
 
         @Override
         public Builder putAllMetaData(Map<String, String> metaData) {
-            metaDataBuilder.putAll(metaData);
+            metaDataBuilder.putAllMetaData(metaData);
             return this;
         }
 
         public CategoryColumn build() {
-            int[] categoryIndexByRowIndex = categoryIndexByRowIndexBuilder.build().toArray();
-            CategoryColumn.Lookup lookup = rowIndex -> categoryIndexByRowIndex[rowIndex];
-            return new CategoryColumn(id, categoryIndexByRowIndex.length, categories, lookup, metaDataBuilder.build());
+            return new CategoryColumn(id, Array.ofAll(categories), Array.ofAll(categoryIndexPerRowIndex), metaDataBuilder.build());
         }
 
     }

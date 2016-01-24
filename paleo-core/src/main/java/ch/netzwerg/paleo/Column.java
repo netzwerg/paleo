@@ -16,7 +16,7 @@
 
 package ch.netzwerg.paleo;
 
-import java.util.Map;
+import javaslang.collection.Map;
 
 public interface Column<T extends ColumnId> {
 
@@ -26,10 +26,15 @@ public interface Column<T extends ColumnId> {
 
     Map<String, String> getMetaData();
 
-    interface Builder<T extends Column<?>> {
-        Builder<T> putMetaData(String key, String value);
-        Builder<T> putAllMetaData(Map<String, String> metaData);
-        T build();
+    interface Builder<V, C extends Column<?>> {
+
+        Builder<V, C> add(V value);
+
+        Builder<V, C> putMetaData(String key, String value);
+
+        Builder<V, C> putAllMetaData(Map<String, String> metaData);
+
+        C build();
     }
 
 }
