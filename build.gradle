@@ -32,6 +32,7 @@ apply from: 'gradle/dependencies.gradle'
 allprojects {
 
     apply plugin: 'com.jfrog.bintray'
+    apply plugin: 'idea'
 
     group = 'ch.netzwerg'
     version = rootProject.version

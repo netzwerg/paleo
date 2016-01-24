@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+
 @SuppressWarnings("All")
 @Ignore
 public class ProfileParserTest {
@@ -38,6 +40,8 @@ public class ProfileParserTest {
         long start = System.currentTimeMillis();
         DataFrame dataFrame = Parser.parseTabDelimited(Schema.parseJson(schema), new File(PARENT_DIR));
         System.out.println("Done: " + (System.currentTimeMillis() - start));
+        assertEquals(4, dataFrame.getColumnCount());
+        assertEquals(1_000_000, dataFrame.getRowCount());
         while (true) {
             // keep profiler running
         }

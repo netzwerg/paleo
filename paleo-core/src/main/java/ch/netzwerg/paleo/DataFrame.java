@@ -60,7 +60,7 @@ public final class DataFrame implements Iterable<Column<?>> {
         return ofAll(Array.of(columns));
     }
 
-    public static DataFrame ofAll(Iterable<Column<?>> columns) {
+    public static DataFrame ofAll(Iterable<? extends Column<?>> columns) {
         return new DataFrame(Array.ofAll(columns));
     }
 

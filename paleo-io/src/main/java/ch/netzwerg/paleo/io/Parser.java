@@ -17,6 +17,7 @@
 package ch.netzwerg.paleo.io;
 
 import ch.netzwerg.paleo.*;
+import ch.netzwerg.paleo.io.impl.ScalaParserImpl;
 import ch.netzwerg.paleo.schema.Field;
 import ch.netzwerg.paleo.schema.Schema;
 import javaslang.Tuple2;
@@ -58,9 +59,7 @@ public final class Parser {
     }
 
     public static DataFrame parseTabDelimited(Schema schema, File parentDir) throws IOException {
-        try (FileReader fileReader = new FileReader(new File(parentDir, schema.getDataFileName()))) {
-            return parseTabDelimited(schema, fileReader);
-        }
+        return ScalaParserImpl.parseTabDelimited(schema, parentDir);
     }
 
     public static DataFrame parseTabDelimited(Schema schema) throws IOException {
