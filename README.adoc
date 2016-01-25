@@ -1,5 +1,4 @@
-# Paleo
-image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"] image::https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg[link="https://bintray.com/netzwerg/maven/paleo/_latestVersion"]
+# Paleo image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"] image:https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg[link="https://bintray.com/netzwerg/maven/paleo/_latestVersion"]
 
 Immutable Java 8 data frames with typed columns.
 
@@ -215,7 +214,7 @@ Maven:
 
 # Javaslang
 
-Paleo makes extensive use of the https://github.com/javaslang/javaslang library[Javaslang]. Javaslang provides
+Paleo makes extensive use of the https://github.com/javaslang/javaslang [Javaslang library]. Javaslang provides
 awesome collection classes which offer functionality way beyond the standard JDK. Working with the Javaslang classes
 is highly recommended, but it is always possible to back out and convert to JDK standards (e.g. with `toJavaList()`).
 
