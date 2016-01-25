@@ -19,6 +19,7 @@ package ch.netzwerg.paleo;
 import javaslang.collection.Array;
 import javaslang.collection.HashSet;
 import javaslang.collection.Iterator;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.File;
@@ -54,7 +55,7 @@ public class DataFrameTest {
     @Test
     public void defaultColumnTypes() {
 
-        StringColumn nameColumn = StringColumn.ofAll(NAME, "Ada", "Homer", "Hillary");
+        StringColumn nameColumn = StringColumn.builder(NAME).addAll("Ada", "Homer", "Hillary").putMetaData("meta-data", "rocks").build();
         IntColumn ageColumn = IntColumn.ofAll(AGE, 42, 99, 67);
         DoubleColumn heightColumn = DoubleColumn.ofAll(HEIGHT, 1.74, 1.20, 1.70);
         BooleanColumn vegetarianColumn = BooleanColumn.ofAll(VEGETARIAN, true, false, false);
@@ -99,6 +100,12 @@ public class DataFrameTest {
         assertEquals(GENDER, df.getColumnId(5, ColumnType.CATEGORY));
         assertEquals(genderColumn, df.getColumn(GENDER));
         assertEquals(HashSet.of("Female", "Male"), genderColumn.getCategories());
+
+        // Column access via ColumnId interface (i.e. non type-specific)
+        ColumnId nonSpecificId = nameColumn.getId();
+        Column<?> column = df.getColumn(nonSpecificId);
+        assertNotNull(column);
+        assertEquals(Option.some("rocks"), column.getMetaData().get("meta-data"));
 
         // typed random access for String values
         String stringValue = df.getValueAt(0, NAME);

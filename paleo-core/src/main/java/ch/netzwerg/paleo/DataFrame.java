@@ -117,6 +117,10 @@ public final class DataFrame implements Iterable<Column<?>> {
         return getTypedColumn(columnId);
     }
 
+    public Column<?> getColumn(ColumnId columnId) {
+        return getTypedColumn(columnId);
+    }
+
     public int getValueAt(int rowIndex, IntColumnId columnId) {
         IntColumn column = getTypedColumn(columnId);
         return column.getValueAt(rowIndex);
