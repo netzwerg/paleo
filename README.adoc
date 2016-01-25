@@ -1,4 +1,5 @@
 # Paleo image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"] image:https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg[link="https://bintray.com/netzwerg/maven/paleo/_latestVersion"]
+:latest-release-version: 0.4.1
 
 Immutable Java 8 data frames with typed columns.
 
@@ -184,18 +185,20 @@ Maven `settings.xml`:
 Gradle:
 
 [source,groovy]
+[subs="attributes"]
 ----
-compile 'ch.netzwerg:paleo-core:0.4.1'
+compile 'ch.netzwerg:paleo-core:{latest-release-version}'
 ----
 
 Maven:
 
 [source,xml]
+[subs="specialcharacters,attributes"]
 ----
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-core</artifactId>
-    <version>0.4.1</version>
+    <version>{latest-release-version}</version>
     <type>jar</type>
 </dependency>
 ----
@@ -207,18 +210,20 @@ Optional (requires `paleo-core`)
 Gradle:
 
 [source,groovy]
+[subs="attributes"]
 ----
-compile 'ch.netzwerg:paleo-io:0.4.1'
+compile 'ch.netzwerg:paleo-io:{latest-release-version}'
 ----
 
 Maven:
 
 [source,xml]
+[subs="specialcharacters,attributes"]
 ----
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-io</artifactId>
-    <version>0.4.1</version>
+    <version>{latest-release-version}</version>
     <type>jar</type>
 </dependency>
 ----
