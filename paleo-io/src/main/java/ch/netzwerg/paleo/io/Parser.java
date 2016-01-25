@@ -172,37 +172,37 @@ public final class Parser {
     }
 
     private static Acc<Integer, IntColumn> intColumnAccumulator(String name) {
-        IntColumn.Builder builder = IntColumn.builder(ColumnIds.intCol(name));
+        IntColumn.Builder builder = IntColumn.builder(ColumnIds.IntColumnId.of(name));
         Function<String, Integer> parseLogic = Integer::parseInt;
         return new Acc<>(builder, parseLogic);
     }
 
     private static Acc<Double, DoubleColumn> doubleColumnAccumulator(String name) {
-        DoubleColumn.Builder builder = DoubleColumn.builder(ColumnIds.doubleCol(name));
+        DoubleColumn.Builder builder = DoubleColumn.builder(ColumnIds.DoubleColumnId.of(name));
         Function<String, Double> parseLogic = Double::parseDouble;
         return new Acc<>(builder, parseLogic);
     }
 
     private static Acc<Boolean, BooleanColumn> booleanColumnAccumulator(String name) {
-        BooleanColumn.Builder builder = BooleanColumn.builder(ColumnIds.booleanCol(name));
+        BooleanColumn.Builder builder = BooleanColumn.builder(ColumnIds.BooleanColumnId.of(name));
         Function<String, Boolean> parseLogic = Boolean::parseBoolean;
         return new Acc<>(builder, parseLogic);
     }
 
     private static Acc<String, StringColumn> stringColumnAccumulator(String name) {
-        StringColumn.Builder builder = StringColumn.builder(ColumnIds.stringCol(name));
+        StringColumn.Builder builder = StringColumn.builder(ColumnIds.StringColumnId.of(name));
         Function<String, String> parseLogic = s -> s;
         return new Acc<>(builder, parseLogic);
     }
 
     private static Acc<String, CategoryColumn> categoryColumnAccumulator(String name) {
-        CategoryColumn.Builder builder = CategoryColumn.builder(ColumnIds.categoryCol(name));
+        CategoryColumn.Builder builder = CategoryColumn.builder(ColumnIds.CategoryColumnId.of(name));
         Function<String, String> parseLogic = s -> s;
         return new Acc<>(builder, parseLogic);
     }
 
     private static Acc<Instant, TimestampColumn> timestampColumnAccumulator(String name, Option<DateTimeFormatter> formatter) {
-        TimestampColumn.Builder builder = TimestampColumn.builder(ColumnIds.timestampCol(name));
+        TimestampColumn.Builder builder = TimestampColumn.builder(ColumnIds.TimestampColumnId.of(name));
         Function<String, Instant> parseLogic = stringValue -> {
             if (formatter.isDefined()) {
                 LocalDateTime dateTime = LocalDateTime.from(formatter.get().parse(stringValue));

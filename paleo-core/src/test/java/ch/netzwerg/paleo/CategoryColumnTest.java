@@ -25,12 +25,11 @@ import org.junit.Test;
 import java.util.Random;
 
 import static ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
-import static ch.netzwerg.paleo.ColumnIds.categoryCol;
 import static org.junit.Assert.assertEquals;
 
 public class CategoryColumnTest extends AbstractBaseColumnTest<String, CategoryColumn> {
 
-    private static final CategoryColumnId ID = categoryCol("test");
+    private static final CategoryColumnId ID = CategoryColumnId.of("test");
 
     private WordGenerator wordGenerator;
 
@@ -56,7 +55,7 @@ public class CategoryColumnTest extends AbstractBaseColumnTest<String, CategoryC
 
     @Test
     public void createValues() {
-        CategoryColumnId id = categoryCol("test");
+        CategoryColumnId id = CategoryColumnId.of("test");
         Array<String> values = Array.ofAll(this.wordGenerator.randomWords(100));
         CategoryColumn column = CategoryColumn.builder(id).addAll(values).build();
         assertEquals(93, column.getCategories().length());

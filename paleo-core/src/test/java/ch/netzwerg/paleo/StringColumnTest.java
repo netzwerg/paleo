@@ -19,12 +19,11 @@ package ch.netzwerg.paleo;
 import org.junit.Test;
 
 import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
-import static ch.netzwerg.paleo.ColumnIds.stringCol;
 import static org.junit.Assert.assertEquals;
 
 public class StringColumnTest extends AbstractBaseColumnTest<String, StringColumn> {
 
-    private static final StringColumnId ID = stringCol("test");
+    private static final StringColumnId ID = StringColumnId.of("test");
 
     @Override
     protected StringColumn.Builder builder() {

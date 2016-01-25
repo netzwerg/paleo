@@ -30,12 +30,12 @@ import static org.junit.Assert.*;
 
 public class DataFrameTest {
 
-    private static final StringColumnId NAME = ColumnIds.stringCol("Name");
-    private static final IntColumnId AGE = ColumnIds.intCol("Age");
-    private static final DoubleColumnId HEIGHT = ColumnIds.doubleCol("Height");
-    private static final BooleanColumnId VEGETARIAN = ColumnIds.booleanCol("Vegetarian");
-    private static final TimestampColumnId DATE_OF_BIRTH = ColumnIds.timestampCol("Date Of Birth");
-    private static final CategoryColumnId GENDER = ColumnIds.categoryCol("Gender");
+    private static final StringColumnId NAME = StringColumnId.of("Name");
+    private static final IntColumnId AGE = IntColumnId.of("Age");
+    private static final DoubleColumnId HEIGHT = DoubleColumnId.of("Height");
+    private static final BooleanColumnId VEGETARIAN = BooleanColumnId.of("Vegetarian");
+    private static final TimestampColumnId DATE_OF_BIRTH = TimestampColumnId.of("Date Of Birth");
+    private static final CategoryColumnId GENDER = CategoryColumnId.of("Gender");
 
     private static final Instant AUG_26_1975 = Instant.parse("1975-08-26T12:08:30.00Z");
     private static final Instant JAN_08_2006 = Instant.parse("2006-01-08T23:43:30.00Z");
@@ -170,7 +170,9 @@ public class DataFrameTest {
 
         Iterator<Column<?>> iterator = DataFrame.ofAll(stringColumn, intColumn).iterator();
         assertTrue(iterator.hasNext());
+        iterator.next();
         assertTrue(iterator.hasNext());
+        iterator.next();
         assertFalse(iterator.hasNext());
     }
 
