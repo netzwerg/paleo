@@ -1,4 +1,5 @@
-# Paleo  [![Build Status](https://travis-ci.org/netzwerg/paleo.svg?branch=master)](https://travis-ci.org/netzwerg/paleo) [ ![Download](https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg) ](https://bintray.com/netzwerg/maven/paleo/_latestVersion)
+# Paleo
+image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"] image::https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg[link="https://bintray.com/netzwerg/maven/paleo/_latestVersion"]
 
 Immutable Java 8 data frames with typed columns.
 
@@ -80,7 +81,7 @@ DataFrame dataFrame = Parser.parseTabDelimited(new StringReader(EXAMPLE));
 
 Generally it is advisable to separate the structural information from the actual data. Paleo therefore supports the
 definition of an external JSON schema. The format is inspired by the
-[JSON Table Schema](http://dataprotocols.org/json-table-schema):
+http://dataprotocols.org/json-table-schema[JSON Table Schema]:
 
 ```json
 {
@@ -147,7 +148,7 @@ String yellow = dataFrame.getValueAt(2, COLOR);
 
 # Usage
 
-All modules are available via [Bintray/JCenter](https://bintray.com/netzwerg/maven/paleo/view).
+All modules are available via https://bintray.com/netzwerg/maven/paleo/view[Bintray/JCenter].
 
 ## Repository Configuration
 
@@ -214,7 +215,7 @@ Maven:
 
 # Javaslang
 
-Paleo makes extensive use of the [Javaslang](https://github.com/javaslang/javaslang) library. Javaslang provides
+Paleo makes extensive use of the https://github.com/javaslang/javaslang library[Javaslang]. Javaslang provides
 awesome collection classes which offer functionality way beyond the standard JDK. Working with the Javaslang classes
 is highly recommended, but it is always possible to back out and convert to JDK standards (e.g. with `toJavaList()`).
 
