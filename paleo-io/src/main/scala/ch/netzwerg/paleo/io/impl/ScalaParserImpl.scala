@@ -17,6 +17,7 @@
 package ch.netzwerg.paleo.io.impl
 
 import java.io.File
+import java.time.Instant
 
 import ch.netzwerg.paleo.ColumnIds._
 import ch.netzwerg.paleo._
@@ -46,7 +47,7 @@ object ScalaParserImpl {
     case ColumnType.CATEGORY => new Acc[java.lang.String, CategoryColumn](CategoryColumn.builder(CategoryColumnId.of(field.getName)), (s) => s)
     case ColumnType.DOUBLE => new Acc[java.lang.Double, DoubleColumn](DoubleColumn.builder(DoubleColumnId.of(field.getName)), (s) => s.toDouble)
     case ColumnType.INT => new Acc[java.lang.Integer, IntColumn](IntColumn.builder(IntColumnId.of(field.getName)), (s) => s.toInt)
-    // TODO: Handle case ColumnType.TIMESTAMP
+    case ColumnType.TIMESTAMP => new Acc[java.time.Instant, TimestampColumn](TimestampColumn.builder(TimestampColumnId.of(field.getName)), (s) => Instant.parse(s))
     case _ => new Acc(StringColumn.builder(StringColumnId.of(field.getName)), (s) => s)
   }
 
