@@ -120,15 +120,15 @@ public class ParserTest {
 
         IntColumnId ageColumnId = df.getColumnId(1, ColumnType.INT);
         IntColumn ageColumn = df.getColumn(ageColumnId);
-        assertArrayEquals(new int[]{42, 99, 67}, ageColumn.getValues().toArray());
+        assertArrayEquals(new int[]{42, 99, 67}, ageColumn.valueStream().toArray());
 
         DoubleColumnId heightColumnId = df.getColumnId(2, ColumnType.DOUBLE);
         DoubleColumn heightColumn = df.getColumn(heightColumnId);
-        assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.getValues().toArray(), 0.01);
+        assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.valueStream().toArray(), 0.01);
 
         BooleanColumnId vegetarianColumnId = df.getColumnId(3, ColumnType.BOOLEAN);
         BooleanColumn vegetarianColumn = df.getColumn(vegetarianColumnId);
-        assertEquals(Array.of(true, false, false), vegetarianColumn.getValues().toArray());
+        assertEquals(Array.of(true, false, false), vegetarianColumn.valueStream().toArray());
 
         // TODO: Re-enable once parsing of categories is available
 //        TimestampColumnId dateOfBirthColumnId = df.getColumnId(4, ColumnType.TIMESTAMP);

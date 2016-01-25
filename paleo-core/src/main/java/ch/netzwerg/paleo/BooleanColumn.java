@@ -73,7 +73,7 @@ public final class BooleanColumn implements Column<BooleanColumnId> {
         return values.get(rowIndex);
     }
 
-    public Stream<Boolean> getValues() {
+    public Stream<Boolean> valueStream() {
         return Stream.range(0, rowCount).map(values::get);
     }
 

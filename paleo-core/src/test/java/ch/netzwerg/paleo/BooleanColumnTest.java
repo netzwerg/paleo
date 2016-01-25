@@ -19,12 +19,11 @@ package ch.netzwerg.paleo;
 import javaslang.collection.Array;
 import org.junit.Test;
 
-import static ch.netzwerg.paleo.ColumnIds.booleanCol;
 import static org.junit.Assert.assertEquals;
 
 public class BooleanColumnTest extends AbstractBaseColumnTest<Boolean, BooleanColumn> {
 
-    private static final ColumnIds.BooleanColumnId ID = booleanCol("test");
+    private static final ColumnIds.BooleanColumnId ID = ColumnIds.BooleanColumnId.of("test");
 
     @Override
     protected BooleanColumn.Builder builder() {
@@ -38,7 +37,7 @@ public class BooleanColumnTest extends AbstractBaseColumnTest<Boolean, BooleanCo
         assertEquals(5, column.getRowCount());
         assertEquals(true, column.getValueAt(0));
         assertEquals(false, column.getValueAt(column.getRowCount() - 1));
-        assertEquals(Array.of(true, false, false, true, false), column.getValues().toArray());
+        assertEquals(Array.of(true, false, false, true, false), column.valueStream().toArray());
     }
 
 }

@@ -1,4 +1,5 @@
-# Paleo  [![Build Status](https://travis-ci.org/netzwerg/paleo.svg?branch=master)](https://travis-ci.org/netzwerg/paleo) [ ![Download](https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg) ](https://bintray.com/netzwerg/maven/paleo/_latestVersion)
+# Paleo image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"] image:https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg[link="https://bintray.com/netzwerg/maven/paleo/_latestVersion"]
+:latest-release-version: 0.5.0
 
 Immutable Java 8 data frames with typed columns.
 
@@ -18,11 +19,12 @@ Columns can be created via simple factory methods, through a fluent builder API,
 
 The `paleo-core` module provides all classes to identify, create, and structure typed columns: 
 
-```java
+[source,java]
+----
 // Type-safe column identifiers
-final StringColumnId NAME = ColumnIds.stringCol("Name");
-final CategoryColumnId COLOR = ColumnIds.categoryCol("Color");
-final DoubleColumnId SERVING_SIZE = ColumnIds.doubleCol("Serving Size (g)");
+final StringColumnId NAME = StringColumnId.of("Name");
+final CategoryColumnId COLOR = CategoryColumnId.of("Color");
+final DoubleColumnId SERVING_SIZE = DoubleColumnId.of("Serving Size (g)");
 
 // Convenient column creation
 StringColumn nameColumn = StringColumn.ofAll(NAME, "Banana", "Blueberry", "Lemon", "Apple");
@@ -37,12 +39,12 @@ String lemon = dataFrame.getValueAt(2, NAME);
 double appleServingSize = dataFrame.getValueAt(3, SERVING_SIZE);
 
 // Typed stream-based access to all values
-DoubleStream servingSizes = servingSizeColumn.getValues();
+DoubleStream servingSizes = servingSizeColumn.valueStream();
 double maxServingSize = servingSizes.summaryStatistics().getMax();
 
 // Smart column implementations
 Set<String> colors = colorColumn.getCategories();
-```
+----
 
 # Parsing From Text / File
 
@@ -54,17 +56,18 @@ data frame (i.e. the names and types of its columns) can be defined in one of tw
 In its simplest format, the tab-delimited text representation directly contains column names and types in a header.
 The first row specifies the column names, the second row specifies the column types (actual data starting on third row):
 
-```
+----
 1 Name    Color
 2 String  Category
 3 Banana  Yellow
 ...
 n Apple   Green
-```
+----
 
 The contents can then be parsed via `Parser.parseTabDelimited(Reader in)`, e.g. like:
 
-```java
+[source,java]
+----
 final String EXAMPLE =
             "Name\tColor\tServing Size (g)\n" +
             "String\tCategory\tDouble\n" +
@@ -74,15 +77,16 @@ final String EXAMPLE =
             "Apple\tGreen\t182";
 
 DataFrame dataFrame = Parser.parseTabDelimited(new StringReader(EXAMPLE));
-```
+----
 
 ## External JSON Schema
 
 Generally it is advisable to separate the structural information from the actual data. Paleo therefore supports the
 definition of an external JSON schema. The format is inspired by the
-[JSON Table Schema](http://dataprotocols.org/json-table-schema):
+http://dataprotocols.org/json-table-schema[JSON Table Schema]:
 
-```json
+[source,json]
+----
 {
   "title": "Example Schema",
   "dataFileName": "data.txt",
@@ -107,21 +111,23 @@ definition of an external JSON schema. The format is inspired by the
     }
   ]
 }
-```
+----
 
 Dedicated parsing methods allow to first parse the schema from JSON, and subsequently use it to create a `DataFrame`.
 A given base directory is used to load the actual data (i.e. to resolve the location of the configured `dataFileName`):
 
-```java
+[source,java]
+----
 Schema schema = Schema.parseJson(new StringReader(EXAMPLE_SCHEMA));
 DataFrame dataFrame = Parser.parseTabDelimited(schema, baseDir);
-```
+----
 
 ## Working With Parsed Data Frames
 
 Once a `DataFrame` instance has been parsed, its data can be accessed through a type-safe API:
 
-```java
+[source,java]
+----
 final String EXAMPLE =
             "Name\tColor\tServing Size (g)\n" +
             "String\tCategory\tDouble\n" +
@@ -143,25 +149,27 @@ IndexedSeq<String> nameValues = nameColumn.getValues();
 
 // ... or access individual values via row index / column id 
 String yellow = dataFrame.getValueAt(2, COLOR);
-```
+----
 
 # Usage
 
-All modules are available via [Bintray/JCenter](https://bintray.com/netzwerg/maven/paleo/view).
+All modules are available via https://bintray.com/netzwerg/maven/paleo/view[Bintray/JCenter].
 
 ## Repository Configuration
 
 Gradle:
 
-```groovy
+[source,groovy]
+----
 repositories {
     jcenter()
 }
-```
+----
 
 Maven `settings.xml`:
 
-```xml
+[source,xml]
+----
 <repository>
     <snapshots>
       <enabled>false</enabled>
@@ -170,26 +178,30 @@ Maven `settings.xml`:
     <name>bintray</name>
     <url>http://jcenter.bintray.com</url>
 </repository>
-```
+----
 
 ## Using the `paleo-core` module
 
 Gradle:
 
-```groovy
-compile 'ch.netzwerg:paleo-core:0.4.1'
-```
+[source,groovy]
+[subs="attributes"]
+----
+compile 'ch.netzwerg:paleo-core:{latest-release-version}'
+----
 
 Maven:
 
-```xml
+[source,xml]
+[subs="specialcharacters,attributes"]
+----
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-core</artifactId>
-    <version>0.4.1</version>
+    <version>{latest-release-version}</version>
     <type>jar</type>
 </dependency>
-```
+----
 
 ## Using the `paleo-io` module
 
@@ -197,24 +209,28 @@ Optional (requires `paleo-core`)
 
 Gradle:
 
-```groovy
-compile 'ch.netzwerg:paleo-io:0.4.1'
-```
+[source,groovy]
+[subs="attributes"]
+----
+compile 'ch.netzwerg:paleo-io:{latest-release-version}'
+----
 
 Maven:
 
-```xml
+[source,xml]
+[subs="specialcharacters,attributes"]
+----
 <dependency>
     <groupId>ch.netzwerg</groupId>
     <artifactId>paleo-io</artifactId>
-    <version>0.4.1</version>
+    <version>{latest-release-version}</version>
     <type>jar</type>
 </dependency>
-```
+----
 
 # Javaslang
 
-Paleo makes extensive use of the [Javaslang](https://github.com/javaslang/javaslang) library. Javaslang provides
+Paleo makes extensive use of the https://github.com/javaslang/javaslang[Javaslang library]. Javaslang provides
 awesome collection classes which offer functionality way beyond the standard JDK. Working with the Javaslang classes
 is highly recommended, but it is always possible to back out and convert to JDK standards (e.g. with `toJavaList()`).
 

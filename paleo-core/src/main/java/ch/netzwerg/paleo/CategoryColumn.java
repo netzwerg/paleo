@@ -81,7 +81,7 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
     /**
      * Creates a stream of individual row values (i.e. "explodes" categories).
      */
-    public Stream<String> createValues() {
+    public Stream<String> valueStream() {
         return Stream.range(0, getRowCount()).map(this::getValueAt);
     }
 

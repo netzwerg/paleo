@@ -31,7 +31,7 @@ public class GenericColumnTest {
     @Test
     public void ofAll() {
         ColumnType<ColumnIds.GenericColumnId> type = new ColumnType<>("CUSTOM", ColumnIds.GenericColumnId.class);
-        ColumnIds.GenericColumnId id = ColumnIds.genericCol("test", type);
+        ColumnIds.GenericColumnId id = ColumnIds.GenericColumnId.of("test", type);
         GenericColumn<File, ColumnIds.GenericColumnId> column = GenericColumn.ofAll(id, FILE_A, FILE_B, FILE_A, FILE_A);
         assertEquals(id, column.getId());
         assertEquals(4, column.getRowCount());

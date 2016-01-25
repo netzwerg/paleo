@@ -19,13 +19,12 @@ package ch.netzwerg.paleo;
 import org.junit.Test;
 
 import static ch.netzwerg.paleo.ColumnIds.IntColumnId;
-import static ch.netzwerg.paleo.ColumnIds.intCol;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class IntColumnTest extends AbstractBaseColumnTest<Integer, IntColumn> {
 
-    private static final IntColumnId ID = intCol("test");
+    private static final IntColumnId ID = IntColumnId.of("test");
 
     @Override
     protected IntColumn.Builder builder() {
@@ -39,7 +38,7 @@ public class IntColumnTest extends AbstractBaseColumnTest<Integer, IntColumn> {
         assertEquals(4, column.getRowCount());
         assertEquals(42, column.getValueAt(0));
         assertEquals(99, column.getValueAt(column.getRowCount() - 1));
-        assertArrayEquals(new int[]{42, 33, 69, 99}, column.getValues().toArray());
+        assertArrayEquals(new int[]{42, 33, 69, 99}, column.valueStream().toArray());
     }
 
 }

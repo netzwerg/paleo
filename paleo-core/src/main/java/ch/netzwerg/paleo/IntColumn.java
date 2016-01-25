@@ -71,7 +71,7 @@ public final class IntColumn implements Column<IntColumnId> {
         return values[index];
     }
 
-    public IntStream getValues() {
+    public IntStream valueStream() {
         return Arrays.stream(values);
     }
 

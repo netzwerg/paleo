@@ -41,17 +41,21 @@ object ScalaParserImpl {
     DataFrame.ofAll(columns)
   }
 
-  def createAcc(field: Field): Acc[_, _ <: Column[_]] = field.getType match {
-    case ColumnType.BOOLEAN => new Acc[java.lang.Boolean, BooleanColumn](BooleanColumn.builder(booleanCol(field.getName)), (s) => java.lang.Boolean.parseBoolean(s))
-    case ColumnType.CATEGORY => new Acc[java.lang.String, CategoryColumn](CategoryColumn.builder(categoryCol(field.getName)), (s) => s)
-    case ColumnType.DOUBLE => new Acc[java.lang.Double, DoubleColumn](DoubleColumn.builder(doubleCol(field.getName)), (s) => s.toDouble)
-    case ColumnType.INT => new Acc[java.lang.Integer, IntColumn](IntColumn.builder(intCol(field.getName)), (s) => s.toInt)
+  private def createAcc(field: Field): Acc[_, _ <: Column[_]] = field.getType match {
+    case ColumnType.BOOLEAN => new Acc[java.lang.Boolean, BooleanColumn](BooleanColumn.builder(BooleanColumnId.of(field.getName)), (s) => java.lang.Boolean.parseBoolean(s))
+    case ColumnType.CATEGORY => new Acc[java.lang.String, CategoryColumn](CategoryColumn.builder(CategoryColumnId.of(field.getName)), (s) => s)
+    case ColumnType.DOUBLE => new Acc[java.lang.Double, DoubleColumn](DoubleColumn.builder(DoubleColumnId.of(field.getName)), (s) => s.toDouble)
+    case ColumnType.INT => new Acc[java.lang.Integer, IntColumn](IntColumn.builder(IntColumnId.of(field.getName)), (s) => s.toInt)
     // TODO: Handle case ColumnType.TIMESTAMP
-    case _ => new Acc(StringColumn.builder(stringCol(field.getName)), (s) => s)
+    case _ => new Acc(StringColumn.builder(StringColumnId.of(field.getName)), (s) => s)
   }
 
 }
 
+/**
+  * Accumulates values by delegating to type-specific builders. The given 'parseLogic' abstracts the conversion from
+  * textual to type-specific values.
+  */
 class Acc[V, C <: Column[_]](builder: Column.Builder[V, C], parseLogic: (String) => (V)) {
 
   def addValue(stringValue: String): Acc[V, C] = {
@@ -59,7 +63,7 @@ class Acc[V, C <: Column[_]](builder: Column.Builder[V, C], parseLogic: (String)
     this
   }
 
-  def putAllMetaData(metaData: javaslang.collection.Map[String,String]) = {
+  def putAllMetaData(metaData: javaslang.collection.Map[String, String]) = {
     builder.putAllMetaData(metaData)
     this
   }

@@ -30,9 +30,9 @@ public class ReadmeTest {
     public void demo() {
 
         // Type-safe column identifiers
-        final StringColumnId NAME = ColumnIds.stringCol("Name");
-        final CategoryColumnId COLOR = ColumnIds.categoryCol("Color");
-        final DoubleColumnId SERVING_SIZE = ColumnIds.doubleCol("Serving Size (g)");
+        final StringColumnId NAME = StringColumnId.of("Name");
+        final CategoryColumnId COLOR = CategoryColumnId.of("Color");
+        final DoubleColumnId SERVING_SIZE = DoubleColumnId.of("Serving Size (g)");
 
         // Convenient column creation
         StringColumn nameColumn = StringColumn.ofAll(NAME, "Banana", "Blueberry", "Lemon", "Apple");
@@ -47,7 +47,7 @@ public class ReadmeTest {
         double appleServingSize = dataFrame.getValueAt(3, SERVING_SIZE);
 
         // Typed stream-based access to all values
-        DoubleStream servingSizes = servingSizeColumn.getValues();
+        DoubleStream servingSizes = servingSizeColumn.valueStream();
         double maxServingSize = servingSizes.summaryStatistics().getMax();
 
         // Smart column implementations

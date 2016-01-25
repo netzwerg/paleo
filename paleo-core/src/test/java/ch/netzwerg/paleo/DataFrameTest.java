@@ -18,22 +18,25 @@ package ch.netzwerg.paleo;
 
 import javaslang.collection.Array;
 import javaslang.collection.HashSet;
+import javaslang.collection.Iterator;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.File;
 import java.time.Instant;
+import java.util.Arrays;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
 import static org.junit.Assert.*;
 
 public class DataFrameTest {
 
-    private static final StringColumnId NAME = ColumnIds.stringCol("Name");
-    private static final IntColumnId AGE = ColumnIds.intCol("Age");
-    private static final DoubleColumnId HEIGHT = ColumnIds.doubleCol("Height");
-    private static final BooleanColumnId VEGETARIAN = ColumnIds.booleanCol("Vegetarian");
-    private static final TimestampColumnId DATE_OF_BIRTH = ColumnIds.timestampCol("Date Of Birth");
-    private static final CategoryColumnId GENDER = ColumnIds.categoryCol("Gender");
+    private static final StringColumnId NAME = StringColumnId.of("Name");
+    private static final IntColumnId AGE = IntColumnId.of("Age");
+    private static final DoubleColumnId HEIGHT = DoubleColumnId.of("Height");
+    private static final BooleanColumnId VEGETARIAN = BooleanColumnId.of("Vegetarian");
+    private static final TimestampColumnId DATE_OF_BIRTH = TimestampColumnId.of("Date Of Birth");
+    private static final CategoryColumnId GENDER = CategoryColumnId.of("Gender");
 
     private static final Instant AUG_26_1975 = Instant.parse("1975-08-26T12:08:30.00Z");
     private static final Instant JAN_08_2006 = Instant.parse("2006-01-08T23:43:30.00Z");
@@ -52,7 +55,7 @@ public class DataFrameTest {
     @Test
     public void defaultColumnTypes() {
 
-        StringColumn nameColumn = StringColumn.ofAll(NAME, "Ada", "Homer", "Hillary");
+        StringColumn nameColumn = StringColumn.builder(NAME).addAll("Ada", "Homer", "Hillary").putMetaData("meta-data", "rocks").build();
         IntColumn ageColumn = IntColumn.ofAll(AGE, 42, 99, 67);
         DoubleColumn heightColumn = DoubleColumn.ofAll(HEIGHT, 1.74, 1.20, 1.70);
         BooleanColumn vegetarianColumn = BooleanColumn.ofAll(VEGETARIAN, true, false, false);
@@ -76,17 +79,17 @@ public class DataFrameTest {
         assertEquals("Int", AGE.getType().getDescription());
         assertEquals(AGE, df.getColumnId(1, ColumnType.INT));
         assertEquals(ageColumn, df.getColumn(AGE));
-        assertArrayEquals(new int[]{42, 99, 67}, ageColumn.getValues().toArray());
+        assertArrayEquals(new int[]{42, 99, 67}, ageColumn.valueStream().toArray());
 
         assertEquals("Double", HEIGHT.getType().getDescription());
         assertEquals(HEIGHT, df.getColumnId(2, ColumnType.DOUBLE));
         assertEquals(heightColumn, df.getColumn(HEIGHT));
-        assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.getValues().toArray(), 0.01);
+        assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.valueStream().toArray(), 0.01);
 
         assertEquals("Boolean", VEGETARIAN.getType().getDescription());
         assertEquals(VEGETARIAN, df.getColumnId(3, ColumnType.BOOLEAN));
         assertEquals(vegetarianColumn, df.getColumn(VEGETARIAN));
-        assertEquals(Array.of(true, false, false), vegetarianColumn.getValues().toArray());
+        assertEquals(Array.of(true, false, false), vegetarianColumn.valueStream().toArray());
 
         assertEquals("Timestamp", DATE_OF_BIRTH.getType().getDescription());
         assertEquals(DATE_OF_BIRTH, df.getColumnId(4, ColumnType.TIMESTAMP));
@@ -97,6 +100,12 @@ public class DataFrameTest {
         assertEquals(GENDER, df.getColumnId(5, ColumnType.CATEGORY));
         assertEquals(genderColumn, df.getColumn(GENDER));
         assertEquals(HashSet.of("Female", "Male"), genderColumn.getCategories());
+
+        // Column access via ColumnId interface (i.e. non type-specific)
+        ColumnId nonSpecificId = nameColumn.getId();
+        Column<?> column = df.getColumn(nonSpecificId);
+        assertNotNull(column);
+        assertEquals(Option.some("rocks"), column.getMetaData().get("meta-data"));
 
         // typed random access for String values
         String stringValue = df.getValueAt(0, NAME);
@@ -146,6 +155,32 @@ public class DataFrameTest {
         StringColumn oneRowColumn = StringColumn.builder(NAME).add("foo").build();
         IntColumn threeRowColumn = IntColumn.builder(AGE).addAll(1, 2, 3).build();
         DataFrame.ofAll(oneRowColumn, threeRowColumn);
+    }
+
+    @Test
+    public void ofAll() {
+        StringColumn stringColumn = StringColumn.builder(NAME).build();
+        IntColumn intColumn = IntColumn.builder(AGE).build();
+
+        // enum variant
+        assertEquals(2, DataFrame.ofAll(stringColumn, intColumn).getColumnCount());
+
+        // iterable variant
+        Iterable<Column<?>> columns = Arrays.asList(stringColumn, intColumn);
+        assertEquals(2, DataFrame.ofAll(columns).getColumnCount());
+    }
+
+    @Test
+    public void iterator() {
+        StringColumn stringColumn = StringColumn.builder(NAME).build();
+        IntColumn intColumn = IntColumn.builder(AGE).build();
+
+        Iterator<Column<?>> iterator = DataFrame.ofAll(stringColumn, intColumn).iterator();
+        assertTrue(iterator.hasNext());
+        iterator.next();
+        assertTrue(iterator.hasNext());
+        iterator.next();
+        assertFalse(iterator.hasNext());
     }
 
 }

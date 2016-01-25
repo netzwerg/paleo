@@ -19,13 +19,12 @@ package ch.netzwerg.paleo;
 import org.junit.Test;
 
 import static ch.netzwerg.paleo.ColumnIds.DoubleColumnId;
-import static ch.netzwerg.paleo.ColumnIds.doubleCol;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class DoubleColumnTest extends AbstractBaseColumnTest<Double, DoubleColumn> {
 
-    private static final DoubleColumnId ID = doubleCol("test");
+    private static final DoubleColumnId ID = DoubleColumnId.of("test");
 
     @Override
     protected DoubleColumn.Builder builder() {
@@ -39,7 +38,7 @@ public class DoubleColumnTest extends AbstractBaseColumnTest<Double, DoubleColum
         assertEquals(4, column.getRowCount());
         assertEquals(1, column.getValueAt(0), 0.01);
         assertEquals(0, column.getValueAt(column.getRowCount() - 1), 0.01);
-        assertArrayEquals(new double[]{1, 2, 9, 0}, column.getValues().toArray(), 0.01);
+        assertArrayEquals(new double[]{1, 2, 9, 0}, column.valueStream().toArray(), 0.01);
     }
 
 }
