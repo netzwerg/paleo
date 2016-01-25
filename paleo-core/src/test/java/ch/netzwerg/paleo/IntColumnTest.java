@@ -38,7 +38,7 @@ public class IntColumnTest extends AbstractBaseColumnTest<Integer, IntColumn> {
         assertEquals(4, column.getRowCount());
         assertEquals(42, column.getValueAt(0));
         assertEquals(99, column.getValueAt(column.getRowCount() - 1));
-        assertArrayEquals(new int[]{42, 33, 69, 99}, column.getValues().toArray());
+        assertArrayEquals(new int[]{42, 33, 69, 99}, column.valueStream().toArray());
     }
 
 }

@@ -18,6 +18,7 @@ package ch.netzwerg.paleo;
 
 import javaslang.collection.IndexedSeq;
 import javaslang.collection.Map;
+import javaslang.collection.Stream;
 
 import static ch.netzwerg.paleo.ColumnIds.GenericColumnId;
 
@@ -50,6 +51,10 @@ abstract class AbstractColumn<V, I extends GenericColumnId> implements Column<I>
 
     public final IndexedSeq<V> getValues() {
         return values;
+    }
+
+    public final Stream<V> valueStream() {
+        return values.toStream();
     }
 
     public final V getValueAt(int index) {

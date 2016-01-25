@@ -47,7 +47,7 @@ public class ReadmeTest {
         double appleServingSize = dataFrame.getValueAt(3, SERVING_SIZE);
 
         // Typed stream-based access to all values
-        DoubleStream servingSizes = servingSizeColumn.getValues();
+        DoubleStream servingSizes = servingSizeColumn.valueStream();
         double maxServingSize = servingSizes.summaryStatistics().getMax();
 
         // Smart column implementations

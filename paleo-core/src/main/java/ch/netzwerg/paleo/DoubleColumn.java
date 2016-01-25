@@ -71,7 +71,7 @@ public final class DoubleColumn implements Column<DoubleColumnId> {
         return values[index];
     }
 
-    public DoubleStream getValues() {
+    public DoubleStream valueStream() {
         return Arrays.stream(values);
     }
 

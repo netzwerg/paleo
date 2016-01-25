@@ -59,7 +59,7 @@ public class CategoryColumnTest extends AbstractBaseColumnTest<String, CategoryC
         Array<String> values = Array.ofAll(this.wordGenerator.randomWords(100));
         CategoryColumn column = CategoryColumn.builder(id).addAll(values).build();
         assertEquals(93, column.getCategories().length());
-        assertEquals(values, column.createValues().toArray());
+        assertEquals(values, column.valueStream().toArray());
     }
 
 }

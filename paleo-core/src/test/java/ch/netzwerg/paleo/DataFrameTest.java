@@ -78,17 +78,17 @@ public class DataFrameTest {
         assertEquals("Int", AGE.getType().getDescription());
         assertEquals(AGE, df.getColumnId(1, ColumnType.INT));
         assertEquals(ageColumn, df.getColumn(AGE));
-        assertArrayEquals(new int[]{42, 99, 67}, ageColumn.getValues().toArray());
+        assertArrayEquals(new int[]{42, 99, 67}, ageColumn.valueStream().toArray());
 
         assertEquals("Double", HEIGHT.getType().getDescription());
         assertEquals(HEIGHT, df.getColumnId(2, ColumnType.DOUBLE));
         assertEquals(heightColumn, df.getColumn(HEIGHT));
-        assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.getValues().toArray(), 0.01);
+        assertArrayEquals(new double[]{1.74, 1.20, 1.70}, heightColumn.valueStream().toArray(), 0.01);
 
         assertEquals("Boolean", VEGETARIAN.getType().getDescription());
         assertEquals(VEGETARIAN, df.getColumnId(3, ColumnType.BOOLEAN));
         assertEquals(vegetarianColumn, df.getColumn(VEGETARIAN));
-        assertEquals(Array.of(true, false, false), vegetarianColumn.getValues().toArray());
+        assertEquals(Array.of(true, false, false), vegetarianColumn.valueStream().toArray());
 
         assertEquals("Timestamp", DATE_OF_BIRTH.getType().getDescription());
         assertEquals(DATE_OF_BIRTH, df.getColumnId(4, ColumnType.TIMESTAMP));
