@@ -18,10 +18,12 @@ package ch.netzwerg.paleo;
 
 import javaslang.collection.Array;
 import javaslang.collection.HashSet;
+import javaslang.collection.Iterator;
 import org.junit.Test;
 
 import java.io.File;
 import java.time.Instant;
+import java.util.Arrays;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
 import static org.junit.Assert.*;
@@ -146,6 +148,30 @@ public class DataFrameTest {
         StringColumn oneRowColumn = StringColumn.builder(NAME).add("foo").build();
         IntColumn threeRowColumn = IntColumn.builder(AGE).addAll(1, 2, 3).build();
         DataFrame.ofAll(oneRowColumn, threeRowColumn);
+    }
+
+    @Test
+    public void ofAll() {
+        StringColumn stringColumn = StringColumn.builder(NAME).build();
+        IntColumn intColumn = IntColumn.builder(AGE).build();
+
+        // enum variant
+        assertEquals(2, DataFrame.ofAll(stringColumn, intColumn).getColumnCount());
+
+        // iterable variant
+        Iterable<Column<?>> columns = Arrays.asList(stringColumn, intColumn);
+        assertEquals(2, DataFrame.ofAll(columns).getColumnCount());
+    }
+
+    @Test
+    public void iterator() {
+        StringColumn stringColumn = StringColumn.builder(NAME).build();
+        IntColumn intColumn = IntColumn.builder(AGE).build();
+
+        Iterator<Column<?>> iterator = DataFrame.ofAll(stringColumn, intColumn).iterator();
+        assertTrue(iterator.hasNext());
+        assertTrue(iterator.hasNext());
+        assertFalse(iterator.hasNext());
     }
 
 }
