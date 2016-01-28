@@ -23,10 +23,12 @@ import org.openjdk.jmh.annotations.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Warmup(iterations = 1)
 @Measurement(iterations = 1)
-@BenchmarkMode(Mode.Throughput)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 @SuppressWarnings("unused")
 public class ParserBenchmarks {
 
