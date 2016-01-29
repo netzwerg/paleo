@@ -17,7 +17,9 @@
 package ch.netzwerg.paleo.io.impl
 
 import java.io.File
-import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.{Instant, LocalDateTime, ZoneId}
+import javaslang.control.Option
 
 import ch.netzwerg.paleo.ColumnIds._
 import ch.netzwerg.paleo._
@@ -30,25 +32,42 @@ object ScalaParserImpl {
 
   def parseTabDelimited(schema: Schema, parentDir: File): DataFrame = {
     val fields = schema.getFields.toJavaList.asScala
-    val accs = for (field <- fields) yield {
-      val acc = createAcc(field)
-      acc.putAllMetaData(field.getMetaData)
-    }
+    val accumulators = fields.map(createAcc)
     for (lines <- Source.fromFile(new File(parentDir, schema.getDataFileName)).getLines()) {
       val values = lines.split("\t")
-      accs.zip(values).map(t => t._1.addValue(t._2))
+      accumulators.zip(values).map(t => t._1.addValue(t._2))
     }
-    val columns: java.lang.Iterable[_ <: Column[_]] = accs.map(_.build()).toIterable.asJava
+    val columns: java.lang.Iterable[_ <: Column[_]] = accumulators.map(_.build()).toIterable.asJava
     DataFrame.ofAll(columns)
   }
 
-  private def createAcc(field: Field): Acc[_, _ <: Column[_]] = field.getType match {
-    case ColumnType.BOOLEAN => new Acc[java.lang.Boolean, BooleanColumn](BooleanColumn.builder(BooleanColumnId.of(field.getName)), (s) => java.lang.Boolean.parseBoolean(s))
-    case ColumnType.CATEGORY => new Acc[java.lang.String, CategoryColumn](CategoryColumn.builder(CategoryColumnId.of(field.getName)), (s) => s)
-    case ColumnType.DOUBLE => new Acc[java.lang.Double, DoubleColumn](DoubleColumn.builder(DoubleColumnId.of(field.getName)), (s) => s.toDouble)
-    case ColumnType.INT => new Acc[java.lang.Integer, IntColumn](IntColumn.builder(IntColumnId.of(field.getName)), (s) => s.toInt)
-    case ColumnType.TIMESTAMP => new Acc[java.time.Instant, TimestampColumn](TimestampColumn.builder(TimestampColumnId.of(field.getName)), (s) => Instant.parse(s))
-    case _ => new Acc(StringColumn.builder(StringColumnId.of(field.getName)), (s) => s)
+  private def createAcc(field: Field): Acc[_, _ <: Column[_]] = {
+    val acc = field.getType match {
+      case ColumnType.BOOLEAN => new Acc[java.lang.Boolean, BooleanColumn](BooleanColumn.builder(BooleanColumnId.of(field.getName)), (s) => java.lang.Boolean.parseBoolean(s))
+      case ColumnType.CATEGORY => new Acc[java.lang.String, CategoryColumn](CategoryColumn.builder(CategoryColumnId.of(field.getName)), (s) => s)
+      case ColumnType.DOUBLE => new Acc[java.lang.Double, DoubleColumn](DoubleColumn.builder(DoubleColumnId.of(field.getName)), (s) => s.toDouble)
+      case ColumnType.INT => new Acc[java.lang.Integer, IntColumn](IntColumn.builder(IntColumnId.of(field.getName)), (s) => s.toInt)
+      case ColumnType.TIMESTAMP => createTimestampAcc(field)
+      case _ => new Acc(StringColumn.builder(StringColumnId.of(field.getName)), (s) => s)
+    }
+    acc.putAllMetaData(field.getMetaData)
+  }
+
+  private def createTimestampAcc(field: Field): Acc[Instant, TimestampColumn] = {
+    val function: java.util.function.Function[String, DateTimeFormatter] = new java.util.function.Function[String, DateTimeFormatter]() {
+      override def apply(pattern: String): DateTimeFormatter = DateTimeFormatter.ofPattern(pattern)
+    }
+    val formatter: Option[DateTimeFormatter] = field.getFormat.map(function)
+    val builder = TimestampColumn.builder(TimestampColumnId.of(field.getName))
+    val parseLogic: (String) => Instant = (s) => {
+      if (formatter.isDefined) {
+        val dateTime: LocalDateTime = LocalDateTime.from(formatter.get.parse(s))
+        dateTime.atZone(ZoneId.systemDefault).toInstant
+      } else {
+        Instant.parse(s)
+      }
+    }
+    new Acc[Instant, TimestampColumn](builder, parseLogic)
   }
 
 }
