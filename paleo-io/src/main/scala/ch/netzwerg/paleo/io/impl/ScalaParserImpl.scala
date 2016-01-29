@@ -77,16 +77,17 @@ object ScalaParserImpl {
     val scalaFields = fields.toJavaList.asScala
     val accumulators = scalaFields.map(createAcc)
 
-    for ((line, rowIndex) <- lines.zipWithIndex) {
+    var rowIndex = 1
+    for (line <- lines) {
       val values = line.split("\t")
 
       if (values.size != accumulators.length) {
-        val oneBasedRowIndex: Int = rowIndex + 1
-        val msg = s"Row '$oneBasedRowIndex' contains '${values.size}' values (but should match column count '${accumulators.length}')"
+        val msg = s"Row '$rowIndex' contains '${values.size}' values (but should match column count '${accumulators.length}')"
         throw new scala.IllegalArgumentException(msg)
       }
 
       accumulators.zip(values).map(t => t._1.addValue(t._2))
+      rowIndex += 1
     }
     val columns: lang.Iterable[_ <: Column[_]] = accumulators.map(_.build()).toIterable.asJava
     DataFrame.ofAll(columns)
