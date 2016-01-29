@@ -16,35 +16,79 @@
 
 package ch.netzwerg.paleo.io.impl
 
-import java.io.File
+import java.io.{File, Reader}
+import java.lang
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
+import java.util.Scanner
+import java.util.regex.Pattern
+import javaslang.collection
 import javaslang.control.Option
 
 import ch.netzwerg.paleo.ColumnIds._
 import ch.netzwerg.paleo._
 import ch.netzwerg.paleo.schema.{Field, Schema}
 
+import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import scala.io.Source
 
 object ScalaParserImpl {
 
+  val LineDelimiter = Pattern.compile("[\\r\\n]+")
+
+  def parseTabDelimited(reader: Reader, timestampPattern: Option[String]): DataFrame = {
+    val scanner: Scanner = new Scanner(reader)
+    scanner.useDelimiter(LineDelimiter)
+    val lines = scanner
+
+    val columnNames = lines.next().split("\t")
+    val columnTypes = lines.next().split("\t")
+
+    val fields: collection.List[Field] = createFields(columnNames, columnTypes, timestampPattern)
+
+    parseTabDelimited(fields, lines)
+
+  }
+
+  private def createFields(columnNames: Array[String], columnTypes: Array[String], timestampFormat: Option[String]) = {
+    val fields: Array[Field] = for ((columnName, columnTypeDesc) <- columnNames.zip(columnTypes)) yield {
+      val columnType = ColumnType.getByDescriptionOrDefault(columnTypeDesc, ColumnType.STRING)
+
+      // TODO: Offer type-safe Field constructor
+      val format = columnType match {
+        case ColumnType.TIMESTAMP => if (timestampFormat.isDefined) timestampFormat.get() else null
+        case _ => null
+      }
+
+      new Field(columnName, columnType, format, null)
+    }
+    val iterator: lang.Iterable[Field] = () => fields.iterator
+    javaslang.collection.List.ofAll[Field](iterator)
+  }
+
   def parseTabDelimited(schema: Schema, parentDir: File): DataFrame = {
-    val fields = schema.getFields.toJavaList.asScala
-    val accumulators = fields.map(createAcc)
-    for ((line, rowIndex) <- Source.fromFile(new File(parentDir, schema.getDataFileName)).getLines().zipWithIndex) {
+    val fields = schema.getFields
+    val lines = Source.fromFile(new File(parentDir, schema.getDataFileName)).getLines()
+    parseTabDelimited(fields, lines)
+  }
+
+  def parseTabDelimited(fields: javaslang.collection.Seq[Field], lines: java.util.Iterator[String]): DataFrame = {
+    val scalaFields = fields.toJavaList.asScala
+    val accumulators = scalaFields.map(createAcc)
+
+    for ((line, rowIndex) <- lines.zipWithIndex) {
       val values = line.split("\t")
 
       if (values.size != accumulators.length) {
         val oneBasedRowIndex: Int = rowIndex + 1
         val msg = s"Row '$oneBasedRowIndex' contains '${values.size}' values (but should match column count '${accumulators.length}')"
-        throw new IllegalArgumentException(msg)
+        throw new scala.IllegalArgumentException(msg)
       }
 
       accumulators.zip(values).map(t => t._1.addValue(t._2))
     }
-    val columns: java.lang.Iterable[_ <: Column[_]] = accumulators.map(_.build()).toIterable.asJava
+    val columns: lang.Iterable[_ <: Column[_]] = accumulators.map(_.build()).toIterable.asJava
     DataFrame.ofAll(columns)
   }
 

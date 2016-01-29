@@ -36,7 +36,6 @@ tasks.withType(ScalaCompile) {
 
 dependencies {
     compile project(':paleo-core')
-    compile libraries.commons_csv
     compile libraries.jackson
     compile libraries.scala
 }
