@@ -19,7 +19,6 @@ package ch.netzwerg.paleo.io.impl
 import java.io.File
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
-import javaslang.control.Option
 
 import ch.netzwerg.paleo.ColumnIds._
 import ch.netzwerg.paleo._
@@ -54,20 +53,31 @@ object ScalaParserImpl {
   }
 
   private def createTimestampAcc(field: Field): Acc[Instant, TimestampColumn] = {
-    val function: java.util.function.Function[String, DateTimeFormatter] = new java.util.function.Function[String, DateTimeFormatter]() {
-      override def apply(pattern: String): DateTimeFormatter = DateTimeFormatter.ofPattern(pattern)
-    }
-    val formatter: Option[DateTimeFormatter] = field.getFormat.map(function)
+    val optionalFormatter: Option[DateTimeFormatter] = field.getFormat.map[DateTimeFormatter]((pattern: String) => DateTimeFormatter.ofPattern(pattern))
     val builder = TimestampColumn.builder(TimestampColumnId.of(field.getName))
-    val parseLogic: (String) => Instant = (s) => {
-      if (formatter.isDefined) {
-        val dateTime: LocalDateTime = LocalDateTime.from(formatter.get.parse(s))
-        dateTime.atZone(ZoneId.systemDefault).toInstant
-      } else {
-        Instant.parse(s)
+    val parseLogic: (String) => Instant = s => {
+      optionalFormatter match {
+        case Some(formatter) =>
+          val dateTime = LocalDateTime.from(formatter.parse(s))
+          dateTime.atZone(ZoneId.systemDefault).toInstant
+        case None => Instant.parse(s)
       }
     }
     new Acc[Instant, TimestampColumn](builder, parseLogic)
+  }
+
+  implicit def javaToScalaFunction[T, R](f: Function[T, R]): java.util.function.Function[T, R] = {
+    new java.util.function.Function[T, R] {
+      override def apply(t: T): R = f.apply(t)
+    }
+  }
+
+  implicit def slangToScalaOption[T](option: javaslang.control.Option[T]) : Option[T] = {
+    if (option.isDefined) {
+      Some(option.get())
+    } else {
+      None
+    }
   }
 
 }
