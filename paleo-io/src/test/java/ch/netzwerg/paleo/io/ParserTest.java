@@ -83,6 +83,11 @@ public class ParserTest {
             FIELDS +
             "}";
 
+    private static final String SCHEMA_INCONSISTENT_COLUMN_COUNT = "{\n" +
+            "  \"dataFileName\": \"/inconsistent-column-count.txt\",\n" +
+            FIELDS +
+            "}";
+
     @Test
     public void parseTabDelimited() throws IOException {
         StringReader reader = new StringReader(CONTENTS_WITH_HEADER);
@@ -108,6 +113,18 @@ public class ParserTest {
         DataFrame df = Parser.parseTabDelimited(schema, resourceFolder);
         assertDataFrameParsedCorrectly(df);
         assertMetaDataParsedCorrectly(df);
+    }
+
+    @Test
+    public void parseTabDelimitedFromSchemaInconsistentColumnCount() throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_INCONSISTENT_COLUMN_COUNT);
+        Schema schema = Schema.parseJson(schemaReader);
+        try {
+            Parser.parseTabDelimited(schema);
+            fail("Exception expected");
+        } catch (Exception e) {
+            assertEquals("Row '2' contains '5' values (but should match column count '6')", e.getMessage());
+        }
     }
 
     private static void assertDataFrameParsedCorrectly(DataFrame df) {

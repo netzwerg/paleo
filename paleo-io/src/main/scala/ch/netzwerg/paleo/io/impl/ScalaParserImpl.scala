@@ -19,6 +19,7 @@ package ch.netzwerg.paleo.io.impl
 import java.io.File
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
+import javaslang.control.Option
 
 import ch.netzwerg.paleo.ColumnIds._
 import ch.netzwerg.paleo._
@@ -32,8 +33,15 @@ object ScalaParserImpl {
   def parseTabDelimited(schema: Schema, parentDir: File): DataFrame = {
     val fields = schema.getFields.toJavaList.asScala
     val accumulators = fields.map(createAcc)
-    for (lines <- Source.fromFile(new File(parentDir, schema.getDataFileName)).getLines()) {
-      val values = lines.split("\t")
+    for ((line, rowIndex) <- Source.fromFile(new File(parentDir, schema.getDataFileName)).getLines().zipWithIndex) {
+      val values = line.split("\t")
+
+      if (values.size != accumulators.length) {
+        val oneBasedRowIndex: Int = rowIndex + 1
+        val msg = s"Row '$oneBasedRowIndex' contains '${values.size}' values (but should match column count '${accumulators.length}')"
+        throw new IllegalArgumentException(msg)
+      }
+
       accumulators.zip(values).map(t => t._1.addValue(t._2))
     }
     val columns: java.lang.Iterable[_ <: Column[_]] = accumulators.map(_.build()).toIterable.asJava
@@ -53,31 +61,17 @@ object ScalaParserImpl {
   }
 
   private def createTimestampAcc(field: Field): Acc[Instant, TimestampColumn] = {
-    val optionalFormatter: Option[DateTimeFormatter] = field.getFormat.map[DateTimeFormatter]((pattern: String) => DateTimeFormatter.ofPattern(pattern))
+    val formatter: Option[DateTimeFormatter] = field.getFormat.map((pattern: String) => DateTimeFormatter.ofPattern(pattern))
     val builder = TimestampColumn.builder(TimestampColumnId.of(field.getName))
     val parseLogic: (String) => Instant = s => {
-      optionalFormatter match {
-        case Some(formatter) =>
-          val dateTime = LocalDateTime.from(formatter.parse(s))
-          dateTime.atZone(ZoneId.systemDefault).toInstant
-        case None => Instant.parse(s)
+      if (formatter.isDefined) {
+        val dateTime = LocalDateTime.from(formatter.get().parse(s))
+        dateTime.atZone(ZoneId.systemDefault).toInstant
+      } else {
+        Instant.parse(s)
       }
     }
     new Acc[Instant, TimestampColumn](builder, parseLogic)
-  }
-
-  implicit def javaToScalaFunction[T, R](f: Function[T, R]): java.util.function.Function[T, R] = {
-    new java.util.function.Function[T, R] {
-      override def apply(t: T): R = f.apply(t)
-    }
-  }
-
-  implicit def slangToScalaOption[T](option: javaslang.control.Option[T]) : Option[T] = {
-    if (option.isDefined) {
-      Some(option.get())
-    } else {
-      None
-    }
   }
 
 }
