@@ -127,6 +127,19 @@ public class ParserTest {
         }
     }
 
+    @Test
+    public void parseTabDelimitedWithEmptyValues() throws IOException {
+        String validButWithEmptyValues =
+                "First\tLast\n" +
+                        "String\tString\n" +
+                        "Barack\tObama\n" +
+                        "Homer\t\n" +
+                        "\tClinton\n";
+        DataFrame df = Parser.parseTabDelimited(new StringReader(validButWithEmptyValues));
+        assertEquals(2, df.getColumnCount());
+        assertEquals(3, df.getRowCount());
+    }
+
     private static void assertDataFrameParsedCorrectly(DataFrame df) {
         assertEquals(6, df.getColumnCount());
         assertEquals(Array.of("Name", "Age", "Height", "Vegetarian", "Date Of Birth", "Gender"), df.getColumnNames());

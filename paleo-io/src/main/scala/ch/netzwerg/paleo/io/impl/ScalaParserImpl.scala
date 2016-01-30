@@ -79,7 +79,7 @@ object ScalaParserImpl {
 
     var rowIndex = 1
     for (line <- lines) {
-      val values = line.split("\t")
+      val values = line.split("\t", -1) // empty values allowed
 
       if (values.size != accumulators.length) {
         val msg = s"Row '$rowIndex' contains '${values.size}' values (but should match column count '${accumulators.length}')"
