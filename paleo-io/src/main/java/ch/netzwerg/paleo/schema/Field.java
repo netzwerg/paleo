@@ -25,6 +25,8 @@ import javaslang.collection.LinkedHashMap;
 import javaslang.collection.Map;
 import javaslang.control.Option;
 
+import java.util.Objects;
+
 public final class Field {
 
     public static final String DEFAULT_NAME = "";
@@ -41,6 +43,13 @@ public final class Field {
         this.type = safeType(type);
         this.format = Option.of(format);
         this.metaData = safeMetaData(metaData);
+    }
+
+    public Field(String name, ColumnType<?> type, Option<String> format) {
+        this.name = safeName(name);
+        this.type = safeType(type);
+        this.format = Objects.requireNonNull(format, "format must not be null");
+        this.metaData = LinkedHashMap.empty();
     }
 
     private static String safeName(String name) {

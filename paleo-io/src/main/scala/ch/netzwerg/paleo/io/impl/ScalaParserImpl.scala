@@ -55,13 +55,11 @@ object ScalaParserImpl {
     val fields: Array[Field] = for ((columnName, columnTypeDesc) <- columnNames.zip(columnTypes)) yield {
       val columnType = ColumnType.getByDescriptionOrDefault(columnTypeDesc, ColumnType.STRING)
 
-      // TODO: Offer type-safe Field constructor
-      val format = columnType match {
-        case ColumnType.TIMESTAMP => if (timestampFormat.isDefined) timestampFormat.get() else null
-        case _ => null
+      columnType match {
+        case ColumnType.TIMESTAMP => new Field(columnName, columnType, timestampFormat)
+        case _ => new Field(columnName, columnType, Option.none())
       }
 
-      new Field(columnName, columnType, format, null)
     }
     val iterator: lang.Iterable[Field] = () => fields.iterator
     javaslang.collection.List.ofAll[Field](iterator)
