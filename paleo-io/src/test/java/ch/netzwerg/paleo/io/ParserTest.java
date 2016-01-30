@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.time.Instant;
 import java.time.Month;
@@ -138,6 +139,16 @@ public class ParserTest {
         DataFrame df = Parser.parseTabDelimited(new StringReader(validButWithEmptyValues));
         assertEquals(2, df.getColumnCount());
         assertEquals(3, df.getRowCount());
+    }
+
+    @Test
+    public void parseTabDelimitedOffsetRowIndexInErrorMessage() {
+        String invalid = "First\tLast\nString\tString\nBarack\n";
+        try (Reader in = new StringReader(invalid)) {
+            Parser.parseTabDelimited(in);
+        } catch (Exception e) {
+            assertEquals("Row '3' contains '1' value (but should match column count '2')", e.getMessage());
+        }
     }
 
     private static void assertDataFrameParsedCorrectly(DataFrame df) {

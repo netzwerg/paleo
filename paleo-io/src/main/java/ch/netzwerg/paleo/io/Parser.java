@@ -45,7 +45,7 @@ public final class Parser {
         try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
              Scanner scanner = new Scanner(inputStream)) {
             scanner.useDelimiter(ScalaParserImpl.LineDelimiter());
-            return ScalaParserImpl.parseTabDelimited(schema.getFields(), scanner);
+            return ScalaParserImpl.parseTabDelimited(schema.getFields(), scanner, 0);
         }
     }
 

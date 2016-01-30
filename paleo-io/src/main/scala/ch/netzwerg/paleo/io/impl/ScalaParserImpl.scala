@@ -47,7 +47,7 @@ object ScalaParserImpl {
 
     val fields: collection.List[Field] = createFields(columnNames, columnTypes, timestampPattern)
 
-    parseTabDelimited(fields, lines)
+    parseTabDelimited(fields, lines, 2)
 
   }
 
@@ -70,10 +70,10 @@ object ScalaParserImpl {
   def parseTabDelimited(schema: Schema, parentDir: File): DataFrame = {
     val fields = schema.getFields
     val lines = Source.fromFile(new File(parentDir, schema.getDataFileName)).getLines()
-    parseTabDelimited(fields, lines)
+    parseTabDelimited(fields, lines, 0)
   }
 
-  def parseTabDelimited(fields: javaslang.collection.Seq[Field], lines: java.util.Iterator[String]): DataFrame = {
+  def parseTabDelimited(fields: javaslang.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int): DataFrame = {
     val scalaFields = fields.toJavaList.asScala
     val accumulators = scalaFields.map(createAcc)
 
@@ -82,7 +82,9 @@ object ScalaParserImpl {
       val values = line.split("\t", -1) // empty values allowed
 
       if (values.size != accumulators.length) {
-        val msg = s"Row '$rowIndex' contains '${values.size}' values (but should match column count '${accumulators.length}')"
+        val rowIndexForHumans = rowIndex + rowIndexOffset
+        val plural = if (values.size > 1) "s" else ""
+        val msg = s"Row '$rowIndexForHumans' contains '${values.size}' value$plural (but should match column count '${accumulators.length}')"
         throw new scala.IllegalArgumentException(msg)
       }
 
