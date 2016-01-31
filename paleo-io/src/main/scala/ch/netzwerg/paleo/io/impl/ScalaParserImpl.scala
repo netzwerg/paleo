@@ -67,8 +67,13 @@ object ScalaParserImpl {
 
   def parseTabDelimited(schema: Schema, parentDir: File): DataFrame = {
     val fields = schema.getFields
-    val lines = Source.fromFile(new File(parentDir, schema.getDataFileName)).getLines()
-    parseTabDelimited(fields, lines, 0)
+    val source = Source.fromFile(new File(parentDir, schema.getDataFileName))
+    try {
+      val lines = source.getLines()
+      parseTabDelimited(fields, lines, 0)
+    } finally {
+      source.close()
+    }
   }
 
   def parseTabDelimited(fields: javaslang.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int): DataFrame = {
