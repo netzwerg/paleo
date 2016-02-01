@@ -27,21 +27,21 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Scanner;
 
-public final class Parser {
+public interface Parser {
 
-    public static DataFrame parseTabDelimited(Reader in) throws IOException {
+    static DataFrame parseTabDelimited(Reader in) throws IOException {
         return ScalaParserImpl.parseTabDelimited(in, Option.none());
     }
 
-    public static DataFrame parseTabDelimited(Reader in, String timestampPattern) throws IOException {
+    static DataFrame parseTabDelimited(Reader in, String timestampPattern) throws IOException {
         return ScalaParserImpl.parseTabDelimited(in, Option.of(timestampPattern));
     }
 
-    public static DataFrame parseTabDelimited(Schema schema, File parentDir) throws IOException {
+    static DataFrame parseTabDelimited(Schema schema, File parentDir) throws IOException {
         return ScalaParserImpl.parseTabDelimited(schema, parentDir);
     }
 
-    public static DataFrame parseTabDelimited(Schema schema) throws IOException {
+    static DataFrame parseTabDelimited(Schema schema) throws IOException {
         try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
              Scanner scanner = new Scanner(inputStream)) {
             scanner.useDelimiter(ScalaParserImpl.LineDelimiter());

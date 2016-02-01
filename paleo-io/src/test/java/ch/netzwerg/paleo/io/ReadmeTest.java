@@ -26,7 +26,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
 

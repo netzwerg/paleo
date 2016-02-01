@@ -18,6 +18,8 @@ package ch.netzwerg.paleo;
 
 import org.junit.Test;
 
+import java.util.stream.DoubleStream;
+
 import static ch.netzwerg.paleo.ColumnIds.DoubleColumnId;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -25,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 public class DoubleColumnTest extends AbstractBaseColumnTest<Double, DoubleColumn> {
 
     private static final DoubleColumnId ID = DoubleColumnId.of("test");
+    private static final double DELTA = 0.0001;
 
     @Override
     protected DoubleColumn.Builder builder() {
@@ -34,11 +37,37 @@ public class DoubleColumnTest extends AbstractBaseColumnTest<Double, DoubleColum
     @Test
     public void valueTypeSpecificBuilding() {
         DoubleColumn column = builder().add(1d).addAll(2, 9).add(0d).build();
+        assertMultipleValues(column);
+    }
+
+    @Test
+    public void of() {
+        DoubleColumn column = DoubleColumn.of(ID, 42d);
+        assertEquals(ID, column.getId());
+        assertEquals(1, column.getRowCount());
+        assertEquals(42d, column.getValueAt(0), DELTA);
+        assertArrayEquals(new double[]{42}, column.valueStream().toArray(), DELTA);
+    }
+
+    @Test
+    public void ofAllVarArgs() {
+        DoubleColumn column = DoubleColumn.ofAll(ID, 1, 2, 9, 0);
+        assertMultipleValues(column);
+    }
+
+    @Test
+    public void ofAllStream() {
+        DoubleStream stream = DoubleStream.of(1, 2, 9, 0);
+        DoubleColumn column = DoubleColumn.ofAll(ID, stream);
+        assertMultipleValues(column);
+    }
+
+    private static void assertMultipleValues(DoubleColumn column) {
         assertEquals(ID, column.getId());
         assertEquals(4, column.getRowCount());
-        assertEquals(1, column.getValueAt(0), 0.01);
-        assertEquals(0, column.getValueAt(column.getRowCount() - 1), 0.01);
-        assertArrayEquals(new double[]{1, 2, 9, 0}, column.valueStream().toArray(), 0.01);
+        assertEquals(1, column.getValueAt(0), DELTA);
+        assertEquals(0, column.getValueAt(column.getRowCount() - 1), DELTA);
+        assertArrayEquals(new double[]{1, 2, 9, 0}, column.valueStream().toArray(), DELTA);
     }
 
 }

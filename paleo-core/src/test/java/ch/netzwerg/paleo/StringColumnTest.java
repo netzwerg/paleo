@@ -21,9 +21,14 @@ import org.junit.Test;
 import static ch.netzwerg.paleo.ColumnIds.StringColumnId;
 import static org.junit.Assert.assertEquals;
 
-public class StringColumnTest extends AbstractBaseColumnTest<String, StringColumn> {
+public class StringColumnTest extends AbstractColumnTest<String, StringColumn> {
 
     private static final StringColumnId ID = StringColumnId.of("test");
+
+    @Override
+    String generateValue() {
+        return String.valueOf(System.currentTimeMillis());
+    }
 
     @Override
     protected StringColumn.Builder builder() {

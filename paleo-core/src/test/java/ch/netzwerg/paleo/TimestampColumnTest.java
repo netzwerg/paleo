@@ -24,13 +24,18 @@ import java.time.Instant;
 import static ch.netzwerg.paleo.ColumnIds.TimestampColumnId;
 import static org.junit.Assert.assertEquals;
 
-public class TimestampColumnTest extends AbstractBaseColumnTest<Instant, TimestampColumn> {
+public class TimestampColumnTest extends AbstractColumnTest<Instant, TimestampColumn> {
 
     private static final Instant AUG_26_1975 = Instant.parse("1975-08-26T12:08:30.00Z");
     private static final Instant JAN_08_2008 = Instant.parse("2006-01-08T23:43:30.00Z");
     private static final Instant OCT_26_1947 = Instant.parse("1947-10-26T03:23:36.00Z");
 
     private static final TimestampColumnId ID = TimestampColumnId.of("test");
+
+    @Override
+    Instant generateValue() {
+        return Instant.now();
+    }
 
     @Override
     protected TimestampColumn.Builder builder() {
