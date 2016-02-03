@@ -23,6 +23,8 @@ import java.time.{Instant, LocalDateTime, ZoneId}
 import java.util.Scanner
 import java.util.regex.Pattern
 import javaslang.collection
+import javaslang.collection.HashMap
+import javaslang.collection.Map
 import javaslang.control.Option
 
 import ch.netzwerg.paleo.ColumnIds._
@@ -47,7 +49,7 @@ object ScalaParserImpl {
 
     val fields: collection.List[Field] = createFields(columnNames, columnTypes, timestampPattern)
 
-    parseTabDelimited(fields, lines, 2)
+    parseTabDelimited(fields, lines, 2, HashMap.empty())
 
   }
 
@@ -70,13 +72,13 @@ object ScalaParserImpl {
     val source = Source.fromFile(new File(parentDir, schema.getDataFileName))
     try {
       val lines = source.getLines()
-      parseTabDelimited(fields, lines, 0)
+      parseTabDelimited(fields, lines, 0, schema.getMetaData)
     } finally {
       source.close()
     }
   }
 
-  def parseTabDelimited(fields: javaslang.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int): DataFrame = {
+  def parseTabDelimited(fields: javaslang.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
     val scalaFields = fields.toJavaList.asScala
     val accumulators = scalaFields.map(createAcc)
 
@@ -94,8 +96,8 @@ object ScalaParserImpl {
       accumulators.zip(values).map(t => t._1.addValue(t._2))
       rowIndex += 1
     }
-    val columns: lang.Iterable[_ <: Column[_]] = accumulators.map(_.build()).toIterable.asJava
-    DataFrame.ofAll(columns)
+    val columns = accumulators.map(_.build()).toIterable.asJava
+    DataFrame.ofAll(columns).withMetaData(dataFrameMetaData)
   }
 
   private def createAcc(field: Field): Acc[_, _ <: Column[_]] = {

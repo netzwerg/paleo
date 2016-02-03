@@ -17,6 +17,7 @@
 package ch.netzwerg.paleo.schema;
 
 import ch.netzwerg.paleo.ColumnType;
+import javaslang.control.Option;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class SchemaTest {
     private static final String JSON = "{\n" +
             "  \"title\": \"Paleo Schema Title\",\n" +
             "  \"dataFileName\": \"data.txt\",\n" +
+            "  \"metaData\": { \"author\": \"netzwerg\" },\n" +
             "  \"fields\": [\n" +
             "    {\n" +
             "      \"name\": \"Foo\",\n" +
@@ -53,6 +55,7 @@ public class SchemaTest {
         assertEquals("Paleo Schema Title", schema.getTitle());
         assertEquals("data.txt", schema.getDataFileName());
         assertEquals(3, schema.getFields().length());
+        assertEquals(Option.of("netzwerg"), schema.getMetaData().get("author"));
 
         Field fooField = schema.getFields().get(0);
         assertEquals("Foo", fooField.getName());
@@ -65,7 +68,7 @@ public class SchemaTest {
         assertEquals("yyyyMMddHHmmss", barField.getFormat().get());
 
         Field emptyField = schema.getFields().get(2);
-        assertEquals(Field.DEFAULT_NAME, emptyField.getName());
+        assertEquals("", emptyField.getName());
         assertEquals(ColumnType.CATEGORY, emptyField.getType());
         assertFalse(emptyField.getFormat().isDefined());
     }

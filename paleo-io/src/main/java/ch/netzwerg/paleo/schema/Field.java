@@ -16,7 +16,6 @@
 
 package ch.netzwerg.paleo.schema;
 
-import ch.netzwerg.paleo.ColumnIds;
 import ch.netzwerg.paleo.ColumnType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,10 +26,11 @@ import javaslang.control.Option;
 
 import java.util.Objects;
 
-public final class Field {
+import static ch.netzwerg.paleo.schema.NullSafe.safeMap;
+import static ch.netzwerg.paleo.schema.NullSafe.safeString;
+import static ch.netzwerg.paleo.schema.NullSafe.safeType;
 
-    public static final String DEFAULT_NAME = "";
-    public static final ColumnType<ColumnIds.StringColumnId> DEFAULT_TYPE = ColumnTypeDeserializer.DEFAULT_TYPE;
+public final class Field {
 
     private final String name;
     private final ColumnType<?> type;
@@ -39,33 +39,17 @@ public final class Field {
 
     @JsonCreator
     public Field(@JsonProperty("name") String name, @JsonProperty("type") @JsonDeserialize(using = ColumnTypeDeserializer.class) ColumnType<?> type, @JsonProperty("format") String format, @JsonProperty("metaData") StringStringMap metaData) {
-        this.name = safeName(name);
+        this.name = safeString(name);
         this.type = safeType(type);
         this.format = Option.of(format);
-        this.metaData = safeMetaData(metaData);
+        this.metaData = safeMap(metaData);
     }
 
     public Field(String name, ColumnType<?> type, Option<String> format) {
-        this.name = safeName(name);
+        this.name = safeString(name);
         this.type = safeType(type);
         this.format = Objects.requireNonNull(format, "format must not be null");
         this.metaData = LinkedHashMap.empty();
-    }
-
-    private static String safeName(String name) {
-        return name == null ? DEFAULT_NAME : name;
-    }
-
-    private static ColumnType<?> safeType(ColumnType<?> type) {
-        return type == null ? DEFAULT_TYPE : type;
-    }
-
-    private static Map<String, String> safeMetaData(StringStringMap javaMap) {
-        if (javaMap == null) {
-            return LinkedHashMap.empty();
-        } else {
-            return LinkedHashMap.ofAll(javaMap);
-        }
     }
 
     public String getName() {

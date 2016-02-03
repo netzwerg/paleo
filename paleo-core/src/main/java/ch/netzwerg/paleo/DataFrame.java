@@ -16,10 +16,7 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.Array;
-import javaslang.collection.IndexedSeq;
-import javaslang.collection.Iterator;
-import javaslang.collection.Set;
+import javaslang.collection.*;
 
 import java.time.Instant;
 
@@ -29,10 +26,16 @@ public final class DataFrame implements Iterable<Column<?>> {
 
     private final Array<Column<?>> columns;
     private final int rowCount;
+    private final Map<String, String> metaData;
 
     private DataFrame(Array<Column<?>> columns) {
+        this(columns, HashMap.empty());
+    }
+
+    private DataFrame(Array<Column<?>> columns, Map<String, String> metaData) {
         this.columns = columns;
         this.rowCount = inferRowCount(columns);
+        this.metaData = metaData;
     }
 
     private static int inferRowCount(IndexedSeq<Column<?>> columns) {
@@ -167,6 +170,14 @@ public final class DataFrame implements Iterable<Column<?>> {
     @Override
     public Iterator<Column<?>> iterator() {
         return columns.iterator();
+    }
+
+    public DataFrame withMetaData(Map<String, String> metaData) {
+        return new DataFrame(columns, metaData);
+    }
+
+    public Map<String, String> getMetaData() {
+        return metaData;
     }
 
 }

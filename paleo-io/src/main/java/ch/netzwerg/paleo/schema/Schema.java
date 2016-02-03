@@ -21,28 +21,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.IndexedSeq;
+import javaslang.collection.Map;
 import javaslang.collection.Vector;
 
 import java.io.IOException;
 import java.io.Reader;
 
-public final class Schema {
+import static ch.netzwerg.paleo.schema.NullSafe.safeMap;
+import static ch.netzwerg.paleo.schema.NullSafe.safeString;
 
-    private static final String DEFAULT_STRING = "";
+public final class Schema {
 
     private final String title;
     private final String dataFileName;
     private final Vector<Field> fields;
+    private final Map<String, String> metaData;
 
     @JsonCreator
-    public Schema(@JsonProperty("title") String title, @JsonProperty("dataFileName") String dataFileName, @JsonProperty("fields") FieldList fields) {
+    public Schema(@JsonProperty("title") String title, @JsonProperty("dataFileName") String dataFileName, @JsonProperty("fields") FieldList fields, @JsonProperty("metaData") StringStringMap metaData) {
         this.title = safeString(title);
         this.dataFileName = safeString(dataFileName);
         this.fields = safeFields(fields);
-    }
-
-    private static String safeString(String s) {
-        return s == null ? DEFAULT_STRING : s;
+        this.metaData = safeMap(metaData);
     }
 
     private static Vector<Field> safeFields(FieldList fields) {
@@ -59,6 +59,10 @@ public final class Schema {
 
     public IndexedSeq<Field> getFields() {
         return fields;
+    }
+
+    public Map<String, String> getMetaData() {
+        return metaData;
     }
 
     public static Schema parseJson(Reader in) throws IOException {

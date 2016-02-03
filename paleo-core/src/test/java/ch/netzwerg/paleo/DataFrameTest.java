@@ -16,9 +16,7 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.Array;
-import javaslang.collection.HashSet;
-import javaslang.collection.Iterator;
+import javaslang.collection.*;
 import javaslang.control.Option;
 import org.junit.Test;
 
@@ -181,6 +179,17 @@ public class DataFrameTest {
         assertTrue(iterator.hasNext());
         iterator.next();
         assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void withMetaData() {
+        StringColumn stringColumn = StringColumn.builder(NAME).build();
+        IntColumn intColumn = IntColumn.builder(AGE).build();
+        DataFrame df = DataFrame.ofAll(stringColumn, intColumn);
+        Map<String, String> metaData = LinkedHashMap.of("foo", "bar");
+        DataFrame withMetaData = df.withMetaData(metaData);
+        assertEquals(metaData, withMetaData.getMetaData());
+        assertEquals(2, withMetaData.getColumnCount());
     }
 
 }

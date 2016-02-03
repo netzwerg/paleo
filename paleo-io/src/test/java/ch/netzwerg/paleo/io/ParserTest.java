@@ -74,13 +74,17 @@ public class ParserTest {
             "    }\n" +
             "  ]\n";
 
+    private static final String META_DATA = "  \"metaData\": { \"author\": \"netzwerg\" }";
+
     private static final String SCHEMA_STREAM_BASED = "{\n" +
             "  \"dataFileName\": \"/data.txt\",\n" +
+            META_DATA + ",\n" +
             FIELDS +
             "}";
 
     private static final String SCHEMA_FILE_BASED = "{\n" +
             "  \"dataFileName\": \"data.txt\",\n" +
+            META_DATA + ",\n" +
             FIELDS +
             "}";
 
@@ -202,9 +206,13 @@ public class ParserTest {
     }
 
     private static void assertMetaDataParsedCorrectly(DataFrame df) {
-        Map<String, String> metaData = df.getColumn(df.getColumnId(2, ColumnType.DOUBLE)).getMetaData();
-        assertEquals(1, metaData.size());
-        assertEquals(Option.of("m"), metaData.get("unit"));
+        Map<String, String> dataFrameMetaData = df.getMetaData();
+        assertEquals(1, dataFrameMetaData.size());
+        assertEquals(Option.of("netzwerg"), dataFrameMetaData.get("author"));
+
+        Map<String, String> columnMetaData = df.getColumn(df.getColumnId(2, ColumnType.DOUBLE)).getMetaData();
+        assertEquals(1, columnMetaData.size());
+        assertEquals(Option.of("m"), columnMetaData.get("unit"));
     }
 
 }
