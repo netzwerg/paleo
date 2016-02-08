@@ -24,6 +24,7 @@ import javaslang.collection.Set;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public final class CategoryColumn implements Column<CategoryColumnId> {
 
@@ -87,26 +88,28 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
 
     public static final class Builder implements Column.Builder<String, CategoryColumn> {
 
+        private static final Integer DEFAULT_INDEX = -1;
+
         private final CategoryColumnId id;
-        private final java.util.List<String> categories;
-        private final java.util.List<Integer> categoryIndexPerRowIndex;
+        private final java.util.Map<String, Integer> indexByCategory;
+        private final java.util.List<Integer> indexPerRow;
         private final MetaDataBuilder metaDataBuilder;
 
         private Builder(CategoryColumnId id) {
             this.id = id;
-            this.categories = new ArrayList<>();
-            this.categoryIndexPerRowIndex = new ArrayList<>();
+            this.indexByCategory = new LinkedHashMap<>();
+            this.indexPerRow = new ArrayList<>();
             this.metaDataBuilder = new MetaDataBuilder();
         }
 
         @Override
         public Builder add(String value) {
-            int categoryIndex = categories.indexOf(value);
+            Integer categoryIndex = indexByCategory.getOrDefault(value, DEFAULT_INDEX);
             if (categoryIndex < 0) {
-                categories.add(value);
-                categoryIndex = categories.size() - 1;
+                indexByCategory.put(value, indexByCategory.size());
+                categoryIndex = indexByCategory.size() - 1;
             }
-            categoryIndexPerRowIndex.add(categoryIndex);
+            indexPerRow.add(categoryIndex);
             return this;
         }
 
@@ -131,7 +134,8 @@ public final class CategoryColumn implements Column<CategoryColumnId> {
         }
 
         public CategoryColumn build() {
-            return new CategoryColumn(id, Array.ofAll(categories), Array.ofAll(categoryIndexPerRowIndex), metaDataBuilder.build());
+            Array<String> categories = Array.ofAll(indexByCategory.keySet());
+            return new CategoryColumn(id, categories, Array.ofAll(indexPerRow), metaDataBuilder.build());
         }
 
     }

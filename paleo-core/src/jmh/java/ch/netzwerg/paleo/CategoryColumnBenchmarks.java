@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 @SuppressWarnings("unused")
 public class CategoryColumnBenchmarks {
 
-    private static final int ROW_COUNT = 1_000_000;
+    private static final int ROW_COUNT = 100_000;
     private static final List<String> UNIQUE_STRINGS = List.ofAll(() -> IntStream.range(0, ROW_COUNT).mapToObj(String::valueOf).iterator());
 
     @Benchmark
