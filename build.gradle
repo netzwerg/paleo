@@ -20,6 +20,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.3.1'
+        classpath 'me.champeau.gradle:jmh-gradle-plugin:0.2.0'
     }
 }
 
@@ -62,6 +63,7 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'maven'
+    apply plugin: 'me.champeau.gradle.jmh'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -88,6 +90,14 @@ subprojects {
 
     artifacts {
         published sourceJar
+    }
+
+    idea.module {
+        scopes.PROVIDED.plus += [ configurations.jmh ]
+    }
+
+    jmh {
+        jmhVersion = versions.jmhVersion
     }
 
 }

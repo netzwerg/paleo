@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-plugins {
-    id "me.champeau.gradle.jmh" version "0.2.0"
-}
-
-apply plugin: 'idea'
 apply plugin: 'scala'
 
 sourceSets.main.scala.srcDir "src/main/java"
@@ -38,12 +33,4 @@ dependencies {
     compile project(':paleo-core')
     compile libraries.jackson
     compile libraries.scala
-}
-
-idea.module {
-    scopes.PROVIDED.plus += [ configurations.jmh ]
-}
-
-jmh {
-    jmhVersion = '1.11.3'
 }

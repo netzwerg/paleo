@@ -16,6 +16,7 @@
 
 ext {
     libraries = [:]
+    versions = [:]
 }
 
 libraries.javaslang = 'com.javaslang:javaslang:2.0.0-RC4'
@@ -28,3 +29,5 @@ def scalaVersion = '2.11.7'
 libraries.scala = "org.scala-lang:scala-library:$scalaVersion"
 libraries.scalaTools = ["org.scala-lang:scala-compiler:$scalaVersion",
                         ext.libraries.scala]
+
+versions.jmhVersion = '1.11.3'
