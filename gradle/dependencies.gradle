@@ -19,7 +19,7 @@ ext {
     versions = [:]
 }
 
-libraries.javaslang = 'com.javaslang:javaslang:2.0.0-RC4'
+libraries.javaslang = 'io.javaslang:javaslang:2.0.0'
 libraries.jackson = 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
 
 libraries.junit = 'junit:junit:4.11'
