@@ -38,22 +38,24 @@ allprojects {
     group = 'ch.netzwerg'
     version = rootProject.version
 
-    bintray {
-        dryRun = project.hasProperty('dryRun') && project.dryRun.toBoolean()
-        user = "$BINTRAY_USER"
-        key = "$BINTRAY_API_KEY"
-        configurations = ['published', 'archives']
-        pkg {
-            repo = 'maven'
-            name = 'paleo'
-            licenses = ['Apache-2.0']
-            desc = 'Immutable Java 8 data frames with typed columns'
-            websiteUrl = 'https://github.com/netzwerg/paleo'
-            issueTrackerUrl = 'https://github.com/netzwerg/paleo/issues'
-            vcsUrl = 'https://github.com/netzwerg/paleo.git'
-            version {
-                name = project.version
-                vcsTag = project.release.tagName
+    if (project.hasProperty("BINTRAY_USER")) {
+        bintray {
+            dryRun = project.hasProperty('dryRun') && project.dryRun.toBoolean()
+            user = "$BINTRAY_USER"
+            key = "$BINTRAY_API_KEY"
+            configurations = ['published', 'archives']
+            pkg {
+                repo = 'maven'
+                name = 'paleo'
+                licenses = ['Apache-2.0']
+                desc = 'Immutable Java 8 data frames with typed columns'
+                websiteUrl = 'https://github.com/netzwerg/paleo'
+                issueTrackerUrl = 'https://github.com/netzwerg/paleo/issues'
+                vcsUrl = 'https://github.com/netzwerg/paleo.git'
+                version {
+                    name = project.version
+                    vcsTag = project.release.tagName
+                }
             }
         }
     }
