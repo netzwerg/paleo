@@ -25,6 +25,7 @@ import static javaslang.Tuple.of;
 public final class ColumnType<T extends ColumnId> {
 
     public static final ColumnType<IntColumnId> INT = new ColumnType<>("Int", IntColumnId.class);
+    public static final ColumnType<LongColumnId> LONG = new ColumnType<>("Long", LongColumnId.class);
     public static final ColumnType<DoubleColumnId> DOUBLE = new ColumnType<>("Double", DoubleColumnId.class);
     public static final ColumnType<BooleanColumnId> BOOLEAN = new ColumnType<>("Boolean", BooleanColumnId.class);
     public static final ColumnType<StringColumnId> STRING = new ColumnType<>("String", StringColumnId.class);
@@ -33,6 +34,7 @@ public final class ColumnType<T extends ColumnId> {
 
     private static final Map<String, ColumnType<?>> TYPES_BY_DESCRIPTION = HashMap.<String, ColumnType<?>>ofEntries(
             of(ColumnType.INT.getDescription(), ColumnType.INT),
+            of(ColumnType.LONG.getDescription(), ColumnType.LONG),
             of(ColumnType.DOUBLE.getDescription(), ColumnType.DOUBLE),
             of(ColumnType.BOOLEAN.getDescription(), ColumnType.BOOLEAN),
             of(ColumnType.STRING.getDescription(), ColumnType.STRING),

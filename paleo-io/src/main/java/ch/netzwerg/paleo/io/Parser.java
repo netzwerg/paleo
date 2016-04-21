@@ -48,5 +48,4 @@ public interface Parser {
             return ScalaParserImpl.parseTabDelimited(schema.getFields(), scanner, 0, schema.getMetaData());
         }
     }
-
 }
