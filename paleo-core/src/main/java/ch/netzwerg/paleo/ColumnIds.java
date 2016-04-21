@@ -30,6 +30,17 @@ public interface ColumnIds {
 
     }
 
+    final class LongColumnId extends GenericColumnId {
+
+        private LongColumnId(String name) {
+            super(name, ColumnType.LONG);
+        }
+
+        public static LongColumnId of(String name) {
+            return new LongColumnId(name);
+        }
+    }
+
     final class DoubleColumnId extends GenericColumnId {
 
         private DoubleColumnId(String name) {
