@@ -106,6 +106,7 @@ object ScalaParserImpl {
       case ColumnType.CATEGORY => new Acc[java.lang.String, CategoryColumn](CategoryColumn.builder(CategoryColumnId.of(field.getName)), (s) => s)
       case ColumnType.DOUBLE => new Acc[java.lang.Double, DoubleColumn](DoubleColumn.builder(DoubleColumnId.of(field.getName)), (s) => s.toDouble)
       case ColumnType.INT => new Acc[java.lang.Integer, IntColumn](IntColumn.builder(IntColumnId.of(field.getName)), (s) => s.toInt)
+      case ColumnType.LONG => new Acc[java.lang.Long, LongColumn](LongColumn.builder(LongColumnId.of(field.getName)), (s) => s.toLong)
       case ColumnType.TIMESTAMP => createTimestampAcc(field)
       case _ => new Acc(StringColumn.builder(StringColumnId.of(field.getName)), (s) => s)
     }
