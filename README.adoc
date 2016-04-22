@@ -7,6 +7,7 @@ A data frame is composed of `0..n` named columns, which all contain the same num
 data type, which allows for type-safe value access. The following column types are supported out-of-the-box:
 
 * **Int**: Primitive `int` values
+* **Long**: Primitive `long` values
 * **Double**: Primitive `double` values
 * **Boolean**: Primitive `boolean` values
 * **String**: `java.lang.String` values
