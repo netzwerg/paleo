@@ -87,6 +87,25 @@ subprojects {
         published
     }
 
+    task copyLicense(type: Copy) {
+        from "$rootDir"
+        into 'build/resources/main/META-INF'
+        include 'LICENSE'
+    }
+
+    jar {
+        dependsOn copyLicense
+        doFirst {
+            manifest {
+                attributes(
+                        'Build-Time': new Date().format("EEE, dd MMM yyyy HH:mm:ss z"),
+                        'Implementation-Version': rootProject.version,
+                        'Bundle-License': 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                )
+            }
+        }
+    }
+
     task sourceJar(type: Jar) {
         from sourceSets.main.allSource
         classifier = 'sources'
