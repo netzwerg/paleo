@@ -247,4 +247,7 @@ aware that the builders are not thread-safe.
 The backing data structures are all about **raw** values and **primitive** types &mdash; this somehow reminded me of
 the paleo diet.
 
-&copy; 2016 Rahel Lüthy
+# Contributions
+
+Pull requests are very welcome.
+Please note that by submitting a pull request, you agree to license your contribution under the "Apache License Version 2.0".
