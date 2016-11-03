@@ -17,7 +17,6 @@
 package ch.netzwerg.paleo.io.impl
 
 import java.io.{File, Reader}
-import java.lang
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
 import java.util.Scanner
@@ -31,13 +30,12 @@ import ch.netzwerg.paleo.ColumnIds._
 import ch.netzwerg.paleo._
 import ch.netzwerg.paleo.schema.{Field, Schema}
 
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import scala.io.Source
 
 object ScalaParserImpl {
 
-  val LineDelimiter = Pattern.compile("[\\r\\n]+")
+  val LineDelimiter: Pattern = Pattern.compile("[\\r\\n]+")
 
   def parseTabDelimited(reader: Reader, timestampPattern: Option[String]): DataFrame = {
     val scanner: Scanner = new Scanner(reader)
@@ -63,8 +61,7 @@ object ScalaParserImpl {
       }
 
     }
-    val iterator: lang.Iterable[Field] = () => fields.iterator
-    javaslang.collection.List.ofAll[Field](iterator)
+    javaslang.collection.List.ofAll[Field](fields.toIterable.asJava)
   }
 
   def parseTabDelimited(schema: Schema, parentDir: File): DataFrame = {
@@ -72,7 +69,7 @@ object ScalaParserImpl {
     val source = Source.fromFile(new File(parentDir, schema.getDataFileName))
     try {
       val lines = source.getLines()
-      parseTabDelimited(fields, lines, 0, schema.getMetaData)
+      parseTabDelimited(fields, lines.asJava, 0, schema.getMetaData)
     } finally {
       source.close()
     }
@@ -83,7 +80,7 @@ object ScalaParserImpl {
     val accumulators = scalaFields.map(createAcc)
 
     var rowIndex = 1
-    for (line <- lines) {
+    for (line <- lines.asScala) {
       val values = line.split("\t", -1) // empty values allowed
 
       if (values.size != accumulators.length) {
@@ -96,7 +93,7 @@ object ScalaParserImpl {
       accumulators.zip(values).map(t => t._1.addValue(t._2))
       rowIndex += 1
     }
-    val columns = accumulators.map(_.build()).toIterable.asJava
+    val columns = accumulators.map(_.build()).asJava
     DataFrame.ofAll(columns).withMetaData(dataFrameMetaData)
   }
 
@@ -140,7 +137,7 @@ class Acc[V, C <: Column[_]](builder: Column.Builder[V, C], parseLogic: (String)
     this
   }
 
-  def putAllMetaData(metaData: javaslang.collection.Map[String, String]) = {
+  def putAllMetaData(metaData: javaslang.collection.Map[String, String]): Acc[V, C] = {
     builder.putAllMetaData(metaData)
     this
   }
