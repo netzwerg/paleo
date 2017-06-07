@@ -32,6 +32,8 @@ import java.time.Instant;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.function.Function;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
@@ -42,9 +44,9 @@ public class ParserTest {
 
     private static final String CONTENTS_WITH_HEADER = "Name\tAge\tHeight\tVegetarian\tDate Of Birth\tGender\n" +
             "String\tInt\tDouble\tBoolean\tTimestamp\tCategory\n" +
-            "Ada\t42\t1.74\ttrue\t19750826050916\tFemale\n" +
-            "Homer\t99\t1.20\tF\t20060108050916\tMale\n" +
-            "Hillary\t67\t1.70\t1\t19471026050916\tFemale\n";
+            "Ada\t42\t1.74\ttrue\t19750826050916.111\tFemale\n" +
+            "Homer\t99\t1.20\tF\t20060108050916.222\tMale\n" +
+            "Hillary\t67\t1.70\t1\t19471026050916.333\tFemale\n";
 
     private static final String FIELDS = "  \"fields\": [\n" +
             "    {\n" +
@@ -66,7 +68,7 @@ public class ParserTest {
             "    {\n" +
             "      \"name\": \"Date Of Birth\",\n" +
             "      \"type\": \"Timestamp\",\n" +
-            "      \"format\": \"yyyyMMddHHmmss\"\n" +
+            "      \"format\": \"yyyyMMddHHmmss.SSS\"\n" +
             "    },\n" +
             "    {\n" +
             "      \"name\": \"Gender\",\n" +
@@ -96,7 +98,7 @@ public class ParserTest {
     @Test
     public void parseTabDelimited() throws IOException {
         StringReader reader = new StringReader(CONTENTS_WITH_HEADER);
-        DataFrame df = Parser.parseTabDelimited(reader, "yyyyMMddHHmmss");
+        DataFrame df = Parser.parseTabDelimited(reader, "yyyyMMddHHmmss.SSS");
         assertDataFrameParsedCorrectly(df);
     }
 
@@ -179,6 +181,9 @@ public class ParserTest {
         TimestampColumn dateOfBirthColumn = df.getColumn(dateOfBirthColumnId);
         Function<? super Instant, Month> toMonth = instant -> instant.atZone(ZoneId.from(ZoneOffset.UTC)).getMonth();
         assertEquals(asList(Month.AUGUST, Month.JANUARY, Month.OCTOBER), dateOfBirthColumn.getValues().map(toMonth).toJavaList());
+        assertEquals(111, dateOfBirthColumn.getValueAt(0).getLong(ChronoField.MILLI_OF_SECOND));
+        assertEquals(222, dateOfBirthColumn.getValueAt(1).getLong(ChronoField.MILLI_OF_SECOND));
+        assertEquals(333, dateOfBirthColumn.getValueAt(2).getLong(ChronoField.MILLI_OF_SECOND));
 
         CategoryColumnId genderColumnId = df.getColumnId(5, ColumnType.CATEGORY);
         CategoryColumn genderColumn = df.getColumn(genderColumnId);

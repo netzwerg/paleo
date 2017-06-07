@@ -40,7 +40,7 @@ public class SchemaTest {
             "    {\n" +
             "      \"name\": \"Bar\",\n" +
             "      \"type\": \"Timestamp\",\n" +
-            "      \"format\": \"yyyyMMddHHmmss\"\n" +
+            "      \"format\": \"yyyyMMddHHmmss.SSS\"\n" +
             "    },\n" +
             "    {\n" +
             "      \"name\": \"\",\n" +
@@ -65,7 +65,7 @@ public class SchemaTest {
         Field barField = schema.getFields().get(1);
         assertEquals("Bar", barField.getName());
         assertEquals(ColumnType.TIMESTAMP, barField.getType());
-        assertEquals("yyyyMMddHHmmss", barField.getFormat().get());
+        assertEquals("yyyyMMddHHmmss.SSS", barField.getFormat().get());
 
         Field emptyField = schema.getFields().get(2);
         assertEquals("", emptyField.getName());
