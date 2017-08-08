@@ -16,9 +16,9 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.IndexedSeq;
-import javaslang.collection.Map;
-import javaslang.collection.Stream;
+import io.vavr.collection.IndexedSeq;
+import io.vavr.collection.Map;
+import io.vavr.collection.Stream;
 
 import static ch.netzwerg.paleo.ColumnIds.GenericColumnId;
 

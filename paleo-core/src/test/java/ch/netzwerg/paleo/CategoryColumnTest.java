@@ -17,8 +17,8 @@
 package ch.netzwerg.paleo;
 
 import ch.netzwerg.chabis.WordGenerator;
-import javaslang.collection.Array;
-import javaslang.collection.HashSet;
+import io.vavr.collection.Array;
+import io.vavr.collection.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 

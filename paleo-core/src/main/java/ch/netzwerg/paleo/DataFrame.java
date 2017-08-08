@@ -14,7 +14,7 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.*;
+import io.vavr.collection.*;
 
 import java.time.Instant;
 
@@ -159,7 +159,7 @@ public final class DataFrame implements Iterable<Column<?>> {
 
     @SuppressWarnings("unchecked")
     private <T extends Column<?>> T getTypedColumn(ColumnId columnId) {
-        return (T) columns.find(c -> c.getId().equals(columnId)).getOption().getOrElseThrow(() -> {
+        return (T) columns.find(c -> c.getId().equals(columnId)).getOrElseThrow(() -> {
             String msg = String.format("Unknown column id '%s'", columnId);
             throw new IllegalArgumentException(msg);
         });

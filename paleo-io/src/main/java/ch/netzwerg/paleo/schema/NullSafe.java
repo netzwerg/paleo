@@ -17,8 +17,8 @@
 package ch.netzwerg.paleo.schema;
 
 import ch.netzwerg.paleo.ColumnType;
-import javaslang.collection.LinkedHashMap;
-import javaslang.collection.Map;
+import io.vavr.collection.LinkedHashMap;
+import io.vavr.collection.Map;
 
 public interface NullSafe {
 

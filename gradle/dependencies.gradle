@@ -17,10 +17,10 @@ ext {
     versions = [:]
 }
 
-libraries.javaslang = 'io.javaslang:javaslang:2.0.4'
-libraries.jackson = 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
+libraries.vavr = 'io.vavr:vavr:0.9.0'
+libraries.jackson = 'com.fasterxml.jackson.core:jackson-databind:2.8.9'
 
-libraries.junit = 'junit:junit:4.11'
+libraries.junit = 'junit:junit:4.12'
 libraries.chabis = 'ch.netzwerg:chabis:0.2.0'
 
 def scalaVersion = '2.12.0'
@@ -28,4 +28,4 @@ libraries.scala = "org.scala-lang:scala-library:$scalaVersion"
 libraries.scalaTools = ["org.scala-lang:scala-compiler:$scalaVersion",
                         ext.libraries.scala]
 
-versions.jmhVersion = '1.11.3'
+versions.jmhVersion = '1.19'

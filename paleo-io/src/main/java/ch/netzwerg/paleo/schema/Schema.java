@@ -18,9 +18,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javaslang.collection.IndexedSeq;
-import javaslang.collection.Map;
-import javaslang.collection.Vector;
+import io.vavr.collection.IndexedSeq;
+import io.vavr.collection.Map;
+import io.vavr.collection.Vector;
 
 import java.io.IOException;
 import java.io.Reader;

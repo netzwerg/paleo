@@ -18,10 +18,10 @@ package ch.netzwerg.paleo;
 
 import ch.netzwerg.paleo.ColumnIds.CategoryColumnId;
 import ch.netzwerg.paleo.impl.MetaDataBuilder;
-import javaslang.collection.Array;
-import javaslang.collection.Map;
-import javaslang.collection.Set;
-import javaslang.collection.Stream;
+import io.vavr.collection.Array;
+import io.vavr.collection.Map;
+import io.vavr.collection.Set;
+import io.vavr.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -16,7 +16,7 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.Array;
+import io.vavr.collection.Array;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

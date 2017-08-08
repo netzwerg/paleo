@@ -14,7 +14,7 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.Set;
+import io.vavr.collection.Set;
 import org.junit.Test;
 
 import java.util.stream.DoubleStream;
