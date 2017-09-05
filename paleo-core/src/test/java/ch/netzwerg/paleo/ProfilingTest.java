@@ -14,8 +14,8 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.Stream;
-import javaslang.collection.Vector;
+import io.vavr.collection.Stream;
+import io.vavr.collection.Vector;
 import org.junit.Ignore;
 import org.junit.Test;
 

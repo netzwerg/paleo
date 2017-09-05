@@ -18,7 +18,7 @@ package ch.netzwerg.paleo;
 
 import ch.netzwerg.paleo.ColumnIds.LongColumnId;
 import ch.netzwerg.paleo.impl.MetaDataBuilder;
-import javaslang.collection.Map;
+import io.vavr.collection.Map;
 
 import java.util.Arrays;
 import java.util.stream.LongStream;

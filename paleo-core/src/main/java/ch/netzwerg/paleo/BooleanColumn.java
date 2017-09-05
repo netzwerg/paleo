@@ -18,8 +18,8 @@ package ch.netzwerg.paleo;
 
 import ch.netzwerg.paleo.ColumnIds.BooleanColumnId;
 import ch.netzwerg.paleo.impl.MetaDataBuilder;
-import javaslang.collection.Map;
-import javaslang.collection.Stream;
+import io.vavr.collection.Map;
+import io.vavr.collection.Stream;
 
 import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicInteger;

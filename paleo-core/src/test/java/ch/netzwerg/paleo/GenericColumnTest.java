@@ -15,7 +15,7 @@
 package ch.netzwerg.paleo;
 
 import ch.netzwerg.paleo.ColumnIds.GenericColumnId;
-import javaslang.collection.Array;
+import io.vavr.collection.Array;
 import org.junit.Test;
 
 import java.io.File;

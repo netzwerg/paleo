@@ -14,11 +14,11 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.HashMap;
-import javaslang.collection.Map;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.Map;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
-import static javaslang.Tuple.of;
+import static io.vavr.Tuple.of;
 
 public final class ColumnType<T extends ColumnId> {
 

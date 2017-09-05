@@ -19,7 +19,7 @@ package ch.netzwerg.paleo.io;
 import ch.netzwerg.paleo.DataFrame;
 import ch.netzwerg.paleo.io.impl.ScalaParserImpl;
 import ch.netzwerg.paleo.schema.Schema;
-import javaslang.control.Option;
+import io.vavr.control.Option;
 
 import java.io.File;
 import java.io.IOException;

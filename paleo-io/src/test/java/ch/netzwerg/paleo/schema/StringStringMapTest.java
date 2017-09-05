@@ -16,8 +16,8 @@
 
 package ch.netzwerg.paleo.schema;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import org.junit.Test;
 
 import java.util.Map;

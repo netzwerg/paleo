@@ -15,7 +15,7 @@
  */
 package ch.netzwerg.paleo;
 
-import javaslang.collection.List;
+import io.vavr.collection.List;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.concurrent.TimeUnit;

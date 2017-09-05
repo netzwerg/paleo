@@ -16,7 +16,7 @@
 
 package ch.netzwerg.paleo.impl;
 
-import javaslang.collection.Map;
+import io.vavr.collection.Map;
 
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -34,8 +34,8 @@ public final class MetaDataBuilder {
         metaData.forEach(t -> this.metaData.put(t._1, t._2));
     }
 
-    public javaslang.collection.LinkedHashMap<String, String> build() {
-        return javaslang.collection.LinkedHashMap.ofAll(metaData);
+    public io.vavr.collection.LinkedHashMap<String, String> build() {
+        return io.vavr.collection.LinkedHashMap.ofAll(metaData);
     }
 
 }

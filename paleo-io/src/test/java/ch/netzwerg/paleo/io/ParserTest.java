@@ -18,10 +18,10 @@ package ch.netzwerg.paleo.io;
 
 import ch.netzwerg.paleo.*;
 import ch.netzwerg.paleo.schema.Schema;
-import javaslang.collection.Array;
-import javaslang.collection.HashSet;
-import javaslang.collection.Map;
-import javaslang.control.Option;
+import io.vavr.collection.Array;
+import io.vavr.collection.HashSet;
+import io.vavr.collection.Map;
+import io.vavr.control.Option;
 import org.junit.Test;
 
 import java.io.File;

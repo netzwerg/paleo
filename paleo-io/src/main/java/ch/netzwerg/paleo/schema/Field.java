@@ -20,9 +20,9 @@ import ch.netzwerg.paleo.ColumnType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import javaslang.collection.LinkedHashMap;
-import javaslang.collection.Map;
-import javaslang.control.Option;
+import io.vavr.collection.LinkedHashMap;
+import io.vavr.collection.Map;
+import io.vavr.control.Option;
 
 import java.util.Objects;
 
