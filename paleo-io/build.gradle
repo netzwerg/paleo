@@ -14,18 +14,11 @@
 
 apply plugin: 'scala'
 
+// compile scala before compiling java
 sourceSets.main.scala.srcDir "src/main/java"
 sourceSets.main.java.srcDirs = []
-
 sourceSets.test.scala.srcDir "src/test/java"
 sourceSets.test.java.srcDirs = []
-
-tasks.withType(ScalaCompile) {
-    // Use incremental compilation
-    scalaCompileOptions.useAnt = false
-    // Enable Scala warnings output
-    scalaCompileOptions.additionalParameters = ["-feature", "-Xexperimental"]
-}
 
 dependencies {
     compile project(':paleo-core')
