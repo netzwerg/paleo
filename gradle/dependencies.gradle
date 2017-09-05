@@ -23,7 +23,7 @@ libraries.jackson = 'com.fasterxml.jackson.core:jackson-databind:2.8.9'
 libraries.junit = 'junit:junit:4.12'
 libraries.chabis = 'ch.netzwerg:chabis:0.2.0'
 
-def scalaVersion = '2.12.0'
+def scalaVersion = '2.12.3'
 libraries.scala = "org.scala-lang:scala-library:$scalaVersion"
 libraries.scalaTools = ["org.scala-lang:scala-compiler:$scalaVersion",
                         ext.libraries.scala]
