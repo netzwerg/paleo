@@ -14,8 +14,8 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.*;
-import javaslang.control.Option;
+import io.vavr.collection.*;
+import io.vavr.control.Option;
 import org.junit.Test;
 
 import java.io.File;

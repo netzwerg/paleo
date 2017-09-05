@@ -18,7 +18,7 @@ import ch.netzwerg.paleo.ColumnType;
 import ch.netzwerg.paleo.DataFrame;
 import ch.netzwerg.paleo.StringColumn;
 import ch.netzwerg.paleo.schema.Schema;
-import javaslang.collection.IndexedSeq;
+import io.vavr.collection.IndexedSeq;
 import org.junit.Test;
 
 import java.io.File;

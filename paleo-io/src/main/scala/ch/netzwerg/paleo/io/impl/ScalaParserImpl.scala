@@ -21,10 +21,10 @@ import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
 import java.util.Scanner
 import java.util.regex.Pattern
-import javaslang.collection
-import javaslang.collection.HashMap
-import javaslang.collection.Map
-import javaslang.control.Option
+import io.vavr.collection
+import io.vavr.collection.HashMap
+import io.vavr.collection.Map
+import io.vavr.control.Option
 
 import ch.netzwerg.paleo.ColumnIds._
 import ch.netzwerg.paleo._
@@ -61,7 +61,7 @@ object ScalaParserImpl {
       }
 
     }
-    javaslang.collection.List.ofAll[Field](fields.toIterable.asJava)
+    _root_.io.vavr.collection.List.ofAll[Field](fields.toIterable.asJava)
   }
 
   def parseTabDelimited(schema: Schema, parentDir: File): DataFrame = {
@@ -75,7 +75,7 @@ object ScalaParserImpl {
     }
   }
 
-  def parseTabDelimited(fields: javaslang.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
+  def parseTabDelimited(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
     val scalaFields = fields.toJavaList.asScala
     val accumulators = scalaFields.map(createAcc)
 
@@ -137,7 +137,7 @@ class Acc[V, C <: Column[_]](builder: Column.Builder[V, C], parseLogic: (String)
     this
   }
 
-  def putAllMetaData(metaData: javaslang.collection.Map[String, String]): Acc[V, C] = {
+  def putAllMetaData(metaData: _root_.io.vavr.collection.Map[String, String]): Acc[V, C] = {
     builder.putAllMetaData(metaData)
     this
   }

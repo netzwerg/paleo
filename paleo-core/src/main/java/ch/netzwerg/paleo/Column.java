@@ -16,7 +16,7 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.Map;
+import io.vavr.collection.Map;
 
 public interface Column<T extends ColumnId> {
 

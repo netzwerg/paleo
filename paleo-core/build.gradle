@@ -13,5 +13,5 @@
  */
 
 dependencies {
-    compile libraries.javaslang
+    compile libraries.vavr
 }

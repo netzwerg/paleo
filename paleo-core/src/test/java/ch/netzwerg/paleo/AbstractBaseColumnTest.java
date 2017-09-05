@@ -16,10 +16,10 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.collection.LinkedHashMap;
-import javaslang.collection.Map;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
+import io.vavr.collection.LinkedHashMap;
+import io.vavr.collection.Map;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

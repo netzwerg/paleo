@@ -229,10 +229,10 @@ Maven:
 </dependency>
 ----
 
-# Javaslang
+# Vavr
 
-Paleo makes extensive use of the https://github.com/javaslang/javaslang[Javaslang library]. Javaslang provides
-awesome collection classes which offer functionality way beyond the standard JDK. Working with the Javaslang classes
+Paleo makes extensive use of the http://www.vavr.io/[Vavr library]. Vavr provides
+awesome collection classes which offer functionality way beyond the standard JDK. Working with the Vavr classes
 is highly recommended, but it is always possible to back out and convert to JDK standards (e.g. with `toJavaList()`).
 
 # Factory-Methods vs. Builders

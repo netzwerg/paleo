@@ -16,9 +16,9 @@
 
 package ch.netzwerg.paleo;
 
-import javaslang.collection.Array;
-import javaslang.collection.LinkedHashMap;
-import javaslang.collection.Map;
+import io.vavr.collection.Array;
+import io.vavr.collection.LinkedHashMap;
+import io.vavr.collection.Map;
 
 import java.util.Objects;
 
