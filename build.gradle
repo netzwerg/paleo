@@ -44,7 +44,7 @@ allprojects {
         if (project.hasProperty('BINTRAY_API_KEY')) {
             key = "$BINTRAY_API_KEY"
         }
-        configurations = ['published']
+        configurations = ['published', 'archives']
         pkg {
             repo = 'maven'
             name = 'paleo'
