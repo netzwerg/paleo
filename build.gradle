@@ -59,6 +59,11 @@ allprojects {
             }
         }
     }
+
+    idea.module {
+        inheritOutputDirs = true
+    }
+
 }
 
 subprojects {
