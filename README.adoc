@@ -49,7 +49,7 @@ Set<String> colors = colorColumn.getCategories();
 
 # Parsing From Text / File
 
-The `paleo-io` module parses data frames from tab-delimited text representations. The structure of the
+The `paleo-io` module parses data frames from tab-delimited or comma-separated text representations. The structure of the
 data frame (i.e. the names and types of its columns) can be defined in one of two ways:
 
 ## Header Rows

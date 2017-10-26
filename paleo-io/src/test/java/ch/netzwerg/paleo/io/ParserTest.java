@@ -33,7 +33,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalField;
 import java.util.function.Function;
 
 import static ch.netzwerg.paleo.ColumnIds.*;
@@ -42,11 +41,17 @@ import static org.junit.Assert.*;
 
 public class ParserTest {
 
-    private static final String CONTENTS_WITH_HEADER = "Name\tAge\tHeight\tVegetarian\tDate Of Birth\tGender\n" +
+    private static final String CONTENTS_WITH_HEADER_TAB_SEPARATED = "Name\tAge\tHeight\tVegetarian\tDate Of Birth\tGender\n" +
             "String\tInt\tDouble\tBoolean\tTimestamp\tCategory\n" +
             "Ada\t42\t1.74\ttrue\t19750826050916.111\tFemale\n" +
             "Homer\t99\t1.20\tF\t20060108050916.222\tMale\n" +
             "Hillary\t67\t1.70\t1\t19471026050916.333\tFemale\n";
+
+    private static final String CONTENTS_WITH_HEADER_CSV = "Name,Age,Height,Vegetarian,Date Of Birth,Gender\n" +
+            "String,Int,Double,Boolean,Timestamp,Category\n" +
+            "Ada,42,1.74,true,19750826050916.111,Female\n" +
+            "Homer,99,1.20,F,20060108050916.222,Male\n" +
+            "Hillary,67,1.70,1,19471026050916.333,Female\n";
 
     private static final String FIELDS = "  \"fields\": [\n" +
             "    {\n" +
@@ -78,33 +83,48 @@ public class ParserTest {
 
     private static final String META_DATA = "  \"metaData\": { \"author\": \"netzwerg\" }";
 
-    private static final String SCHEMA_STREAM_BASED = "{\n" +
+    private static final String SCHEMA_STREAM_BASED_TAB_DELIMITED = "{\n" +
             "  \"dataFileName\": \"/data.txt\",\n" +
             META_DATA + ",\n" +
             FIELDS +
             "}";
 
-    private static final String SCHEMA_FILE_BASED = "{\n" +
+    private static final String SCHEMA_STREAM_BASED_CSV = "{\n" +
+            "  \"dataFileName\": \"/data.csv\",\n" +
+            META_DATA + ",\n" +
+            FIELDS +
+            "}";
+
+    private static final String SCHEMA_FILE_BASED_TAB_DELIMITED = "{\n" +
             "  \"dataFileName\": \"data.txt\",\n" +
             META_DATA + ",\n" +
             FIELDS +
             "}";
 
+    private static final String SCHEMA_FILE_BASED_CSV = "{\n" +
+            "  \"dataFileName\": \"data.csv\",\n" +
+            META_DATA + ",\n" +
+            FIELDS +
+            "}";
+
+
     private static final String SCHEMA_INCONSISTENT_COLUMN_COUNT = "{\n" +
             "  \"dataFileName\": \"/inconsistent-column-count.txt\",\n" +
             FIELDS +
             "}";
+    
+    // -- Tab Delimited
 
     @Test
-    public void parseTabDelimited() throws IOException {
-        StringReader reader = new StringReader(CONTENTS_WITH_HEADER);
+    public void parseTabDelimited() {
+        StringReader reader = new StringReader(CONTENTS_WITH_HEADER_TAB_SEPARATED);
         DataFrame df = Parser.parseTabDelimited(reader, "yyyyMMddHHmmss.SSS");
         assertDataFrameParsedCorrectly(df);
     }
 
     @Test
     public void parseTabDelimitedFromSchemaStreamBased() throws IOException {
-        StringReader schemaReader = new StringReader(SCHEMA_STREAM_BASED);
+        StringReader schemaReader = new StringReader(SCHEMA_STREAM_BASED_TAB_DELIMITED);
         Schema schema = Schema.parseJson(schemaReader);
         DataFrame df = Parser.parseTabDelimited(schema);
         assertDataFrameParsedCorrectly(df);
@@ -113,7 +133,7 @@ public class ParserTest {
 
     @Test
     public void parseTabDelimitedFromSchemaFileBased() throws IOException {
-        StringReader schemaReader = new StringReader(SCHEMA_FILE_BASED);
+        StringReader schemaReader = new StringReader(SCHEMA_FILE_BASED_TAB_DELIMITED);
         Schema schema = Schema.parseJson(schemaReader);
         // some trickery to find physical location of resources folder...
         File resourceFolder = new File(ParserTest.class.getResource("/data.txt").getPath()).getParentFile();
@@ -135,7 +155,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseTabDelimitedWithEmptyValues() throws IOException {
+    public void parseTabDelimitedWithEmptyValues() {
         String validButWithEmptyValues =
                 "First\tLast\n" +
                         "String\tString\n" +
@@ -156,6 +176,50 @@ public class ParserTest {
             assertEquals("Row '3' contains '1' value (but should match column count '2')", e.getMessage());
         }
     }
+
+    // -- Comma Separated
+
+    @Test
+    public void parseCommaSeparated() {
+        StringReader reader = new StringReader(CONTENTS_WITH_HEADER_CSV);
+        DataFrame df = Parser.parseCommaSeparated(reader, "yyyyMMddHHmmss.SSS");
+        assertDataFrameParsedCorrectly(df);
+    }
+
+    @Test
+    public void parseCommaSeparatedFromSchemaStreamBased() throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_STREAM_BASED_CSV);
+        Schema schema = Schema.parseJson(schemaReader);
+        DataFrame df = Parser.parseCommaSeparated(schema);
+        assertDataFrameParsedCorrectly(df);
+        assertMetaDataParsedCorrectly(df);
+    }
+
+    @Test
+    public void parseCommaSeparatedFromSchemaFileBased() throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_FILE_BASED_CSV);
+        Schema schema = Schema.parseJson(schemaReader);
+        // some trickery to find physical location of resources folder...
+        File resourceFolder = new File(ParserTest.class.getResource("/data.csv").getPath()).getParentFile();
+        DataFrame df = Parser.parseCommaSeparated(schema, resourceFolder);
+        assertDataFrameParsedCorrectly(df);
+        assertMetaDataParsedCorrectly(df);
+    }
+
+    @Test
+    public void parseCommaSeparatedWithEmptyValues() {
+        String validButWithEmptyValues =
+                "First,Last\n" +
+                        "String,String\n" +
+                        "Barack,Obama\n" +
+                        "Homer,\n" +
+                        ",Clinton\n";
+        DataFrame df = Parser.parseCommaSeparated(new StringReader(validButWithEmptyValues));
+        assertEquals(2, df.getColumnCount());
+        assertEquals(3, df.getRowCount());
+    }
+    
+    // -- Generic
 
     private static void assertDataFrameParsedCorrectly(DataFrame df) {
         assertEquals(6, df.getColumnCount());

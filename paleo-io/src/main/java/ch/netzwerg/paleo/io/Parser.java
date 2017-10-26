@@ -29,23 +29,49 @@ import java.util.Scanner;
 
 public interface Parser {
 
-    static DataFrame parseTabDelimited(Reader in) throws IOException {
-        return ScalaParserImpl.parseTabDelimited(in, Option.none());
+    // -- Tab Delimited
+
+    static DataFrame parseTabDelimited(Reader in) {
+        return ScalaParserImpl.parseViaReaderTabDelimited(in, Option.none());
     }
 
-    static DataFrame parseTabDelimited(Reader in, String timestampPattern) throws IOException {
-        return ScalaParserImpl.parseTabDelimited(in, Option.of(timestampPattern));
+    static DataFrame parseTabDelimited(Reader in, String timestampPattern) {
+        return ScalaParserImpl.parseViaReaderTabDelimited(in, Option.of(timestampPattern));
     }
 
-    static DataFrame parseTabDelimited(Schema schema, File parentDir) throws IOException {
-        return ScalaParserImpl.parseTabDelimited(schema, parentDir);
+    static DataFrame parseTabDelimited(Schema schema, File parentDir) {
+        return ScalaParserImpl.parseViaSchemaTabDelimited(schema, parentDir);
     }
 
     static DataFrame parseTabDelimited(Schema schema) throws IOException {
         try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
              Scanner scanner = new Scanner(inputStream)) {
+
             scanner.useDelimiter(ScalaParserImpl.LineDelimiter());
-            return ScalaParserImpl.parseTabDelimited(schema.getFields(), scanner, 0, schema.getMetaData());
+            return ScalaParserImpl.parseViaFieldsTabDelimited(schema.getFields(), scanner, 0, schema.getMetaData());
+        }
+    }
+
+    // -- Comma Separated
+
+    static DataFrame parseCommaSeparated(Reader in) {
+        return ScalaParserImpl.parseViaReaderCommaSeparated(in, Option.none());
+    }
+
+    static DataFrame parseCommaSeparated(Reader in, String timestampPattern) {
+        return ScalaParserImpl.parseViaReaderCommaSeparated(in, Option.of(timestampPattern));
+    }
+
+    static DataFrame parseCommaSeparated(Schema schema, File parentDir) {
+        return ScalaParserImpl.parseViaSchemaCommaSeparated(schema, parentDir);
+    }
+
+    static DataFrame parseCommaSeparated(Schema schema) throws IOException {
+        try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
+             Scanner scanner = new Scanner(inputStream)) {
+
+            scanner.useDelimiter(ScalaParserImpl.LineDelimiter());
+            return ScalaParserImpl.parseViaFieldsCommaSeparated(schema.getFields(), scanner, 0, schema.getMetaData());
         }
     }
 

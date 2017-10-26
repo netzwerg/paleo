@@ -31,7 +31,7 @@ import static ch.netzwerg.paleo.ColumnIds.*;
 public class ReadmeTest {
 
     @Test
-    public void demo() throws IOException {
+    public void demo() {
 
         final String EXAMPLE =
                 "Name\tColor\tServing Size (g)\n" +

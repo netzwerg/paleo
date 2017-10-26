@@ -21,12 +21,11 @@ import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
 import java.util.Scanner
 import java.util.regex.Pattern
-import io.vavr.collection
-import io.vavr.collection.HashMap
-import io.vavr.collection.Map
-import io.vavr.control.Option
 
 import ch.netzwerg.paleo.ColumnIds._
+import io.vavr.collection
+import io.vavr.collection.{HashMap, Map}
+import io.vavr.control.Option
 import ch.netzwerg.paleo._
 import ch.netzwerg.paleo.schema.{Field, Schema}
 
@@ -37,17 +36,54 @@ object ScalaParserImpl {
 
   val LineDelimiter: Pattern = Pattern.compile("[\\r\\n]+")
 
-  def parseTabDelimited(reader: Reader, timestampPattern: Option[String]): DataFrame = {
+  private val TabSplitter = (line: String) => line.split("\t", -1) // allow empty values
+  private val CommaSplitter = (line: String) => line.split(",", -1) // allow empty values
+
+  // -- Tab Delimited
+
+  def parseViaReaderTabDelimited(reader: Reader, timestampPattern: Option[String]): DataFrame = {
+    parseViaReader(reader, timestampPattern, TabSplitter, TabSplitter, TabSplitter)
+  }
+
+  def parseViaSchemaTabDelimited(schema: Schema, parentDir: File): DataFrame = {
+    parseViaSchema(schema, parentDir, TabSplitter)
+  }
+
+  def parseViaFieldsTabDelimited(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
+    parseViaFields(fields, lines, rowIndexOffset, dataFrameMetaData, TabSplitter)
+  }
+
+  // -- Comma Separated
+
+  def parseViaReaderCommaSeparated(reader: Reader, timestampPattern: Option[String]): DataFrame = {
+    parseViaReader(reader, timestampPattern, CommaSplitter, CommaSplitter, CommaSplitter)
+  }
+
+  def parseViaSchemaCommaSeparated(schema: Schema, parentDir: File): DataFrame = {
+    parseViaSchema(schema, parentDir, CommaSplitter)
+  }
+
+  def parseViaFieldsCommaSeparated(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
+    parseViaFields(fields, lines, rowIndexOffset, dataFrameMetaData, CommaSplitter)
+  }
+
+  // -- Generic Column/Type/Value extraction
+
+  private def parseViaReader(reader: Reader,
+                     timestampPattern: Option[String],
+                     columnNameExtractor: (String) => Array[String],
+                     columnTypeExtractor: (String) => Array[String],
+                     valueExtractor: (String) => Array[String]): DataFrame = {
     val scanner: Scanner = new Scanner(reader)
     scanner.useDelimiter(LineDelimiter)
     val lines = scanner
 
-    val columnNames = lines.next().split("\t")
-    val columnTypes = lines.next().split("\t")
+    val columnNames = columnNameExtractor(lines.next())
+    val columnTypes = columnTypeExtractor(lines.next())
 
     val fields: collection.List[Field] = createFields(columnNames, columnTypes, timestampPattern)
 
-    parseTabDelimited(fields, lines, 2, HashMap.empty())
+    parseViaFields(fields, lines, 2, HashMap.empty(), valueExtractor)
 
   }
 
@@ -64,29 +100,29 @@ object ScalaParserImpl {
     _root_.io.vavr.collection.List.ofAll[Field](fields.toIterable.asJava)
   }
 
-  def parseTabDelimited(schema: Schema, parentDir: File): DataFrame = {
+  private def parseViaSchema(schema: Schema, parentDir: File, valueExtractor: (String) => Array[String]): DataFrame = {
     val fields = schema.getFields
     val source = Source.fromFile(new File(parentDir, schema.getDataFileName))
     try {
       val lines = source.getLines()
-      parseTabDelimited(fields, lines.asJava, 0, schema.getMetaData)
+      parseViaFields(fields, lines.asJava, 0, schema.getMetaData, valueExtractor)
     } finally {
       source.close()
     }
   }
 
-  def parseTabDelimited(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
+  private def parseViaFields(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String], valueExtractor: (String) => Array[String]): DataFrame = {
     val scalaFields = fields.toJavaList.asScala
     val accumulators = scalaFields.map(createAcc)
 
     var rowIndex = 1
     for (line <- lines.asScala) {
-      val values = line.split("\t", -1) // empty values allowed
+      val values = valueExtractor(line)
 
-      if (values.size != accumulators.length) {
+      if (values.length != accumulators.length) {
         val rowIndexForHumans = rowIndex + rowIndexOffset
-        val plural = if (values.size > 1) "s" else ""
-        val msg = s"Row '$rowIndexForHumans' contains '${values.size}' value$plural (but should match column count '${accumulators.length}')"
+        val plural = if (values.length > 1) "s" else ""
+        val msg = s"Row '$rowIndexForHumans' contains '${values.length}' value$plural (but should match column count '${accumulators.length}')"
         throw new scala.IllegalArgumentException(msg)
       }
 
