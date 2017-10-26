@@ -23,7 +23,7 @@ buildscript {
 }
 
 plugins {
-    id 'ch.netzwerg.release' version '1.2.4'
+    id 'ch.netzwerg.release' version '1.2.5'
 }
 
 apply from: 'gradle/dependencies.gradle'
