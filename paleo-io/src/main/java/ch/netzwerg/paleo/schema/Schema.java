@@ -21,11 +21,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.collection.IndexedSeq;
 import io.vavr.collection.Map;
 import io.vavr.collection.Vector;
+import io.vavr.control.Option;
+import io.vavr.jackson.datatype.VavrModule;
 
 import java.io.IOException;
 import java.io.Reader;
 
 import static ch.netzwerg.paleo.schema.NullSafe.safeMap;
+import static ch.netzwerg.paleo.schema.NullSafe.safeOption;
 import static ch.netzwerg.paleo.schema.NullSafe.safeString;
 
 public final class Schema {
@@ -34,13 +37,15 @@ public final class Schema {
     private final String dataFileName;
     private final Vector<Field> fields;
     private final Map<String, String> metaData;
+    private final Option<String> charsetName;
 
     @JsonCreator
-    public Schema(@JsonProperty("title") String title, @JsonProperty("dataFileName") String dataFileName, @JsonProperty("fields") FieldList fields, @JsonProperty("metaData") StringStringMap metaData) {
+    public Schema(@JsonProperty("title") String title, @JsonProperty("dataFileName") String dataFileName, @JsonProperty("fields") FieldList fields, @JsonProperty("metaData") StringStringMap metaData,  @JsonProperty("charsetName") Option<String> charsetName) {
         this.title = safeString(title);
         this.dataFileName = safeString(dataFileName);
         this.fields = safeFields(fields);
         this.metaData = safeMap(metaData);
+        this.charsetName = safeOption(charsetName);
     }
 
     private static Vector<Field> safeFields(FieldList fields) {
@@ -63,9 +68,14 @@ public final class Schema {
         return metaData;
     }
 
+    public Option<String> getCharsetName(){
+        return charsetName;
+    }
+
     public static Schema parseJson(Reader in) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new VavrModule());
         return mapper.readValue(in, Schema.class);
     }
 

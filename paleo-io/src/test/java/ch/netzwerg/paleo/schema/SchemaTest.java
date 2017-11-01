@@ -25,6 +25,7 @@ import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SchemaTest {
 
@@ -49,6 +50,14 @@ public class SchemaTest {
             "  ]\n" +
             "}";
 
+    private static final String JSON_WITH_CHARSET_NAME = "{\n" +
+            "  \"title\": \"Paleo Schema Title\",\n" +
+            "  \"dataFileName\": \"data.tsv\",\n" +
+            "  \"metaData\": { \"author\": \"netzwerg\" },\n" +
+            "  \"charsetName\": \"ISO-8859-1\",\n" +
+            "  \"fields\": [ ]\n" +
+            "}";
+
     @Test
     public void parse() throws IOException {
         Schema schema = Schema.parseJson(new StringReader(JSON));
@@ -56,6 +65,7 @@ public class SchemaTest {
         assertEquals("data.tsv", schema.getDataFileName());
         assertEquals(3, schema.getFields().length());
         assertEquals(Option.of("netzwerg"), schema.getMetaData().get("author"));
+        assertTrue(schema.getCharsetName().isEmpty());
 
         Field fooField = schema.getFields().get(0);
         assertEquals("Foo", fooField.getName());
@@ -71,6 +81,12 @@ public class SchemaTest {
         assertEquals("", emptyField.getName());
         assertEquals(ColumnType.CATEGORY, emptyField.getType());
         assertFalse(emptyField.getFormat().isDefined());
+    }
+
+    @Test
+    public void parseCharset() throws IOException{
+        Schema schema = Schema.parseJson(new StringReader(JSON_WITH_CHARSET_NAME));
+        assertEquals(Option.some("ISO-8859-1"), schema.getCharsetName());
     }
 
 }
