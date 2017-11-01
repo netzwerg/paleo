@@ -17,13 +17,13 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'me.champeau.gradle:jmh-gradle-plugin:0.2.0'
     }
 }
 
 plugins {
     id 'ch.netzwerg.release' version '1.2.5'
-    id 'com.jfrog.bintray' version '1.7.3'
 }
 
 apply from: 'gradle/dependencies.gradle'
