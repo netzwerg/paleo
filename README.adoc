@@ -91,6 +91,7 @@ http://dataprotocols.org/json-table-schema[JSON Table Schema]:
 {
   "title": "Example Schema",
   "dataFileName": "data.txt",
+  "charsetName": "ISO-8859-1", // <1>
   "fields": [
     {
       "name": "Name",
@@ -113,6 +114,7 @@ http://dataprotocols.org/json-table-schema[JSON Table Schema]:
   ]
 }
 ----
+<1> Optionally specify an encoding
 
 Dedicated parsing methods allow to first parse the schema from JSON, and subsequently use it to create a `DataFrame`.
 A given base directory is used to load the actual data (i.e. to resolve the location of the configured `dataFileName`):

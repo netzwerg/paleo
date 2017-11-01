@@ -17,8 +17,9 @@ ext {
     versions = [:]
 }
 
-libraries.vavr = 'io.vavr:vavr:0.9.1'
-libraries.jackson = 'com.fasterxml.jackson.core:jackson-databind:2.8.9'
+def vavrVersion = '0.9.1'
+libraries.vavr = "io.vavr:vavr:$vavrVersion"
+libraries.jackson = ['com.fasterxml.jackson.core:jackson-databind:2.8.9', "io.vavr:vavr-jackson:$vavrVersion"]
 
 libraries.junit = 'junit:junit:4.12'
 libraries.chabis = 'ch.netzwerg:chabis:0.2.0'

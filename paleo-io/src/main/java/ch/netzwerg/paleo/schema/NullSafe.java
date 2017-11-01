@@ -19,6 +19,7 @@ package ch.netzwerg.paleo.schema;
 import ch.netzwerg.paleo.ColumnType;
 import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.Map;
+import io.vavr.control.Option;
 
 public interface NullSafe {
 
@@ -35,6 +36,14 @@ public interface NullSafe {
             return LinkedHashMap.empty();
         } else {
             return LinkedHashMap.ofAll(javaMap);
+        }
+    }
+
+    static <T> Option<T> safeOption(Option<T> option){
+        if (option == null){
+            return Option.none();
+        } else {
+            return  option;
         }
     }
 
