@@ -22,10 +22,7 @@ import ch.netzwerg.paleo.schema.Schema;
 import io.vavr.control.Option;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
-import java.util.Scanner;
 
 public interface Parser {
 
@@ -43,13 +40,8 @@ public interface Parser {
         return ScalaParserImpl.parseViaSchemaTsv(schema, parentDir);
     }
 
-    static DataFrame tsv(Schema schema) throws IOException {
-        try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
-             Scanner scanner = new Scanner(inputStream)) {
-
-            scanner.useDelimiter(ScalaParserImpl.LineDelimiter());
-            return ScalaParserImpl.parseViaFieldsTsv(schema.getFields(), scanner, 0, schema.getMetaData());
-        }
+    static DataFrame tsv(Schema schema) {
+        return ScalaParserImpl.parseViaSchemaTsv(schema);
     }
 
     // -- Comma Separated Values
@@ -66,13 +58,8 @@ public interface Parser {
         return ScalaParserImpl.parseViaSchemaCsv(schema, parentDir);
     }
 
-    static DataFrame csv(Schema schema) throws IOException {
-        try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
-             Scanner scanner = new Scanner(inputStream)) {
-
-            scanner.useDelimiter(ScalaParserImpl.LineDelimiter());
-            return ScalaParserImpl.parseViaFieldsCsv(schema.getFields(), scanner, 0, schema.getMetaData());
-        }
+    static DataFrame csv(Schema schema) {
+        return ScalaParserImpl.parseViaSchemaCsv(schema);
     }
 
 }

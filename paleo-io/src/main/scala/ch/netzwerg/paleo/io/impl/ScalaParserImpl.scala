@@ -49,7 +49,9 @@ object ScalaParserImpl {
     parseViaSchema(schema, parentDir, TabSplitter)
   }
 
-  def parseViaFieldsTsv(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
+  def parseViaSchemaTsv(schema: Schema): DataFrame = parseViaSchema(schema, parseViaFieldsTsv)
+
+  private def parseViaFieldsTsv(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
     parseViaFields(fields, lines, rowIndexOffset, dataFrameMetaData, TabSplitter)
   }
 
@@ -63,17 +65,19 @@ object ScalaParserImpl {
     parseViaSchema(schema, parentDir, CommaSplitter)
   }
 
-  def parseViaFieldsCsv(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
+  def parseViaSchemaCsv(schema: Schema): DataFrame = parseViaSchema(schema, parseViaFieldsCsv)
+
+  private def parseViaFieldsCsv(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
     parseViaFields(fields, lines, rowIndexOffset, dataFrameMetaData, CommaSplitter)
   }
 
   // -- Generic Column/Type/Value extraction
 
   private def parseViaReader(reader: Reader,
-                     timestampPattern: Option[String],
-                     columnNameExtractor: (String) => Array[String],
-                     columnTypeExtractor: (String) => Array[String],
-                     valueExtractor: (String) => Array[String]): DataFrame = {
+                             timestampPattern: Option[String],
+                             columnNameExtractor: (String) => Array[String],
+                             columnTypeExtractor: (String) => Array[String],
+                             valueExtractor: (String) => Array[String]): DataFrame = {
     val scanner: Scanner = new Scanner(reader)
     scanner.useDelimiter(LineDelimiter)
     val lines = scanner
@@ -108,6 +112,18 @@ object ScalaParserImpl {
       parseViaFields(fields, lines.asJava, 0, schema.getMetaData, valueExtractor)
     } finally {
       source.close()
+    }
+  }
+
+  private def parseViaSchema(schema: Schema, parseLogic: (_root_.io.vavr.collection.Seq[Field], java.util.Iterator[String], Int, Map[String, String]) => DataFrame): DataFrame = {
+    val inputStream = ScalaParserImpl.getClass.getResourceAsStream(schema.getDataFileName)
+    val scanner = new Scanner(inputStream)
+    try {
+      scanner.useDelimiter(ScalaParserImpl.LineDelimiter)
+      parseLogic(schema.getFields, scanner, 0, schema.getMetaData)
+    } finally {
+      if (inputStream != null) inputStream.close()
+      if (scanner != null) scanner.close()
     }
   }
 
