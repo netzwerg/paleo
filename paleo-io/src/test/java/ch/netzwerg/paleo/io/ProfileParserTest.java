@@ -36,7 +36,7 @@ public class ProfileParserTest {
     public void run() throws IOException {
         FileReader schema = new FileReader(SCHEMA);
         long start = System.currentTimeMillis();
-        DataFrame dataFrame = Parser.parseTabDelimited(Schema.parseJson(schema), new File(PARENT_DIR));
+        DataFrame dataFrame = Parser.tsv(Schema.parseJson(schema), new File(PARENT_DIR));
         System.out.println("Done: " + (System.currentTimeMillis() - start));
         assertEquals(4, dataFrame.getColumnCount());
         assertEquals(1_000_000, dataFrame.getRowCount());

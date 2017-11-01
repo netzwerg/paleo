@@ -42,7 +42,7 @@ public class ReadmeTest {
                         "Apple\tGreen\t182";
 
 
-        DataFrame dataFrame = Parser.parseTabDelimited(new StringReader(EXAMPLE));
+        DataFrame dataFrame = Parser.tsv(new StringReader(EXAMPLE));
 
         // Lookup typed identifiers by column index
         final StringColumnId NAME = dataFrame.getColumnId(0, ColumnType.STRING);
@@ -62,7 +62,7 @@ public class ReadmeTest {
     public void demoViaSchema() throws IOException {
         final String EXAMPLE_SCHEMA = "{\n" +
                 "  \"title\": \"Example Schema\",\n" +
-                "  \"dataFileName\": \"example-data.txt\",\n" +
+                "  \"dataFileName\": \"example-data.tsv\",\n" +
                 "  \"fields\": [\n" +
                 "    {\n" +
                 "      \"name\": \"Name\",\n" +
@@ -86,10 +86,10 @@ public class ReadmeTest {
                 "}";
 
         // some trickery to find physical location of resources folder...
-        File baseDir = new File(ParserTest.class.getResource("/example-data.txt").getPath()).getParentFile();
+        File baseDir = new File(ParserTest.class.getResource("/example-data.tsv").getPath()).getParentFile();
 
         Schema schema = Schema.parseJson(new StringReader(EXAMPLE_SCHEMA));
-        DataFrame dataFrame = Parser.parseTabDelimited(schema, baseDir);
+        DataFrame dataFrame = Parser.tsv(schema, baseDir);
     }
 
 }

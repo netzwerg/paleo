@@ -39,7 +39,7 @@ public class ParserBenchmarks {
     @Benchmark
     public void parseWithSchema() throws IOException {
         FileReader schema = new FileReader(SCHEMA);
-        DataFrame dataFrame = Parser.parseTabDelimited(Schema.parseJson(schema), new File(PARENT_DIR));
+        DataFrame dataFrame = Parser.tsv(Schema.parseJson(schema), new File(PARENT_DIR));
         if (dataFrame.getRowCount() != 1_000_000) {
             throw new IllegalArgumentException("Parsing failed – expected 1 mio rows");
         }

@@ -39,31 +39,31 @@ object ScalaParserImpl {
   private val TabSplitter = (line: String) => line.split("\t", -1) // allow empty values
   private val CommaSplitter = (line: String) => line.split(",", -1) // allow empty values
 
-  // -- Tab Delimited
+  // -- Tab Delimited Values
 
-  def parseViaReaderTabDelimited(reader: Reader, timestampPattern: Option[String]): DataFrame = {
+  def parseViaReaderTsv(reader: Reader, timestampPattern: Option[String]): DataFrame = {
     parseViaReader(reader, timestampPattern, TabSplitter, TabSplitter, TabSplitter)
   }
 
-  def parseViaSchemaTabDelimited(schema: Schema, parentDir: File): DataFrame = {
+  def parseViaSchemaTsv(schema: Schema, parentDir: File): DataFrame = {
     parseViaSchema(schema, parentDir, TabSplitter)
   }
 
-  def parseViaFieldsTabDelimited(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
+  def parseViaFieldsTsv(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
     parseViaFields(fields, lines, rowIndexOffset, dataFrameMetaData, TabSplitter)
   }
 
-  // -- Comma Separated
+  // -- Comma Separated Values
 
-  def parseViaReaderCommaSeparated(reader: Reader, timestampPattern: Option[String]): DataFrame = {
+  def parseViaReaderCsv(reader: Reader, timestampPattern: Option[String]): DataFrame = {
     parseViaReader(reader, timestampPattern, CommaSplitter, CommaSplitter, CommaSplitter)
   }
 
-  def parseViaSchemaCommaSeparated(schema: Schema, parentDir: File): DataFrame = {
+  def parseViaSchemaCsv(schema: Schema, parentDir: File): DataFrame = {
     parseViaSchema(schema, parentDir, CommaSplitter)
   }
 
-  def parseViaFieldsCommaSeparated(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
+  def parseViaFieldsCsv(fields: _root_.io.vavr.collection.Seq[Field], lines: java.util.Iterator[String], rowIndexOffset: Int, dataFrameMetaData: Map[String, String]): DataFrame = {
     parseViaFields(fields, lines, rowIndexOffset, dataFrameMetaData, CommaSplitter)
   }
 

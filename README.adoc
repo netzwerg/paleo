@@ -65,7 +65,7 @@ The first row specifies the column names, the second row specifies the column ty
 n Apple   Green
 ----
 
-The contents can then be parsed via `Parser.parseTabDelimited(Reader in)`, e.g. like:
+The contents can then be parsed via `Parser.tsv(Reader in)` or `Parser.csv(Reader in)`, e.g. like:
 
 [source,java]
 ----
@@ -77,7 +77,7 @@ final String EXAMPLE =
             "Lemon\tYellow\t83\n" +
             "Apple\tGreen\t182";
 
-DataFrame dataFrame = Parser.parseTabDelimited(new StringReader(EXAMPLE));
+DataFrame dataFrame = Parser.tsv(new StringReader(EXAMPLE));
 ----
 
 ## External JSON Schema
@@ -120,7 +120,7 @@ A given base directory is used to load the actual data (i.e. to resolve the loca
 [source,java]
 ----
 Schema schema = Schema.parseJson(new StringReader(EXAMPLE_SCHEMA));
-DataFrame dataFrame = Parser.parseTabDelimited(schema, baseDir);
+DataFrame dataFrame = Parser.tsv(schema, baseDir);
 ----
 
 ## Working With Parsed Data Frames
@@ -137,7 +137,7 @@ final String EXAMPLE =
             "Lemon\tYellow\t83\n" +
             "Apple\tGreen\t182";
 
-DataFrame dataFrame = Parser.parseTabDelimited(new StringReader(EXAMPLE));
+DataFrame dataFrame = Parser.tsv(new StringReader(EXAMPLE));
 
 // Lookup typed identifiers by column index
 final StringColumnId NAME = dataFrame.getColumnId(0, ColumnType.STRING);

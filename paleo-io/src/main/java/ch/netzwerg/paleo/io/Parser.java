@@ -29,49 +29,49 @@ import java.util.Scanner;
 
 public interface Parser {
 
-    // -- Tab Delimited
+    // -- Tab Delimited Values
 
-    static DataFrame parseTabDelimited(Reader in) {
-        return ScalaParserImpl.parseViaReaderTabDelimited(in, Option.none());
+    static DataFrame tsv(Reader in) {
+        return ScalaParserImpl.parseViaReaderTsv(in, Option.none());
     }
 
-    static DataFrame parseTabDelimited(Reader in, String timestampPattern) {
-        return ScalaParserImpl.parseViaReaderTabDelimited(in, Option.of(timestampPattern));
+    static DataFrame tsv(Reader in, String timestampPattern) {
+        return ScalaParserImpl.parseViaReaderTsv(in, Option.of(timestampPattern));
     }
 
-    static DataFrame parseTabDelimited(Schema schema, File parentDir) {
-        return ScalaParserImpl.parseViaSchemaTabDelimited(schema, parentDir);
+    static DataFrame tsv(Schema schema, File parentDir) {
+        return ScalaParserImpl.parseViaSchemaTsv(schema, parentDir);
     }
 
-    static DataFrame parseTabDelimited(Schema schema) throws IOException {
+    static DataFrame tsv(Schema schema) throws IOException {
         try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
              Scanner scanner = new Scanner(inputStream)) {
 
             scanner.useDelimiter(ScalaParserImpl.LineDelimiter());
-            return ScalaParserImpl.parseViaFieldsTabDelimited(schema.getFields(), scanner, 0, schema.getMetaData());
+            return ScalaParserImpl.parseViaFieldsTsv(schema.getFields(), scanner, 0, schema.getMetaData());
         }
     }
 
-    // -- Comma Separated
+    // -- Comma Separated Values
 
-    static DataFrame parseCommaSeparated(Reader in) {
-        return ScalaParserImpl.parseViaReaderCommaSeparated(in, Option.none());
+    static DataFrame csv(Reader in) {
+        return ScalaParserImpl.parseViaReaderCsv(in, Option.none());
     }
 
-    static DataFrame parseCommaSeparated(Reader in, String timestampPattern) {
-        return ScalaParserImpl.parseViaReaderCommaSeparated(in, Option.of(timestampPattern));
+    static DataFrame csv(Reader in, String timestampPattern) {
+        return ScalaParserImpl.parseViaReaderCsv(in, Option.of(timestampPattern));
     }
 
-    static DataFrame parseCommaSeparated(Schema schema, File parentDir) {
-        return ScalaParserImpl.parseViaSchemaCommaSeparated(schema, parentDir);
+    static DataFrame csv(Schema schema, File parentDir) {
+        return ScalaParserImpl.parseViaSchemaCsv(schema, parentDir);
     }
 
-    static DataFrame parseCommaSeparated(Schema schema) throws IOException {
+    static DataFrame csv(Schema schema) throws IOException {
         try (InputStream inputStream = Parser.class.getResourceAsStream(schema.getDataFileName());
              Scanner scanner = new Scanner(inputStream)) {
 
             scanner.useDelimiter(ScalaParserImpl.LineDelimiter());
-            return ScalaParserImpl.parseViaFieldsCommaSeparated(schema.getFields(), scanner, 0, schema.getMetaData());
+            return ScalaParserImpl.parseViaFieldsCsv(schema.getFields(), scanner, 0, schema.getMetaData());
         }
     }
 

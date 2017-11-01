@@ -1,6 +1,6 @@
 {
   "title": "Example Schema",
-  "dataFileName": "example-data.txt",
+  "dataFileName": "example-data.tsv",
   "fields": [
     {
       "name": "Name",

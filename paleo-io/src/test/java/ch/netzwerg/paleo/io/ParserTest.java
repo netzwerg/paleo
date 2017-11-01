@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 
 public class ParserTest {
 
-    private static final String CONTENTS_WITH_HEADER_TAB_SEPARATED = "Name\tAge\tHeight\tVegetarian\tDate Of Birth\tGender\n" +
+    private static final String CONTENTS_WITH_HEADER_TSV = "Name\tAge\tHeight\tVegetarian\tDate Of Birth\tGender\n" +
             "String\tInt\tDouble\tBoolean\tTimestamp\tCategory\n" +
             "Ada\t42\t1.74\ttrue\t19750826050916.111\tFemale\n" +
             "Homer\t99\t1.20\tF\t20060108050916.222\tMale\n" +
@@ -83,8 +83,8 @@ public class ParserTest {
 
     private static final String META_DATA = "  \"metaData\": { \"author\": \"netzwerg\" }";
 
-    private static final String SCHEMA_STREAM_BASED_TAB_DELIMITED = "{\n" +
-            "  \"dataFileName\": \"/data.txt\",\n" +
+    private static final String SCHEMA_STREAM_BASED_TSV = "{\n" +
+            "  \"dataFileName\": \"/data.tsv\",\n" +
             META_DATA + ",\n" +
             FIELDS +
             "}";
@@ -95,8 +95,8 @@ public class ParserTest {
             FIELDS +
             "}";
 
-    private static final String SCHEMA_FILE_BASED_TAB_DELIMITED = "{\n" +
-            "  \"dataFileName\": \"data.txt\",\n" +
+    private static final String SCHEMA_FILE_BASED_TSV = "{\n" +
+            "  \"dataFileName\": \"data.tsv\",\n" +
             META_DATA + ",\n" +
             FIELDS +
             "}";
@@ -109,45 +109,45 @@ public class ParserTest {
 
 
     private static final String SCHEMA_INCONSISTENT_COLUMN_COUNT = "{\n" +
-            "  \"dataFileName\": \"/inconsistent-column-count.txt\",\n" +
+            "  \"dataFileName\": \"/inconsistent-column-count.tsv\",\n" +
             FIELDS +
             "}";
     
     // -- Tab Delimited
 
     @Test
-    public void parseTabDelimited() {
-        StringReader reader = new StringReader(CONTENTS_WITH_HEADER_TAB_SEPARATED);
-        DataFrame df = Parser.parseTabDelimited(reader, "yyyyMMddHHmmss.SSS");
+    public void tsv() {
+        StringReader reader = new StringReader(CONTENTS_WITH_HEADER_TSV);
+        DataFrame df = Parser.tsv(reader, "yyyyMMddHHmmss.SSS");
         assertDataFrameParsedCorrectly(df);
     }
 
     @Test
-    public void parseTabDelimitedFromSchemaStreamBased() throws IOException {
-        StringReader schemaReader = new StringReader(SCHEMA_STREAM_BASED_TAB_DELIMITED);
+    public void tsvFromSchemaStreamBased() throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_STREAM_BASED_TSV);
         Schema schema = Schema.parseJson(schemaReader);
-        DataFrame df = Parser.parseTabDelimited(schema);
+        DataFrame df = Parser.tsv(schema);
         assertDataFrameParsedCorrectly(df);
         assertMetaDataParsedCorrectly(df);
     }
 
     @Test
-    public void parseTabDelimitedFromSchemaFileBased() throws IOException {
-        StringReader schemaReader = new StringReader(SCHEMA_FILE_BASED_TAB_DELIMITED);
+    public void tsvFromSchemaFileBased() throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_FILE_BASED_TSV);
         Schema schema = Schema.parseJson(schemaReader);
         // some trickery to find physical location of resources folder...
-        File resourceFolder = new File(ParserTest.class.getResource("/data.txt").getPath()).getParentFile();
-        DataFrame df = Parser.parseTabDelimited(schema, resourceFolder);
+        File resourceFolder = new File(ParserTest.class.getResource("/data.tsv").getPath()).getParentFile();
+        DataFrame df = Parser.tsv(schema, resourceFolder);
         assertDataFrameParsedCorrectly(df);
         assertMetaDataParsedCorrectly(df);
     }
 
     @Test
-    public void parseTabDelimitedFromSchemaInconsistentColumnCount() throws IOException {
+    public void tsvFromSchemaInconsistentColumnCount() throws IOException {
         StringReader schemaReader = new StringReader(SCHEMA_INCONSISTENT_COLUMN_COUNT);
         Schema schema = Schema.parseJson(schemaReader);
         try {
-            Parser.parseTabDelimited(schema);
+            Parser.tsv(schema);
             fail("Exception expected");
         } catch (Exception e) {
             assertEquals("Row '2' contains '5' values (but should match column count '6')", e.getMessage());
@@ -155,23 +155,23 @@ public class ParserTest {
     }
 
     @Test
-    public void parseTabDelimitedWithEmptyValues() {
+    public void tsvWithEmptyValues() {
         String validButWithEmptyValues =
                 "First\tLast\n" +
                         "String\tString\n" +
                         "Barack\tObama\n" +
                         "Homer\t\n" +
                         "\tClinton\n";
-        DataFrame df = Parser.parseTabDelimited(new StringReader(validButWithEmptyValues));
+        DataFrame df = Parser.tsv(new StringReader(validButWithEmptyValues));
         assertEquals(2, df.getColumnCount());
         assertEquals(3, df.getRowCount());
     }
 
     @Test
-    public void parseTabDelimitedOffsetRowIndexInErrorMessage() {
+    public void tsvOffsetRowIndexInErrorMessage() {
         String invalid = "First\tLast\nString\tString\nBarack\n";
         try (Reader in = new StringReader(invalid)) {
-            Parser.parseTabDelimited(in);
+            Parser.tsv(in);
         } catch (Exception e) {
             assertEquals("Row '3' contains '1' value (but should match column count '2')", e.getMessage());
         }
@@ -180,41 +180,41 @@ public class ParserTest {
     // -- Comma Separated
 
     @Test
-    public void parseCommaSeparated() {
+    public void csv() {
         StringReader reader = new StringReader(CONTENTS_WITH_HEADER_CSV);
-        DataFrame df = Parser.parseCommaSeparated(reader, "yyyyMMddHHmmss.SSS");
+        DataFrame df = Parser.csv(reader, "yyyyMMddHHmmss.SSS");
         assertDataFrameParsedCorrectly(df);
     }
 
     @Test
-    public void parseCommaSeparatedFromSchemaStreamBased() throws IOException {
+    public void csvFromSchemaStreamBased() throws IOException {
         StringReader schemaReader = new StringReader(SCHEMA_STREAM_BASED_CSV);
         Schema schema = Schema.parseJson(schemaReader);
-        DataFrame df = Parser.parseCommaSeparated(schema);
+        DataFrame df = Parser.csv(schema);
         assertDataFrameParsedCorrectly(df);
         assertMetaDataParsedCorrectly(df);
     }
 
     @Test
-    public void parseCommaSeparatedFromSchemaFileBased() throws IOException {
+    public void csvFromSchemaFileBased() throws IOException {
         StringReader schemaReader = new StringReader(SCHEMA_FILE_BASED_CSV);
         Schema schema = Schema.parseJson(schemaReader);
         // some trickery to find physical location of resources folder...
         File resourceFolder = new File(ParserTest.class.getResource("/data.csv").getPath()).getParentFile();
-        DataFrame df = Parser.parseCommaSeparated(schema, resourceFolder);
+        DataFrame df = Parser.csv(schema, resourceFolder);
         assertDataFrameParsedCorrectly(df);
         assertMetaDataParsedCorrectly(df);
     }
 
     @Test
-    public void parseCommaSeparatedWithEmptyValues() {
+    public void csvWithEmptyValues() {
         String validButWithEmptyValues =
                 "First,Last\n" +
                         "String,String\n" +
                         "Barack,Obama\n" +
                         "Homer,\n" +
                         ",Clinton\n";
-        DataFrame df = Parser.parseCommaSeparated(new StringReader(validButWithEmptyValues));
+        DataFrame df = Parser.csv(new StringReader(validButWithEmptyValues));
         assertEquals(2, df.getColumnCount());
         assertEquals(3, df.getRowCount());
     }

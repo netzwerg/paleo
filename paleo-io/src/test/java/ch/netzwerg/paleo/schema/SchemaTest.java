@@ -30,7 +30,7 @@ public class SchemaTest {
 
     private static final String JSON = "{\n" +
             "  \"title\": \"Paleo Schema Title\",\n" +
-            "  \"dataFileName\": \"data.txt\",\n" +
+            "  \"dataFileName\": \"data.tsv\",\n" +
             "  \"metaData\": { \"author\": \"netzwerg\" },\n" +
             "  \"fields\": [\n" +
             "    {\n" +
@@ -53,7 +53,7 @@ public class SchemaTest {
     public void parse() throws IOException {
         Schema schema = Schema.parseJson(new StringReader(JSON));
         assertEquals("Paleo Schema Title", schema.getTitle());
-        assertEquals("data.txt", schema.getDataFileName());
+        assertEquals("data.tsv", schema.getDataFileName());
         assertEquals(3, schema.getFields().length());
         assertEquals(Option.of("netzwerg"), schema.getMetaData().get("author"));
 
