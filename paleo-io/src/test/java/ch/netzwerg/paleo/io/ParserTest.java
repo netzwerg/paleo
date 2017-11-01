@@ -112,6 +112,16 @@ public class ParserTest {
             "  \"dataFileName\": \"/inconsistent-column-count.tsv\",\n" +
             FIELDS +
             "}";
+
+    private static final String SCHEMA_WITH_CHARSET_NAME = "{\n" +
+            "  \"dataFileName\": \"/iso-8859-1.txt\",\n" +
+            "  \"charsetName\": \"ISO-8859-1\",\n" +
+            "  \"fields\": [\n" +
+            "    {\n" +
+            "      \"demo\": \"Demo\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
     
     // -- Tab Delimited
 
@@ -177,6 +187,11 @@ public class ParserTest {
         }
     }
 
+    @Test
+    public void tsvFromSchemaWithCharset() throws IOException {
+        assertSchemaWithCharset(Parser::tsv);
+    }
+
     // -- Comma Separated
 
     @Test
@@ -218,7 +233,12 @@ public class ParserTest {
         assertEquals(2, df.getColumnCount());
         assertEquals(3, df.getRowCount());
     }
-    
+
+    @Test
+    public void csvFromSchemaWithCharset() throws IOException {
+        assertSchemaWithCharset(Parser::csv);
+    }
+
     // -- Generic
 
     private static void assertDataFrameParsedCorrectly(DataFrame df) {
@@ -282,6 +302,14 @@ public class ParserTest {
         Map<String, String> columnMetaData = df.getColumn(df.getColumnId(2, ColumnType.DOUBLE)).getMetaData();
         assertEquals(1, columnMetaData.size());
         assertEquals(Option.of("m"), columnMetaData.get("unit"));
+    }
+
+    private static void assertSchemaWithCharset(Function<Schema, DataFrame> parseLogic) throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_WITH_CHARSET_NAME);
+        Schema schema = Schema.parseJson(schemaReader);
+        DataFrame dataFrame = parseLogic.apply(schema);
+        StringColumnId columnId = dataFrame.getColumnId(0, ColumnType.STRING);
+        assertEquals("°", dataFrame.getValueAt(0, columnId));
     }
 
 }

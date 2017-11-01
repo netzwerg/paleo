@@ -117,7 +117,10 @@ object ScalaParserImpl {
 
   private def parseViaSchema(schema: Schema, parseLogic: (_root_.io.vavr.collection.Seq[Field], java.util.Iterator[String], Int, Map[String, String]) => DataFrame): DataFrame = {
     val inputStream = ScalaParserImpl.getClass.getResourceAsStream(schema.getDataFileName)
-    val scanner = new Scanner(inputStream)
+    val scanner = schema.getCharsetName.asScala match {
+      case Some(charsetName) => new Scanner(inputStream, charsetName)
+      case None => new Scanner(inputStream)
+    }
     try {
       scanner.useDelimiter(ScalaParserImpl.LineDelimiter)
       parseLogic(schema.getFields, scanner, 0, schema.getMetaData)
@@ -174,6 +177,10 @@ object ScalaParserImpl {
       }
     }
     new Acc[Instant, TimestampColumn](builder, parseLogic)
+  }
+
+  implicit class VavrOptionConverter[A](val underlying: Option[A]) extends AnyVal {
+    def asScala: scala.Option[A] = if (underlying.isDefined) Some(underlying.get) else None
   }
 
 }
