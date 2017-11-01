@@ -1,5 +1,5 @@
 # Paleo image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"] image:https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg[link="https://bintray.com/netzwerg/maven/paleo/_latestVersion"]
-:latest-release-version: 0.13.0
+:latest-release-version: 0.13.1
 
 Immutable Java 8 data frames with typed columns.
 
