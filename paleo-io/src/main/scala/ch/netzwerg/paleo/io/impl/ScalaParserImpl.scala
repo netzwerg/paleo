@@ -106,7 +106,10 @@ object ScalaParserImpl {
 
   private def parseViaSchema(schema: Schema, parentDir: File, valueExtractor: (String) => Array[String]): DataFrame = {
     val fields = schema.getFields
-    val source = Source.fromFile(new File(parentDir, schema.getDataFileName))
+    val source = schema.getCharsetName.asScala match {
+      case Some(charsetName) => Source.fromFile(new File(parentDir, schema.getDataFileName), charsetName)
+      case None => Source.fromFile(new File(parentDir, schema.getDataFileName))
+    }
     try {
       val lines = source.getLines()
       parseViaFields(fields, lines.asJava, 0, schema.getMetaData, valueExtractor)

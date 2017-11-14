@@ -18,6 +18,7 @@ package ch.netzwerg.paleo.io;
 
 import ch.netzwerg.paleo.*;
 import ch.netzwerg.paleo.schema.Schema;
+import io.vavr.Function2;
 import io.vavr.collection.Array;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Map;
@@ -192,6 +193,11 @@ public class ParserTest {
         assertSchemaWithCharset(Parser::tsv);
     }
 
+    @Test
+    public void tsvFromSchemaRelativeToParentDirWithCharset() throws IOException {
+        assertSchemaRelativeToParentDirWithCharset(Parser::tsv);
+    }
+
     // -- Comma Separated
 
     @Test
@@ -237,6 +243,11 @@ public class ParserTest {
     @Test
     public void csvFromSchemaWithCharset() throws IOException {
         assertSchemaWithCharset(Parser::csv);
+    }
+
+    @Test
+    public void csvFromSchemaRelativeToParentDirWithCharset() throws IOException {
+        assertSchemaRelativeToParentDirWithCharset(Parser::csv);
     }
 
     // -- Generic
@@ -308,6 +319,16 @@ public class ParserTest {
         StringReader schemaReader = new StringReader(SCHEMA_WITH_CHARSET_NAME);
         Schema schema = Schema.parseJson(schemaReader);
         DataFrame dataFrame = parseLogic.apply(schema);
+        StringColumnId columnId = dataFrame.getColumnId(0, ColumnType.STRING);
+        assertEquals("°", dataFrame.getValueAt(0, columnId));
+    }
+
+    private static void assertSchemaRelativeToParentDirWithCharset(Function2<Schema, File, DataFrame> parseLogic) throws IOException {
+        StringReader schemaReader = new StringReader(SCHEMA_WITH_CHARSET_NAME);
+        Schema schema = Schema.parseJson(schemaReader);
+        // some trickery to find physical location of resources folder...
+        File resourceFolder = new File(ParserTest.class.getResource("/iso-8859-1.txt").getPath()).getParentFile();
+        DataFrame dataFrame = parseLogic.apply(schema, resourceFolder);
         StringColumnId columnId = dataFrame.getColumnId(0, ColumnType.STRING);
         assertEquals("°", dataFrame.getValueAt(0, columnId));
     }
