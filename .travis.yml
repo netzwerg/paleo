@@ -1,12 +1,7 @@
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
 env:
   - TERM=dumb
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install --only-upgrade -y oracle-java8-installer
-install:
-  - /bin/true
 script:
   - ./gradlew -PBINTRAY_USER -PBINTRAY_API_KEY build
