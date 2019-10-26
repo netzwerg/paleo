@@ -17,13 +17,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'me.champeau.gradle:jmh-gradle-plugin:0.2.0'
+        classpath 'me.champeau.gradle:jmh-gradle-plugin:0.4.4'
     }
 }
 
 plugins {
     id 'ch.netzwerg.release' version '1.2.5'
-    id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.jfrog.bintray' version '1.8.4'
 }
 
 apply from: 'gradle/dependencies.gradle'
@@ -76,6 +76,7 @@ subprojects {
     targetCompatibility = 1.8
 
     compileJava.options.encoding = 'UTF-8'
+    javadoc.options.encoding = 'UTF-8'
 
     repositories {
         jcenter()

@@ -20,6 +20,9 @@ sourceSets.main.java.srcDirs = []
 sourceSets.test.scala.srcDir "src/test/java"
 sourceSets.test.java.srcDirs = []
 
+compileScala.options.encoding = 'UTF-8'
+compileTestScala.options.encoding = 'UTF-8'
+
 dependencies {
     compile project(':paleo-core')
     compile libraries.jackson
