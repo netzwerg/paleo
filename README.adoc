@@ -1,10 +1,7 @@
-ifdef::env-github[]
-:warning-caption: :warning:
-endif::[]
+# NO LONGER MAINTAINED – USE AT YOUR OWN RISK!
+
 # Paleo image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"]
 :latest-release-version: 0.14.0
-
-WARNING: This library is no longer maintained – use at your own risk!
 
 Immutable Java 8 data frames with typed columns.
 
