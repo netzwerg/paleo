@@ -1,5 +1,10 @@
-# Paleo image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"] image:https://api.bintray.com/packages/netzwerg/maven/paleo/images/download.svg[link="https://bintray.com/netzwerg/maven/paleo/_latestVersion"]
+ifdef::env-github[]
+:warning-caption: :warning:
+endif::[]
+# Paleo image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"]
 :latest-release-version: 0.14.0
+
+WARNING: This library is no longer maintained – use at your own risk!
 
 Immutable Java 8 data frames with typed columns.
 
