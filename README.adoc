@@ -1,6 +1,6 @@
 # NO LONGER MAINTAINED – USE AT YOUR OWN RISK!
 
-# Paleo image:https://travis-ci.org/netzwerg/paleo.svg?branch=master["Build Status", link="https://travis-ci.org/netzwerg/paleo"]
+# Paleo
 :latest-release-version: 0.14.0
 
 Immutable Java 8 data frames with typed columns.
@@ -255,3 +255,5 @@ the paleo diet.
 
 Pull requests are very welcome.
 Please note that by submitting a pull request, you agree to license your contribution under the "Apache License Version 2.0".
+
+&copy; 2015-2021 Rahel Lüthy
