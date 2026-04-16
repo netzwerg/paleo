@@ -12,128 +12,66 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'me.champeau.gradle:jmh-gradle-plugin:0.4.4'
-    }
-}
-
 plugins {
-    id 'ch.netzwerg.release' version '1.2.5'
-    id 'com.jfrog.bintray' version '1.8.4'
+    id 'me.champeau.jmh' version '0.7.3' apply false
 }
 
 apply from: 'gradle/dependencies.gradle'
 
 allprojects {
-
-    apply plugin: 'com.jfrog.bintray'
-    apply plugin: 'idea'
-
     group = 'ch.netzwerg'
-    version = rootProject.version
-
-    bintray {
-        dryRun = project.hasProperty('dryRun') && project.dryRun.toBoolean()
-        if (project.hasProperty('BINTRAY_USER')) {
-            user = "$BINTRAY_USER"
-        }
-        if (project.hasProperty('BINTRAY_API_KEY')) {
-            key = "$BINTRAY_API_KEY"
-        }
-        configurations = ['published', 'archives']
-        pkg {
-            repo = 'maven'
-            name = 'paleo'
-            licenses = ['Apache-2.0']
-            desc = 'Immutable Java 8 data frames with typed columns'
-            websiteUrl = 'https://github.com/netzwerg/paleo'
-            issueTrackerUrl = 'https://github.com/netzwerg/paleo/issues'
-            vcsUrl = 'https://github.com/netzwerg/paleo.git'
-            version {
-                name = project.version
-                vcsTag = project.release.tagName
-            }
-        }
-    }
-
-    idea.module {
-        inheritOutputDirs = true
-    }
-
+    version = file("$rootDir/version.txt").text.trim()
 }
 
 subprojects {
 
-    apply plugin: 'java'
-    apply plugin: 'maven'
-    apply plugin: 'me.champeau.gradle.jmh'
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'me.champeau.jmh'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        withSourcesJar()
+    }
 
     compileJava.options.encoding = 'UTF-8'
     javadoc.options.encoding = 'UTF-8'
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        testCompile libraries.junit
-        testCompile libraries.chabis
+        testImplementation libraries.junit
     }
 
-    configurations {
-        published
-    }
-
-    task copyLicense(type: Copy) {
-        from "$rootDir"
-        into 'build/resources/main/META-INF'
-        include 'LICENSE'
-    }
-
-    jar {
-        dependsOn copyLicense
-        doFirst {
-            manifest {
-                attributes(
-                        'Build-Time': new Date().format("EEE, dd MMM yyyy HH:mm:ss z"),
-                        'Implementation-Version': rootProject.version,
-                        'Bundle-License': 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                )
-            }
+    processResources {
+        from("$rootDir") {
+            include 'LICENSE'
+            into 'META-INF'
         }
     }
 
-    task sourceJar(type: Jar) {
-        from sourceSets.main.allSource
-        classifier = 'sources'
+    jar {
+        manifest {
+            attributes(
+                    'Implementation-Version': rootProject.version,
+                    'Bundle-License': 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            )
+        }
     }
 
-    artifacts {
-        published sourceJar
-    }
-
-    idea.module {
-        scopes.PROVIDED.plus += [ configurations.jmh ]
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
     }
 
     jmh {
         jmhVersion = versions.jmhVersion
     }
 
-}
-
-configurations {
-    published
-}
-
-release {
-    dependsOn subprojects.build
-    push = false
 }

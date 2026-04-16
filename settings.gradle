@@ -12,4 +12,12 @@
  * limitations under the License.
  */
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'paleo'
 include 'paleo-core', 'paleo-io'

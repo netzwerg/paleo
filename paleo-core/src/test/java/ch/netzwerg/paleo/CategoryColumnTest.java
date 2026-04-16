@@ -16,7 +16,6 @@
 
 package ch.netzwerg.paleo;
 
-import ch.netzwerg.chabis.WordGenerator;
 import io.vavr.collection.Array;
 import io.vavr.collection.HashSet;
 import org.junit.Before;
@@ -31,11 +30,11 @@ public class CategoryColumnTest extends AbstractBaseColumnTest<String, CategoryC
 
     private static final CategoryColumnId ID = CategoryColumnId.of("test");
 
-    private WordGenerator wordGenerator;
+    private TestWordGenerator wordGenerator;
 
     @Before
     public void before() {
-        this.wordGenerator = new WordGenerator(new Random(42));
+        this.wordGenerator = new TestWordGenerator(new Random(42));
     }
 
     @Override
@@ -58,7 +57,8 @@ public class CategoryColumnTest extends AbstractBaseColumnTest<String, CategoryC
         CategoryColumnId id = CategoryColumnId.of("test");
         Array<String> values = Array.ofAll(this.wordGenerator.randomWords(100));
         CategoryColumn column = CategoryColumn.builder(id).addAll(values).build();
-        assertEquals(93, column.getCategories().length());
+        assertEquals(100, column.getRowCount());
+        assertEquals(values.toSet().length(), column.getCategories().length());
         assertEquals(values, column.valueStream().toArray());
     }
 

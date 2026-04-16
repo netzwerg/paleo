@@ -24,7 +24,7 @@ compileScala.options.encoding = 'UTF-8'
 compileTestScala.options.encoding = 'UTF-8'
 
 dependencies {
-    compile project(':paleo-core')
-    compile libraries.jackson
-    compile libraries.scala
+    api project(':paleo-core')
+    implementation libraries.jackson
+    implementation libraries.scala
 }

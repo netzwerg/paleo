@@ -158,7 +158,7 @@ String yellow = dataFrame.getValueAt(2, COLOR);
 
 # Usage
 
-All modules are available via https://bintray.com/netzwerg/maven/paleo/view[Bintray/JCenter].
+All modules are available via https://search.maven.org/search?q=g:ch.netzwerg%20AND%20a:paleo*[Maven Central].
 
 ## Repository Configuration
 
@@ -167,22 +167,8 @@ Gradle:
 [source,groovy]
 ----
 repositories {
-    jcenter()
+    mavenCentral()
 }
-----
-
-Maven `settings.xml`:
-
-[source,xml]
-----
-<repository>
-    <snapshots>
-      <enabled>false</enabled>
-    </snapshots>
-    <id>central</id>
-    <name>bintray</name>
-    <url>http://jcenter.bintray.com</url>
-</repository>
 ----
 
 ## Using the `paleo-core` module
@@ -192,7 +178,7 @@ Gradle:
 [source,groovy]
 [subs="attributes"]
 ----
-compile 'ch.netzwerg:paleo-core:{latest-release-version}'
+implementation 'ch.netzwerg:paleo-core:{latest-release-version}'
 ----
 
 Maven:
@@ -217,7 +203,7 @@ Gradle:
 [source,groovy]
 [subs="attributes"]
 ----
-compile 'ch.netzwerg:paleo-io:{latest-release-version}'
+implementation 'ch.netzwerg:paleo-io:{latest-release-version}'
 ----
 
 Maven:

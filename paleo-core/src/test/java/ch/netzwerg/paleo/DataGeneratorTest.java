@@ -14,7 +14,6 @@
 
 package ch.netzwerg.paleo;
 
-import ch.netzwerg.chabis.WordGenerator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,11 +35,11 @@ public class DataGeneratorTest {
     private static final Random R = new Random();
     private static final int ROW_COUNT = 1000000;
 
-    private WordGenerator wordGenerator;
+    private TestWordGenerator wordGenerator;
 
     @Before
     public void before() {
-        this.wordGenerator = new WordGenerator(R);
+        this.wordGenerator = new TestWordGenerator(R);
     }
 
     @Test @Ignore

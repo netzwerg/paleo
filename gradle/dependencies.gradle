@@ -21,11 +21,10 @@ libraries.vavr = "io.vavr:vavr:0.10.2"
 libraries.jackson = ['com.fasterxml.jackson.core:jackson-databind:2.9.10.1', "io.vavr:vavr-jackson:0.10.2"]
 
 libraries.junit = 'junit:junit:4.12'
-libraries.chabis = 'ch.netzwerg:chabis:0.2.0'
 
-def scalaVersion = '2.12.10'
+def scalaVersion = '2.12.21'
 libraries.scala = "org.scala-lang:scala-library:$scalaVersion"
 libraries.scalaTools = ["org.scala-lang:scala-compiler:$scalaVersion",
                         ext.libraries.scala]
 
-versions.jmhVersion = '1.21'
+versions.jmhVersion = '1.37'
